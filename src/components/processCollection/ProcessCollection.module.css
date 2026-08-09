@@ -1,0 +1,159 @@
+.paymentPhase,
+.pinPhase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balanceDisplay {
+  width: 100%;
+  background-color: var(--bg-primary);
+  border: 1px solid #3a3f44;
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.balanceLabel {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.balanceAmount {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--accent);
+  font-family: var(--mono);
+}
+
+.formGroup {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.input {
+  width: 100%;
+  background-color: var(--bg-primary);
+  border: 1px solid #3a3f44;
+  color: var(--text-primary);
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 4px;
+  font-family: var(--mono);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.proceedBtn {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* PIN Phase Styles */
+.jobSummary {
+  width: 100%;
+  background-color: var(--bg-primary);
+  border: 1px solid #3a3f44;
+  border-radius: 4px;
+  padding: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.summaryDevice {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.summaryFault {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.instruction {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+}
+
+.pinDots {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--text-secondary);
+  background-color: transparent;
+}
+
+.dot.active {
+  background-color: #2ecc71; /* Green for final confirmation */
+  border-color: #2ecc71;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.key {
+  background-color: var(--bg-primary);
+  border: 1px solid #3a3f44;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key:active {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  transform: scale(0.95);
+}
+
+.delKey {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.blankKey {
+  visibility: hidden;
+}

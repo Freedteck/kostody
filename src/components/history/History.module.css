@@ -1,0 +1,90 @@
+.historyContainer {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding: 20px;
+  padding-bottom: 100px; /* Space for BottomNav */
+  font-family: var(--sans);
+  color: var(--text-primary);
+}
+
+.header {
+  border-bottom: 1px solid #3a3f44;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.header p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 5px 0 0 0;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid #3a3f44;
+  color: var(--text-primary);
+  padding: 12px 15px;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+.jobList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.jobCard {
+  background-color: var(--surface);
+  border: 1px solid #3a3f44;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.jobHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.deviceName {
+  font-size: 1.1rem;
+  margin: 0;
+}
+.jobId {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.customerName {
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+.jobFault {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.dateText {
+  font-size: 0.75rem;
+  color: #2ecc71;
+  margin: 10px 0 0 0;
+  font-family: var(--mono);
+}
+
+.jobCardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}

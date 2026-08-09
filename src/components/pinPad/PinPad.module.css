@@ -1,0 +1,90 @@
+.pinContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.instruction {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+}
+
+.pinDots {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--text-secondary);
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.dot.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.key {
+  background-color: var(--bg-primary);
+  border: 1px solid #3a3f44;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 500;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key:active {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  transform: scale(0.95);
+}
+
+.delKey {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.delKey:active {
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.blankKey {
+  visibility: hidden;
+}
+
+.forgotBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-top: 20px;
+}
+
+.forgotBtn:hover {
+  color: var(--accent);
+}
