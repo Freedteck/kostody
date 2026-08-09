@@ -11,12 +11,10 @@ const JobSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get data passed from the Intake Form
   const formData = location.state?.formData;
 
-  // Safeguard: If user refreshes or comes here directly, send them back
   if (!formData) {
-    navigate("/intake");
+    navigate("/app/intake");
     return null;
   }
 
@@ -30,7 +28,6 @@ const JobSummary = () => {
   };
 
   const handleShare = () => {
-    // Mock sending WhatsApp link
     console.log("Link sent to customer via WhatsApp");
     setIsSuccessOpen(true);
   };
@@ -44,7 +41,15 @@ const JobSummary = () => {
     <div className={styles.summaryContainer}>
       <div className={styles.summaryHeader}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          ←
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
         <h1>Job Summary</h1>
       </div>
@@ -92,7 +97,6 @@ const JobSummary = () => {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Condition Photos</h2>
           <div className={styles.photoGrid}>
-            {/* Mocking 3 photos for now, later we will map actual uploaded photos */}
             <div className={styles.photoBox}>No Image</div>
             <div className={styles.photoBox}>No Image</div>
             <div className={styles.photoBox}>No Image</div>
@@ -131,7 +135,6 @@ const JobSummary = () => {
 
       {/* Action Area */}
       <div className={styles.actionArea}>
-        {/* Share Toggle */}
         <div className={styles.toggleRow}>
           <div>
             <span className={styles.toggleLabel}>Share with Customer</span>
@@ -148,7 +151,6 @@ const JobSummary = () => {
           </button>
         </div>
 
-        {/* Dynamic Action Button */}
         {!shareWithCustomer ? (
           <button className={styles.lockBtn} onClick={() => setIsPinOpen(true)}>
             Lock Agreement
@@ -160,7 +162,6 @@ const JobSummary = () => {
         )}
       </div>
 
-      {/* Modals */}
       {isPinOpen && (
         <PinPad
           onSuccess={handlePinSuccess}
@@ -168,7 +169,6 @@ const JobSummary = () => {
           title="Authorize Agreement"
         />
       )}
-
       {isSuccessOpen && (
         <SuccessSheet
           title={shareWithCustomer ? "Link Sent" : "Agreement Locked"}

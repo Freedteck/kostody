@@ -6,31 +6,31 @@ const IntakeForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if we are returning a job
   const returnJobData = location.state?.returnJobData;
+  const editJobData = location.state?.editJobData;
 
   const [hasReferralId, setHasReferralId] = useState(false);
   const [referralId, setReferralId] = useState("");
 
   const [formData, setFormData] = useState({
-    customerName: returnJobData?.customer || "",
-    customerPhone: returnJobData?.phone || "",
-    deviceModel: returnJobData?.device || "",
-    faultDescription: "",
-    quotedPrice: "",
-    upfrontPayment: "",
+    customerName: editJobData?.customerName || returnJobData?.customer || "",
+    customerPhone: editJobData?.customerPhone || returnJobData?.phone || "",
+    deviceModel: editJobData?.device || returnJobData?.device || "",
+    faultDescription: editJobData?.fault || "",
+    quotedPrice: editJobData?.quotedPrice || "",
+    upfrontPayment: editJobData?.upfrontPayment || "",
     quoteValidity: "7",
-    accessoriesRetained: "",
+    accessoriesRetained: editJobData?.accessories?.join(", ") || "",
   });
 
   const isReturnJob = !!returnJobData;
+  const isEditJob = !!editJobData;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Mock function to simulate fetching data from the database via Job ID
   const handleReferralIdBlur = (e) => {
     const id = e.target.value.trim();
     if (id === "KSD-9F3A") {
@@ -46,25 +46,36 @@ const IntakeForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Navigate to Job Summary, passing the formData
     navigate("/app/summary", { state: { formData } });
   };
 
-  // Check if fields should be read-only (either because of Transfer Referral or Return Job)
   const isLocked = (hasReferralId && referralId === "KSD-9F3A") || isReturnJob;
 
   return (
     <div className={styles.formContainer}>
       <div className={styles.formHeader}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          ←
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
-        <h1>{isReturnJob ? "Return Job Intake" : "New Intake"}</h1>
+        <h1>
+          {isEditJob
+            ? "Edit Job Details"
+            : isReturnJob
+              ? "Return Job Intake"
+              : "New Intake"}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Transfer Toggle - Only show if it's NOT a return job */}
-        {!isReturnJob && (
+        {!isReturnJob && !isEditJob && (
           <div className={styles.referralToggleContainer}>
             <label className={styles.label}>
               Accepting from another Engineer?
@@ -82,8 +93,7 @@ const IntakeForm = () => {
           </div>
         )}
 
-        {/* Referral ID Input (Conditional) */}
-        {hasReferralId && !isReturnJob && (
+        {hasReferralId && !isReturnJob && !isEditJob && (
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="referralId">
               Referral Job ID
@@ -95,14 +105,13 @@ const IntakeForm = () => {
               onChange={(e) => setReferralId(e.target.value)}
               onBlur={handleReferralIdBlur}
               id="referralId"
-              placeholder="e.g. KSD-9F3A (Type this to test)"
+              placeholder="e.g. KSD-9F3A"
               required={hasReferralId}
               style={{ fontFamily: "var(--mono)" }}
             />
           </div>
         )}
 
-        {/* Customer Details */}
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="customerName">
             Customer Name
@@ -154,7 +163,6 @@ const IntakeForm = () => {
           />
         </div>
 
-        {/* Device Details */}
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="deviceModel">
             Device & Model
@@ -166,7 +174,7 @@ const IntakeForm = () => {
             value={formData.deviceModel}
             onChange={handleChange}
             id="deviceModel"
-            placeholder="e.g. iPhone 13 Pro, Tecno Camon 20"
+            placeholder="e.g. iPhone 13 Pro"
             required
             readOnly={isLocked}
             style={
@@ -181,7 +189,6 @@ const IntakeForm = () => {
           />
         </div>
 
-        {/* Diagnosis */}
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="faultDescription">
             Diagnosis / Fault Description
@@ -194,14 +201,13 @@ const IntakeForm = () => {
             id="faultDescription"
             placeholder={
               isReturnJob
-                ? "Describe the NEW fault for this return job..."
-                : "e.g. Broken screen, customer says touch still works but glass is shattered."
+                ? "Describe the NEW fault..."
+                : "e.g. Broken screen, touch still works."
             }
             required
           />
         </div>
 
-        {/* Accessories / Parts Retained */}
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="accessoriesRetained">
             Accessories / Parts Retained
@@ -213,11 +219,10 @@ const IntakeForm = () => {
             value={formData.accessoriesRetained}
             onChange={handleChange}
             id="accessoriesRetained"
-            placeholder="e.g. SIM card, Battery (If none, leave blank)"
+            placeholder="e.g. SIM card, Battery"
           />
         </div>
 
-        {/* Working Condition Photos */}
         <div className={styles.formGroup}>
           <label className={styles.label}>Device Condition Photos</label>
           <label htmlFor="photoUpload" className={styles.photoUploadArea}>
@@ -236,7 +241,6 @@ const IntakeForm = () => {
           />
         </div>
 
-        {/* Pricing & Validity */}
         <div className={styles.priceRow}>
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="quotedPrice">
@@ -289,7 +293,11 @@ const IntakeForm = () => {
         </div>
 
         <button type="submit" className={styles.submitBtn}>
-          {isReturnJob ? "Review Return Job" : "Review & Continue"}
+          {isEditJob
+            ? "Save Changes"
+            : isReturnJob
+              ? "Review Return Job"
+              : "Review & Continue"}
         </button>
       </form>
     </div>

@@ -4,9 +4,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 100;
   animation: fadeIn 0.3s ease forwards;
+  backdrop-filter: blur(4px); /* Native iOS blur effect */
 }
 
 .sheet {
@@ -17,7 +18,6 @@
   background-color: var(--surface);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  border-top: 1px solid var(--accent);
   padding: 20px;
   padding-bottom: 40px;
   z-index: 101;
@@ -40,6 +40,7 @@
   margin: 0 0 20px 0;
   text-align: center;
   color: var(--text-primary);
+  font-weight: 600;
 }
 
 @keyframes fadeIn {
@@ -50,7 +51,6 @@
     opacity: 1;
   }
 }
-
 @keyframes slideUp {
   from {
     transform: translateY(100%);

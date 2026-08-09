@@ -11,142 +11,137 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #3a3f44; /* Dark border for the header split */
-  padding-bottom: 15px;
+  padding-bottom: 20px;
   margin-bottom: 20px;
+  /* Removed border-bottom for a flatter, native feel */
 }
 
 .header h1 {
-  font-size: 1.2rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 1.4rem; /* Slightly larger for native feel */
+  font-weight: 700;
   margin: 0;
 }
 
 .header p {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
-  margin: 0;
+  margin: 5px 0 0 0;
 }
 
 .headerActions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .iconBtn,
 .iconBtnPrimary {
-  width: 40px;
-  height: 40px;
+  width: 42px; /* Slightly larger touch target */
+  height: 42px;
   border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #3a3f44;
+  border: none; /* Removed border */
   background: var(--surface);
   color: var(--text-primary);
-  transition: all 0.2s;
+  transition: opacity 0.1s; /* Native touch feedback */
 }
 
-.iconBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.iconBtn:active {
+  opacity: 0.6; /* Dims slightly when tapped */
 }
 
 .iconBtnPrimary {
   background-color: var(--accent);
   color: var(--bg-primary);
-  border: none;
-  font-size: 1.8rem;
 }
 
-.iconBtnPrimary:hover {
-  background-color: #e65c00;
+.iconBtnPrimary:active {
+  opacity: 0.8;
 }
 
+/* Search Input - No border, uses surface color */
 .searchInput {
   width: 100%;
   background-color: var(--surface);
-  border: 1px solid #3a3f44;
+  border: none; /* Removed border */
   color: var(--text-primary);
-  padding: 12px 15px;
+  padding: 14px 16px;
   font-size: 0.95rem;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  border-radius: 8px; /* Slightly more rounded for native feel */
+  margin-bottom: 20px;
   outline: none;
-  transition: border-color 0.2s;
 }
 
-.searchInput:focus {
-  border-color: var(--accent);
+.searchInput::placeholder {
+  color: var(--text-secondary);
 }
 
+/* Filter Tabs - Cleaner */
 .filterTabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
-  overflow-x: auto; /* Allows scrolling if tabs overflow on small screens */
+  margin-bottom: 24px;
+  overflow-x: auto;
   white-space: nowrap;
   padding-bottom: 5px;
+  scrollbar-width: none; /* Hide scrollbar for native feel */
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tabBtn {
   background: none;
-  border: 1px solid #3a3f44;
+  border: none; /* Removed border */
   color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .tabActive {
   background-color: var(--accent-bg);
-  border-color: var(--accent);
   color: var(--accent);
-}
-
-.noJobs {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-top: 40px;
-  font-size: 0.9rem;
-}
-
-.jobFault {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 5px 0 0 0;
+  font-weight: 600;
 }
 
 .jobList {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
+/* Job Card - Rely on background contrast, native active state */
 .jobCard {
   background-color: var(--surface);
-  border: 1px solid #3a3f44; /* Rugged dark border */
-  padding: 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border-color 0.2s;
+  border: 1px solid #2c2f33; /* Very subtle border */
+  padding: 16px;
+  border-radius: 8px; /* Rounded for native feel */
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.1s ease-out,
+    background-color 0.1s;
 }
 
-.jobCard:hover {
-  border-color: var(--accent);
+.jobCard:active {
+  transform: scale(
+    0.98
+  ); /* Shrinks slightly when tapped, like a native button */
+  background-color: #202327;
 }
 
 .jobHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .deviceName {
@@ -160,44 +155,49 @@
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin: 0;
+  background: var(--bg-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .jobDetails {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-top: 10px;
-  border-top: 1px dashed #3a3f44;
-  padding-top: 10px;
+  margin-top: 12px;
 }
 
 .customerName {
   font-size: 0.9rem;
   color: var(--text-primary);
+  margin: 0;
+}
+
+.jobFault {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
 }
 
 .statusBadge {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: bold;
   text-transform: uppercase;
   padding: 4px 8px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .statusPending {
   background-color: var(--accent-bg);
   color: var(--accent);
-  border: 1px solid var(--accent-border);
 }
 
 .statusProgress {
-  background-color: rgba(0, 180, 216, 0.2);
+  background-color: rgba(0, 180, 216, 0.15);
   color: #00b4d8;
-  border: 1px solid #00b4d8;
 }
 
 .statusReady {
-  background-color: rgba(46, 204, 113, 0.2);
+  background-color: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
-  border: 1px solid #2ecc71;
 }

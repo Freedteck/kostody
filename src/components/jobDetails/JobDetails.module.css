@@ -13,44 +13,42 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  border-bottom: 1px solid #3a3f44;
-  padding-bottom: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .backBtn {
   background: none;
-  border: 1px solid #3a3f44;
-  color: var(--text-secondary);
-  padding: 5px 10px;
-  border-radius: 4px;
+  border: none;
+  color: var(--text-primary);
   cursor: pointer;
-  font-size: 1rem;
+  padding: 5px;
+  margin-left: -5px;
+  transition: opacity 0.1s;
 }
 
-.backBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.backBtn:active {
+  opacity: 0.5;
 }
 
 .headerInfo h1 {
   font-size: 1.4rem;
   margin: 0;
+  font-weight: 700;
 }
 
 .headerInfo p {
   font-family: var(--mono);
   font-size: 0.85rem;
   color: var(--text-secondary);
-  margin: 5px 0 0 0;
+  margin: 4px 0 0 0;
 }
 
+/* Native Card Style (No borders, just background) */
 .section {
-  margin-bottom: 30px;
+  margin-bottom: 16px;
   background-color: var(--surface);
-  border: 1px solid #3a3f44;
-  padding: 15px;
-  border-radius: 4px;
+  padding: 18px;
+  border-radius: 12px;
 }
 
 .sectionTitle {
@@ -58,43 +56,45 @@
   text-transform: uppercase;
   color: var(--text-secondary);
   letter-spacing: 1px;
-  margin-bottom: 15px;
-  border-bottom: 1px dashed #3a3f44;
-  padding-bottom: 5px;
+  margin: 0 0 16px 0;
+  font-weight: 600;
 }
 
 .detailRow {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.detailRow:last-child {
+  margin-bottom: 0;
 }
 
 .detailLabel {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .detailValue {
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   text-align: right;
 }
 
 .detailValueMono {
   font-family: var(--mono);
-  color: var(--accent);
 }
 
 .faultText {
   width: 100%;
   background-color: var(--bg-primary);
-  border: 1px solid #3a3f44;
-  padding: 10px;
-  border-radius: 4px;
+  padding: 12px;
+  border-radius: 8px;
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--text-primary);
+  margin: 0;
 }
 
 .photoGrid {
@@ -106,8 +106,7 @@
 .photoPlaceholder {
   aspect-ratio: 1;
   background-color: var(--bg-primary);
-  border: 1px solid #3a3f44;
-  border-radius: 4px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,72 +118,65 @@
 .actionsContainer {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .statusBtn {
   width: 100%;
-  padding: 15px;
-  border: 1px solid #3a3f44;
+  padding: 16px;
   background-color: var(--surface);
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: 12px;
+  border: none;
+  transition: transform 0.1s;
 }
 
-.statusBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.statusBtn:active {
+  transform: scale(0.98);
+  opacity: 0.8;
 }
 
 .statusBtnPrimary {
   background-color: var(--accent);
   color: var(--bg-primary);
-  border: none;
-}
-
-.statusBtnPrimary:hover {
-  background-color: #e65c00;
-  color: var(--bg-primary);
 }
 
 .handoffBtn {
   width: 100%;
-  padding: 12px;
-  border: 1px dashed var(--text-secondary);
-  background: none;
+  padding: 14px;
+  background-color: var(--surface);
   color: var(--text-secondary);
   font-size: 0.85rem;
+  font-weight: bold;
   text-transform: uppercase;
   cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
+  border-radius: 12px;
+  border: none;
 }
 
-.handoffBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.handoffBtn:active {
+  opacity: 0.7;
 }
 
-/* Read-Only Toggle Switch for Customer Confirmation */
+/* Toggle */
 .toggleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: var(--surface);
-  border: 1px solid #3a3f44;
-  padding: 12px 15px;
-  border-radius: 4px;
-  margin-bottom: 20px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
 .toggleLabel {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-primary);
 }
@@ -193,13 +185,13 @@
   position: relative;
   width: 44px;
   height: 24px;
-  background-color: #3a3f44; /* Off state */
+  background-color: #3a3f44;
   border-radius: 12px;
-  cursor: not-allowed; /* Shows it's read-only */
+  cursor: not-allowed;
 }
 
 .toggleSwitch.on {
-  background-color: #2ecc71; /* On state (Green) */
+  background-color: #2ecc71;
 }
 
 .toggleHandle {
@@ -217,7 +209,7 @@
   transform: translateX(20px);
 }
 
-/* Multiple Accessories Pills */
+/* Accessories Pills */
 .pillContainer {
   display: flex;
   flex-wrap: wrap;
@@ -227,95 +219,89 @@
 
 .pill {
   background-color: var(--bg-primary);
-  border: 1px solid #3a3f44;
   color: var(--text-primary);
-  padding: 4px 10px;
-  border-radius: 15px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 0.8rem;
+  font-weight: 500;
 }
 
-/* Quick Contact Buttons */
+/* Contact Buttons */
 .contactRow {
   display: flex;
   gap: 10px;
-  margin-top: 5px;
+  margin: 12px 0 16px 0;
 }
 
 .contactBtn {
   flex: 1;
-  background: none;
-  border: 1px solid #3a3f44;
-  color: var(--text-secondary);
-  padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
   text-decoration: none;
-  text-align: center;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.1s;
 }
 
-.contactBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.contactBtn:active {
+  opacity: 0.7;
 }
 
-/* Log Payment Inline Form */
+/* Log Payment */
 .logPaymentInline {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 16px;
 }
 
 .logPaymentInput {
   flex: 1;
-  min-width: 0; /* THIS FIXES THE OVERFLOW ISSUE */
+  min-width: 0;
   background-color: var(--bg-primary);
-  border: 1px solid #3a3f44;
   color: var(--text-primary);
   padding: 12px;
   font-size: 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
+  border: none;
   font-family: var(--mono);
   outline: none;
-  transition: border-color 0.2s;
 }
 
-.logPaymentInput:focus {
-  border-color: var(--accent);
+.logPaymentSubmit,
+.cancelPaymentBtn {
+  border: none;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .logPaymentSubmit {
   background-color: var(--accent);
   color: var(--bg-primary);
-  border: none;
-  padding: 0 20px;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 0.9rem;
-  white-space: nowrap; /* Prevents the "Add" text from wrapping */
 }
 
 .cancelPaymentBtn {
-  background: var(--bg-primary);
-  border: 1px solid #3a3f44;
+  background-color: var(--bg-primary);
   color: var(--text-secondary);
-  padding: 0 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  white-space: nowrap; /* Prevents the "Cancel" text from wrapping */
 }
 
-/* Medical Chart Style Timeline */
+/* Timeline */
 .timeline {
-  margin-top: 10px;
-  border-left: 2px solid #3a3f44;
-  padding-left: 15px;
+  margin-top: 12px;
+  border-left: 2px solid var(--bg-primary);
+  padding-left: 16px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .timelineItem {
@@ -325,11 +311,11 @@
 .timelineItem::before {
   content: "";
   position: absolute;
-  left: -21px; /* aligns with the border */
+  left: -22px;
   top: 4px;
   width: 10px;
   height: 10px;
-  background-color: var(--bg-primary);
+  background-color: var(--surface);
   border: 2px solid var(--text-secondary);
   border-radius: 50%;
 }
@@ -349,21 +335,18 @@
 
 .logPaymentBtn {
   width: 100%;
-  padding: 10px;
-  background: none;
-  border: 1px dashed var(--text-secondary);
+  padding: 12px;
+  background-color: var(--bg-primary);
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 4px;
-  margin-top: 10px;
+  border-radius: 8px;
+  margin-top: 16px;
+  border: none;
 }
 
-.logPaymentBtn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
+/* Expired Tooltip */
 .expiredText {
   color: #ff4d4d !important;
 }
@@ -372,12 +355,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid var(--text-secondary);
-  font-size: 0.65rem;
-  margin-left: 5px;
+  margin-left: 6px;
   position: relative;
   cursor: help;
   color: var(--text-secondary);
@@ -386,17 +364,16 @@
 .tooltip {
   visibility: hidden;
   width: 160px;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: #000;
+  color: #fff;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 8px;
   position: absolute;
   z-index: 10;
   bottom: 125%;
   left: 50%;
   margin-left: -80px;
-  border: 1px solid var(--accent);
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 0.75rem;
@@ -404,7 +381,6 @@
   text-transform: none;
   letter-spacing: normal;
   pointer-events: none;
-  white-space: normal;
 }
 
 .infoIcon:hover .tooltip {

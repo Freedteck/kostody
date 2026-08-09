@@ -4,7 +4,6 @@
   align-items: center;
   padding-bottom: 10px;
 }
-
 .instruction {
   font-size: 0.85rem;
   color: var(--text-secondary);
@@ -16,7 +15,6 @@
   gap: 15px;
   margin-bottom: 30px;
 }
-
 .dot {
   width: 14px;
   height: 14px;
@@ -25,7 +23,6 @@
   background-color: transparent;
   transition: background-color 0.2s;
 }
-
 .dot.active {
   background-color: var(--accent);
   border-color: var(--accent);
@@ -41,7 +38,7 @@
 
 .key {
   background-color: var(--bg-primary);
-  border: 1px solid #3a3f44;
+  border: none;
   color: var(--text-primary);
   font-size: 1.5rem;
   font-weight: 500;
@@ -62,13 +59,12 @@
 
 .delKey {
   background: none;
-  border: none;
   color: var(--text-secondary);
 }
-
 .delKey:active {
   background-color: transparent;
   color: var(--text-primary);
+  opacity: 0.5;
 }
 
 .blankKey {
@@ -84,7 +80,6 @@
   font-size: 0.85rem;
   margin-top: 20px;
 }
-
-.forgotBtn:hover {
+.forgotBtn:active {
   color: var(--accent);
 }

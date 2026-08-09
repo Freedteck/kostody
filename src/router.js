@@ -10,6 +10,11 @@ import CustomerJobPage from "./pages/customerJob/CustomerJob";
 import HistoryPage from "./pages/history/History";
 import ProfilePage from "./pages/profile/Profile";
 import Dashboard from "./pages/dashboard/Dashboard";
+import CustomerLogin from "./pages/customerLogin/CustomerLogin";
+import CustomerApp from "./CustomerApp";
+import CustomerDashboard from "./pages/customerDashboard/CustomerDashboard";
+import CustomerProfilePage from "./pages/customerProfile/CustomerProfile";
+import CustomerHistoryPage from "./pages/customerHistory/CustomerHistory";
 
 export const router = createBrowserRouter([
   {
@@ -54,9 +59,30 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
   {
-    path: "/c/:jobId",
-    Component: CustomerJobPage,
+    path: "/c/login",
+    Component: CustomerLogin,
+  },
+  {
+    path: "/c",
+    Component: CustomerApp,
+    children: [
+      {
+        path: "dashboard",
+        Component: CustomerDashboard,
+      },
+      {
+        path: ":jobId",
+        Component: CustomerJobPage,
+      },
+      {
+        path: "history",
+        Component: CustomerHistoryPage,
+      },
+      {
+        path: "profile",
+        Component: CustomerProfilePage,
+      },
+    ],
   },
 ]);

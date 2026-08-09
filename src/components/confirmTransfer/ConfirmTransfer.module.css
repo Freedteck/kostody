@@ -5,7 +5,6 @@
   margin-bottom: 30px;
   line-height: 1.4;
 }
-
 .buttonRow {
   display: flex;
   gap: 15px;
@@ -15,29 +14,29 @@
 .btnAccept {
   flex: 1;
   padding: 15px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: bold;
   text-transform: uppercase;
   cursor: pointer;
   font-size: 0.9rem;
+  border: none;
+  transition: transform 0.1s;
 }
 
 .btnDecline {
-  background: none;
-  color: #ff4d4d;
-  border: 1px solid #ff4d4d;
-}
-
-.btnDecline:hover {
   background-color: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}
+.btnDecline:active {
+  background-color: rgba(255, 77, 77, 0.2);
+  transform: scale(0.98);
 }
 
 .btnAccept {
   background-color: var(--accent);
   color: var(--bg-primary);
-  border: none;
 }
-
-.btnAccept:hover {
-  background-color: #e65c00;
+.btnAccept:active {
+  transform: scale(0.98);
+  opacity: 0.9;
 }

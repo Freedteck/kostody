@@ -20,7 +20,7 @@ const mockJobData = {
   quoteValidity: "7 Days",
   customerConfirmed: true,
   photos: [null, null, null],
-  transferStatus: "none", // Changed to none so you can test the Expired flow from (pending_acceptance, in_progress, ready_for_pickup, completed)
+  transferStatus: "none",
 };
 
 const initialTimeline = [
@@ -36,17 +36,14 @@ const initialTimeline = [
 
 const JobDetails = () => {
   const navigate = useNavigate();
-
   const [jobData, setJobData] = useState(mockJobData);
-  const [status, setStatus] = useState("Expired"); // Set to Expired to test
+  const [status, setStatus] = useState("Pending Confirmation");
   const [payments, setPayments] = useState([mockJobData.upfrontPayment]);
   const [timeline, setTimeline] = useState(initialTimeline);
   const [showPaymentInput, setShowPaymentInput] = useState(false);
   const [newPaymentAmount, setNewPaymentAmount] = useState("");
-
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
-
   const [isRequoteOpen, setIsRequoteOpen] = useState(false);
   const [isRequotePinOpen, setIsRequotePinOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
@@ -62,7 +59,6 @@ const JobDetails = () => {
   const handleAdvanceStatus = () => {
     let newStatus = status;
     let newEvent = "";
-
     if (status === "Pending Confirmation") {
       newStatus = "In Progress";
       newEvent = "Status updated to In Progress";
@@ -73,7 +69,6 @@ const JobDetails = () => {
       setIsCollectionOpen(true);
       return;
     }
-
     if (newEvent) {
       setStatus(newStatus);
       setTimeline((prev) => [...prev, { time: "Just now", event: newEvent }]);
@@ -81,9 +76,8 @@ const JobDetails = () => {
   };
 
   const getButtonLabel = () => {
-    if (status === "Pending Confirmation")
-      return "Start Repair (Move to In Progress)";
-    if (status === "In Progress") return "Mark as Ready for Pickup";
+    if (status === "Pending Confirmation") return "Start Repair";
+    if (status === "In Progress") return "Ready for Pickup";
     if (status === "Ready for Pickup") return "Process Collection";
     return "Job Completed";
   };
@@ -106,9 +100,7 @@ const JobDetails = () => {
   };
 
   const handleCollectionSuccess = (pin, finalPayment) => {
-    if (finalPayment > 0) {
-      setPayments((prev) => [...prev, finalPayment]);
-    }
+    if (finalPayment > 0) setPayments((prev) => [...prev, finalPayment]);
     setIsCollectionOpen(false);
     setStatus("Completed");
     setTimeline((prev) => [
@@ -131,7 +123,6 @@ const JobDetails = () => {
       },
     ]);
   };
-
   const handleDeclineTransfer = () => {
     setIsSheetOpen(false);
     setTimeline((prev) => [
@@ -139,22 +130,18 @@ const JobDetails = () => {
       { time: "Just now", event: "Transfer Declined. Negotiation required." },
     ]);
   };
-
   const handleRequoteSubmit = (price, validity) => {
     setNewQuoteData({ price, validity });
     setIsRequoteOpen(false);
     setIsRequotePinOpen(true);
   };
-
   const handleRequotePinSuccess = () => {
     setIsRequotePinOpen(false);
-
     setJobData((prev) => ({
       ...prev,
       quotedPrice: Number(newQuoteData.price),
       quoteValidity: `${newQuoteData.validity} Days`,
     }));
-
     setStatus("Pending Confirmation");
     setTimeline((prev) => [
       ...prev,
@@ -163,20 +150,23 @@ const JobDetails = () => {
         event: `New quote raised (₦${Number(newQuoteData.price).toLocaleString()}) and authorized by customer.`,
       },
     ]);
-
     setIsSuccessOpen(true);
-  };
-
-  const handleSuccessClose = () => {
-    setIsSuccessOpen(false);
   };
 
   return (
     <div className={styles.detailsContainer}>
-      {/* Header */}
+      {/* Header with SVG Back Arrow */}
       <div className={styles.detailsHeader}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          ←
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
         <div className={styles.headerInfo}>
           <h1>{jobData.device}</h1>
@@ -186,7 +176,6 @@ const JobDetails = () => {
         </div>
       </div>
 
-      {/* Customer Confirmation Status */}
       <div className={styles.toggleRow}>
         <span className={styles.toggleLabel}>Customer Confirmation</span>
         <div
@@ -196,19 +185,30 @@ const JobDetails = () => {
         </div>
       </div>
 
-      {/* Customer & Financials */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Agreement Details</h2>
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>Customer</span>
           <span className={styles.detailValue}>{jobData.customerName}</span>
         </div>
-        <div className={styles.contactRow} style={{ marginBottom: "15px" }}>
+
+        {/* Contact Buttons with SVG Icons */}
+        <div className={styles.contactRow}>
           <a
             href={`tel:${jobData.customerPhone}`}
             className={styles.contactBtn}
           >
-            📞 Call
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M22 16.92V19.92C22 20.52 21.52 21 20.92 21C9.7 21 1 12.3 1 1.08C1 0.48 1.48 0 2.08 0H5.08C5.68 0 6.16 0.48 6.16 1.08C6.16 2.68 6.36 4.24 6.76 5.74C6.88 6.22 6.74 6.74 6.38 7.1L4.6 8.88C6.06 11.7 8.3 13.94 11.12 15.4L12.9 13.62C13.26 13.26 13.78 13.12 14.26 13.24C15.76 13.64 17.32 13.84 18.92 13.84C19.52 13.84 20 14.32 20 14.92V16.92Z"
+                transform="translate(1 1)"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Call
           </a>
           <a
             href={`https://wa.me/234${jobData.customerPhone.slice(1)}`}
@@ -216,9 +216,19 @@ const JobDetails = () => {
             rel="noreferrer"
             className={styles.contactBtn}
           >
-            💬 WhatsApp
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M21 11.5C21 16.7467 16.7467 21 11.5 21C9.88149 21 8.35519 20.6039 7.01829 19.9041L3 21L4.0959 16.9817C3.39613 15.6448 3 14.1185 3 12.5C3 7.25329 7.25329 3 12.5 3C17.7467 3 22 7.25329 22 12.5L21 11.5Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            WhatsApp
           </a>
         </div>
+
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>Quoted Price</span>
           <span className={`${styles.detailValue} ${styles.detailValueMono}`}>
@@ -246,17 +256,37 @@ const JobDetails = () => {
           </span>
         </div>
 
-        {/* Quote Validity with Tooltip */}
         <div className={styles.detailRow}>
           <span
             className={`${styles.detailLabel} ${isExpired ? styles.expiredText : ""}`}
           >
             Quote Validity
             <span className={styles.infoIcon}>
-              ⓘ
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M12 8H12.01"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M11 12H12V16"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <span className={styles.tooltip}>
                 {isExpired
-                  ? "This quote has expired. Please raise a new quote for customer approval."
+                  ? "This quote has expired. Please raise a new quote."
                   : "The quoted price is valid for this period."}
               </span>
             </span>
@@ -268,7 +298,6 @@ const JobDetails = () => {
           </span>
         </div>
 
-        {/* Log New Payment UI */}
         {!showPaymentInput ? (
           <button
             className={styles.logPaymentBtn}
@@ -301,7 +330,6 @@ const JobDetails = () => {
         )}
       </div>
 
-      {/* Diagnosis & Parts */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Diagnosis & Parts</h2>
         <div className={styles.detailRow} style={{ alignItems: "flex-start" }}>
@@ -317,7 +345,6 @@ const JobDetails = () => {
         <p className={styles.faultText}>{jobData.fault}</p>
       </div>
 
-      {/* Condition Photos */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Condition Photos</h2>
         <div className={styles.photoGrid}>
@@ -329,7 +356,6 @@ const JobDetails = () => {
         </div>
       </div>
 
-      {/* Job Timeline */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Job History</h2>
         <div className={styles.timeline}>
@@ -342,7 +368,6 @@ const JobDetails = () => {
         </div>
       </div>
 
-      {/* Actions */}
       <div className={styles.actionsContainer}>
         {jobData.transferStatus === "pending_acceptance" ? (
           <button
@@ -359,17 +384,28 @@ const JobDetails = () => {
             Raise New Quote
           </button>
         ) : (
-          <button
-            className={`${styles.statusBtn} ${status !== "Completed" ? styles.statusBtnPrimary : ""}`}
-            onClick={handleAdvanceStatus}
-            disabled={status === "Completed"}
-          >
-            {getButtonLabel()}
-          </button>
+          <>
+            <button
+              className={`${styles.statusBtn} ${status !== "Completed" ? styles.statusBtnPrimary : ""}`}
+              onClick={handleAdvanceStatus}
+              disabled={status === "Completed"}
+            >
+              {getButtonLabel()}
+            </button>
+            {status === "Pending Confirmation" && (
+              <button
+                className={styles.handoffBtn}
+                onClick={() =>
+                  navigate("/app/intake", { state: { editJobData: jobData } })
+                }
+              >
+                Edit Details
+              </button>
+            )}
+          </>
         )}
       </div>
 
-      {/* Existing Sheets */}
       {isSheetOpen && (
         <ConfirmTransfer
           onAccept={handleAcceptTransfer}
@@ -378,7 +414,6 @@ const JobDetails = () => {
           onClose={() => setIsSheetOpen(false)}
         />
       )}
-
       {isCollectionOpen && (
         <ProcessCollection
           onClose={() => setIsCollectionOpen(false)}
@@ -387,8 +422,6 @@ const JobDetails = () => {
           outstandingBalance={outstandingBalance}
         />
       )}
-
-      {/* New Re-quote Sheets */}
       {isRequoteOpen && (
         <RaiseQuote
           onClose={() => setIsRequoteOpen(false)}
@@ -396,7 +429,6 @@ const JobDetails = () => {
           currentPrice={jobData.quotedPrice}
         />
       )}
-
       {isRequotePinOpen && (
         <PinPad
           onSuccess={handleRequotePinSuccess}
@@ -404,12 +436,11 @@ const JobDetails = () => {
           title="Authorize New Quote"
         />
       )}
-
       {isSuccessOpen && (
         <SuccessSheet
           title="Quote Updated"
           message="Customer authorized the new price. Job is now active."
-          onClose={handleSuccessClose}
+          onClose={() => setIsSuccessOpen(false)}
         />
       )}
     </div>

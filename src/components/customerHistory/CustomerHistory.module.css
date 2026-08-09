@@ -1,0 +1,111 @@
+.historyContainer {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding: 20px;
+  padding-bottom: 100px;
+  font-family: var(--sans);
+  color: var(--text-primary);
+}
+.header {
+  margin-bottom: 24px;
+}
+.header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+  font-weight: 700;
+}
+.header p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 5px 0 0 0;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: var(--surface);
+  border: none;
+  color: var(--text-primary);
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  outline: none;
+}
+.searchInput::placeholder {
+  color: var(--text-secondary);
+}
+
+.timelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.monthGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.monthHeader {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin: 0;
+  padding-bottom: 5px;
+  font-weight: 600;
+}
+
+.jobList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.jobCard {
+  background-color: var(--surface);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.jobCard:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.deviceName {
+  font-size: 1.05rem;
+  margin: 0;
+  font-weight: 600;
+}
+.statusBadge {
+  font-size: 0.7rem;
+  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.15);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.shopName {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.dot {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+.dateText {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+}

@@ -6,7 +6,6 @@
   font-family: var(--sans);
   color: var(--text-primary);
 }
-
 .header {
   margin-bottom: 30px;
 }
@@ -20,9 +19,8 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
-
 .avatar {
   width: 60px;
   height: 60px;
@@ -35,56 +33,18 @@
   align-items: center;
   justify-content: center;
 }
-
-.shopName {
+.customerName {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 700;
 }
-.engineerName {
+.customerPhone {
   margin: 5px 0 0 0;
   color: var(--text-secondary);
+  font-family: var(--mono);
   font-size: 0.9rem;
 }
 
-/* Financial Banner */
-.financialBanner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--surface);
-  border-radius: 12px;
-  padding: 20px 15px;
-  margin-bottom: 40px;
-}
-
-.finStat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-.finValue {
-  font-family: var(--mono);
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--accent);
-}
-.finLabel {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-top: 4px;
-  letter-spacing: 0.5px;
-}
-.finDivider {
-  width: 1px;
-  height: 30px;
-  background-color: #3a3f44;
-}
-
-/* Settings Groups */
 .settingsGroup {
   margin-bottom: 30px;
 }
@@ -102,31 +62,28 @@
   border-radius: 12px;
   overflow: hidden;
 }
-
 .listItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
+  padding: 16px;
   cursor: pointer;
   transition: background-color 0.1s;
 }
-
 .listItem:active {
   background-color: #202327;
 }
-
 .itemLeft {
   display: flex;
   align-items: center;
   gap: 12px;
   color: var(--text-primary);
   font-size: 0.95rem;
+  font-weight: 500;
 }
 .listItem svg {
   color: var(--text-secondary);
 }
-
 .listDivider {
   height: 1px;
   background-color: var(--bg-primary);
@@ -139,14 +96,13 @@
   border: none;
   color: #ff4d4d;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 20px;
 }
-
 .logoutBtn:active {
   background-color: rgba(255, 77, 77, 0.2);
   transform: scale(0.98);
