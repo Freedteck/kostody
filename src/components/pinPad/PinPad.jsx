@@ -2,40 +2,62 @@ import { useState } from "react";
 import styles from "./PinPad.module.css";
 import BottomSheet from "../bottomSheet/BottomSheet";
 
-const PinPad = ({ onSuccess, onClose, title, isNewUser = false }) => {
+const PinPad = ({ onProcess, onClose, title, isNewUser = false }) => {
   const [pin, setPin] = useState("");
-  const [tempPin, setTempPin] = useState(""); // Holds the first PIN during creation
+  const [tempPin, setTempPin] = useState("");
   const [phase, setPhase] = useState(isNewUser ? "create" : "enter");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isMismatch, setIsMismatch] = useState(false);
+
+  const triggerError = (message) => {
+    setError(message);
+    setIsMismatch(true);
+    setTimeout(() => {
+      setPin("");
+      setIsMismatch(false);
+      setError(null);
+    }, 1000);
+  };
 
   const handlePress = (val) => {
+    if (isLoading) return;
+
     if (val === "del") {
       setPin(pin.slice(0, -1));
+      setError(null);
     } else if (pin.length < 4) {
       const newPin = pin + val;
       setPin(newPin);
 
       if (newPin.length === 4) {
         if (phase === "create") {
-          // Save the first PIN, clear dots, move to confirm phase
           setTempPin(newPin);
           setTimeout(() => setPin(""), 150);
           setPhase("confirm");
         } else if (phase === "confirm") {
           if (newPin === tempPin) {
-            setTimeout(() => onSuccess(newPin), 200);
+            submitPin(newPin);
           } else {
-            // PINs don't match, reset everything
-            alert("PINs do not match. Please try again.");
-            setPin("");
-            setTempPin("");
-            setPhase("create");
+            triggerError("PINs do not match");
           }
         } else if (phase === "enter") {
-          // Existing user just entering
-          setTimeout(() => onSuccess(newPin), 200);
+          submitPin(newPin);
         }
       }
     }
+  };
+
+  const submitPin = (finalPin) => {
+    setIsLoading(true);
+    setError(null);
+    onProcess(finalPin)
+      .catch((err) => {
+        triggerError(err.message || "Invalid PIN");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const keys = [
@@ -54,6 +76,7 @@ const PinPad = ({ onSuccess, onClose, title, isNewUser = false }) => {
   ];
 
   const getInstruction = () => {
+    if (isLoading) return "Verifying...";
     if (phase === "create") return "Create a 4-digit PIN";
     if (phase === "confirm") return "Confirm your 4-digit PIN";
     return "Enter your 4-digit PIN";
@@ -64,15 +87,18 @@ const PinPad = ({ onSuccess, onClose, title, isNewUser = false }) => {
       <div className={styles.pinContainer}>
         <p className={styles.instruction}>{getInstruction()}</p>
 
-        {/* PIN Dots */}
-        <div className={styles.pinDots}>
+        {/* PIN Dots with Shake & Red Error State */}
+        <div className={`${styles.pinDots} ${isMismatch ? styles.shake : ""}`}>
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
-              className={`${styles.dot} ${pin.length > i ? styles.active : ""}`}
+              className={`${styles.dot} ${pin.length > i ? styles.active : ""} ${isMismatch ? styles.errorDot : ""}`}
             ></div>
           ))}
         </div>
+
+        {/* Inline Error Message */}
+        {error && <p className={styles.errorText}>{error}</p>}
 
         {/* Custom Keypad */}
         <div className={styles.keypad}>
@@ -85,6 +111,7 @@ const PinPad = ({ onSuccess, onClose, title, isNewUser = false }) => {
                 key={index}
                 className={`${styles.key} ${key === "del" ? styles.delKey : ""}`}
                 onClick={() => handlePress(key)}
+                disabled={isLoading}
               >
                 {key === "del" ? "⌫" : key}
               </button>
@@ -92,8 +119,7 @@ const PinPad = ({ onSuccess, onClose, title, isNewUser = false }) => {
           })}
         </div>
 
-        {/* Forgot PIN link (Only for existing users entering PIN) */}
-        {phase === "enter" && (
+        {phase === "enter" && !isLoading && (
           <button
             className={styles.forgotBtn}
             onClick={() => alert("Mock: SMS sent to reset PIN.")}

@@ -100,14 +100,13 @@ const IntakeForm = () => {
             </label>
             <input
               type="text"
-              className={styles.input}
+              className={`${styles.input} ${styles.inputMono}`}
               value={referralId}
               onChange={(e) => setReferralId(e.target.value)}
               onBlur={handleReferralIdBlur}
               id="referralId"
               placeholder="e.g. KSD-9F3A"
               required={hasReferralId}
-              style={{ fontFamily: "var(--mono)" }}
             />
           </div>
         )}
@@ -119,21 +118,12 @@ const IntakeForm = () => {
           <input
             type="text"
             name="customerName"
-            className={styles.input}
+            className={`${styles.input} ${isLocked ? styles.inputLocked : ""}`}
             value={formData.customerName}
             onChange={handleChange}
             id="customerName"
             required
             readOnly={isLocked}
-            style={
-              isLocked
-                ? {
-                    backgroundColor: "#1a1d21",
-                    color: "#9ca3af",
-                    cursor: "not-allowed",
-                  }
-                : {}
-            }
           />
         </div>
 
@@ -144,22 +134,13 @@ const IntakeForm = () => {
           <input
             type="tel"
             name="customerPhone"
-            className={styles.input}
+            className={`${styles.input} ${isLocked ? styles.inputLocked : ""}`}
             value={formData.customerPhone}
             onChange={handleChange}
             id="customerPhone"
             placeholder="e.g. 0801 234 5678"
             required
             readOnly={isLocked}
-            style={
-              isLocked
-                ? {
-                    backgroundColor: "#1a1d21",
-                    color: "#9ca3af",
-                    cursor: "not-allowed",
-                  }
-                : {}
-            }
           />
         </div>
 
@@ -170,22 +151,13 @@ const IntakeForm = () => {
           <input
             type="text"
             name="deviceModel"
-            className={styles.input}
+            className={`${styles.input} ${isLocked ? styles.inputLocked : ""}`}
             value={formData.deviceModel}
             onChange={handleChange}
             id="deviceModel"
             placeholder="e.g. iPhone 13 Pro"
             required
             readOnly={isLocked}
-            style={
-              isLocked
-                ? {
-                    backgroundColor: "#1a1d21",
-                    color: "#9ca3af",
-                    cursor: "not-allowed",
-                  }
-                : {}
-            }
           />
         </div>
 

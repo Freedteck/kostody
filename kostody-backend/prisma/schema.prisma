@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 2. The Engineer / Shop
+model Shop {
+  id           String   @id @default(uuid())
+  shopName     String
+  engineerName String
+  phone        String   @unique 
+  email        String   @unique
+  passwordHash String
+  specialty    String
+  address      String
+  createdAt    DateTime @default(now())
+  
+  // Relations
+  jobs         Job[]
+}
+
+// 3. The Universal Customer
+model Customer {
+  id        String   @id @default(uuid())
+  phone     String   @unique 
+  name      String
+  pinHash   String   
+  createdAt DateTime @default(now())
+  
+  // Relations
+  jobs      Job[]
+}
+
+// 4. The Repair Job
+model Job {
+  id                 String   @id // @default(uuid())
+  shopId             String
+  customerId         String
+  
+  deviceModel        String
+  faultDescription   String
+  accessoriesRetained String[] 
+  
+  quotedPrice        Float
+  upfrontPayment     Float
+  quoteValidityDays  Int
+  
+  // Lazy Evaluation: We store the exact time it expires
+  expiresAt          DateTime 
+  status             String   @default("Pending Confirmation")
+  transferStatus     String   @default("None")
+  
+  // For Return Jobs (Chain of Custody)
+  parentJobId        String? 
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  // Relations (Connecting the tables together)
+  shop               Shop     @relation(fields: [shopId], references: [id])
+  customer           Customer @relation(fields: [customerId], references: [id])
+  events             JobEvent[]
+  payments           Payment[]
+  photos             Photo[]
+}
+
+// 5. The Medical Chart Timeline
+model JobEvent {
+  id        String   @id @default(uuid())
+  jobId     String
+  eventText String
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// 6. Payment Tracking
+model Payment {
+  id        String   @id @default(uuid())
+  jobId     String
+  amount    Float
+  method    String
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// 7. Condition Photos (Evidence)
+model Photo {
+  id        String   @id @default(uuid())
+  jobId     String
+  url       String
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}

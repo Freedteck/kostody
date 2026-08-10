@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Register.module.css";
+import useToast from "../../hooks/useToast";
+import { registerShop } from "../../services/api";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [businessData, setBusinessData] = useState({
     shopName: "",
@@ -14,25 +18,45 @@ const Register = () => {
     specialty: "",
   });
 
+  const [authData, setAuthData] = useState({
+    email: "",
+    password: "",
+  });
+
   const handleBusinessSubmit = (e) => {
     e.preventDefault();
     setStep(2);
   };
 
-  const handleFinalRegister = (e) => {
+  const handleFinalRegister = async (e) => {
     e.preventDefault();
-    console.log("Registering with:", { ...businessData, authMethod: "email" });
-    navigate("/app/dashboard");
-  };
+    setIsLoading(true);
 
-  const handleGoogleRegister = () => {
-    console.log("Registering with:", { ...businessData, authMethod: "google" });
-    navigate("/app/dashboard");
+    await registerShop(businessData, authData)
+      .then((data) => {
+        if (data) {
+          showToast("Registration successful! Please log in.", "success");
+          navigate("/login");
+        }
+      })
+      .catch((error) => {
+        showToast(
+          error.message || "Registration failed. Please try again.",
+          "error",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBusinessData((prev) => ({ ...prev, [name]: value }));
+    if (name === "email" || name === "password") {
+      setAuthData((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setBusinessData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   return (
@@ -66,6 +90,7 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   autoFocus
+                  disabled={isLoading}
                 />
               </div>
 
@@ -82,6 +107,7 @@ const Register = () => {
                   value={businessData.engineerName}
                   onChange={handleChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -98,6 +124,7 @@ const Register = () => {
                   value={businessData.shopPhone}
                   onChange={handleChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -114,6 +141,7 @@ const Register = () => {
                   value={businessData.shopAddress}
                   onChange={handleChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
@@ -128,6 +156,7 @@ const Register = () => {
                   value={businessData.specialty}
                   onChange={handleChange}
                   required
+                  disabled={isLoading}
                 >
                   <option value="">Select your specialty...</option>
                   <option value="general">
@@ -139,7 +168,11 @@ const Register = () => {
                 </select>
               </div>
 
-              <button type="submit" className={styles.primaryBtn}>
+              <button
+                type="submit"
+                className={styles.primaryBtn}
+                disabled={isLoading}
+              >
                 Continue
               </button>
             </form>
@@ -154,7 +187,8 @@ const Register = () => {
             <button
               type="button"
               className={styles.googleBtn}
-              onClick={handleGoogleRegister}
+              onClick={() => navigate("/app/dashboard")}
+              disabled={isLoading}
             >
               <svg
                 width="20"
@@ -194,10 +228,14 @@ const Register = () => {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   className={styles.input}
                   placeholder="engineer@shop.com"
+                  value={authData.email}
+                  onChange={handleChange}
                   required
                   autoFocus
+                  disabled={isLoading}
                 />
               </div>
 
@@ -208,14 +246,28 @@ const Register = () => {
                 <input
                   type="password"
                   id="password"
+                  name="password"
                   className={styles.input}
                   placeholder="Create a strong password"
+                  value={authData.password}
+                  onChange={handleChange}
                   required
+                  disabled={isLoading}
                 />
               </div>
 
-              <button type="submit" className={styles.primaryBtn}>
-                Create Account
+              <button
+                type="submit"
+                className={styles.primaryBtn}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className={styles.spinner}></span> Processing...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </button>
             </form>
           </>

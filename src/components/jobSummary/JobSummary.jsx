@@ -3,13 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./JobSummary.module.css";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
+import { checkCustomer, lockJob } from "../../services/api";
+import useShop from "../../hooks/useShop";
 
 const JobSummary = () => {
   const [shareWithCustomer, setShareWithCustomer] = useState(false);
   const [isPinOpen, setIsPinOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [exists, setExists] = useState(false);
+  const [customerData, setCustomerData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { shopId } = useShop();
 
   const formData = location.state?.formData;
 
@@ -21,12 +27,6 @@ const JobSummary = () => {
   const outstandingBalance =
     (formData.quotedPrice || 0) - (formData.upfrontPayment || 0);
 
-  const handlePinSuccess = (pin) => {
-    console.log("Agreement locked with PIN:", pin);
-    setIsPinOpen(false);
-    setIsSuccessOpen(true);
-  };
-
   const handleShare = () => {
     console.log("Link sent to customer via WhatsApp");
     setIsSuccessOpen(true);
@@ -35,6 +35,36 @@ const JobSummary = () => {
   const handleSuccessClose = () => {
     setIsSuccessOpen(false);
     navigate("/app/dashboard");
+  };
+
+  const handleLock = () => {
+    setIsLoading(true);
+    checkCustomer(formData.customerPhone)
+      .then((customer) => {
+        setExists(customer.exists);
+        setCustomerData(customer);
+        setIsPinOpen(true);
+      })
+      .catch((error) => {
+        console.error("Error locking job:", error);
+        throw new Error(error.message || "Failed to lock job");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const handleAgreementLock = async (pin) => {
+    return await lockJob(formData, shopId, customerData?.customerId, pin)
+      .then((data) => {
+        console.log("Job locked successfully:", data);
+        setIsPinOpen(false);
+        setIsSuccessOpen(true);
+      })
+      .catch((error) => {
+        console.error("Error locking job:", error);
+        throw new Error(error.message || "Failed to lock job");
+      });
   };
 
   return (
@@ -83,7 +113,7 @@ const JobSummary = () => {
             >
               <span className={styles.detailLabel}>Accessories</span>
               <div className={styles.pillContainer}>
-                {formData.accessoriesRetained.split(",").map((item, index) => (
+                {formData.accessoriesRetained?.split(",").map((item, index) => (
                   <span key={index} className={styles.pill}>
                     {item.trim()}
                   </span>
@@ -152,8 +182,18 @@ const JobSummary = () => {
         </div>
 
         {!shareWithCustomer ? (
-          <button className={styles.lockBtn} onClick={() => setIsPinOpen(true)}>
-            Lock Agreement
+          <button
+            className={styles.lockBtn}
+            onClick={handleLock}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className={styles.spinner}></span> Processing...
+              </>
+            ) : (
+              "Lock Agreement"
+            )}
           </button>
         ) : (
           <button className={styles.shareBtn} onClick={handleShare}>
@@ -164,9 +204,10 @@ const JobSummary = () => {
 
       {isPinOpen && (
         <PinPad
-          onSuccess={handlePinSuccess}
+          onProcess={handleAgreementLock}
           onClose={() => setIsPinOpen(false)}
           title="Authorize Agreement"
+          isNewUser={!exists}
         />
       )}
       {isSuccessOpen && (

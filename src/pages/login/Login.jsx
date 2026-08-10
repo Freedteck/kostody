@@ -1,12 +1,46 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import useToast from "../../hooks/useToast";
+import { loginShop } from "../../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const [authData, setAuthData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAuthData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate("/app/dashboard");
+    setIsLoading(true);
+
+    await loginShop(authData)
+      .then((data) => {
+        // Save to localStorage
+        localStorage.setItem("kostody_token", data.token);
+        localStorage.setItem("kostody_shop", JSON.stringify(data.data));
+
+        showToast("Login successful! Welcome back.", "success");
+        navigate("/app/dashboard");
+      })
+      .catch((error) => {
+        showToast(
+          error.message || "Invalid credentials. Please try again.",
+          "error",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -27,6 +61,7 @@ const Login = () => {
             type="button"
             className={styles.googleBtn}
             onClick={() => navigate("/app/dashboard")}
+            disabled={isLoading}
           >
             <svg
               width="20"
@@ -65,9 +100,13 @@ const Login = () => {
             <input
               type="email"
               id="email"
+              name="email"
               className={styles.input}
-              required
               placeholder="engineer@shop.com"
+              value={authData.email}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
             />
           </div>
 
@@ -78,14 +117,28 @@ const Login = () => {
             <input
               type="password"
               id="password"
+              name="password"
               className={styles.input}
-              required
               placeholder="••••••••"
+              value={authData.password}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
             />
           </div>
 
-          <button type="submit" className={styles.loginBtn}>
-            Sign In
+          <button
+            type="submit"
+            className={styles.loginBtn}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className={styles.spinner}></span> Processing...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
 
           <p className={styles.registerText}>

@@ -15,7 +15,6 @@
   gap: 15px;
   margin-bottom: 30px;
 }
-
 .backBtn {
   background: none;
   border: none;
@@ -24,11 +23,9 @@
   padding: 5px;
   margin-left: -5px;
 }
-
 .backBtn:active {
   opacity: 0.5;
 }
-
 .formHeader h1 {
   font-size: 1.4rem;
   font-weight: 700;
@@ -68,6 +65,17 @@
   border-color: var(--accent);
 }
 
+/* New Locked State */
+.inputLocked {
+  background-color: #1a1d21; /* Darker than surface */
+  color: #6b7280; /* Muted grey text */
+  border: 1px dashed #3a3f44; /* Dashed border to show it's read-only */
+  cursor: not-allowed;
+}
+
+.inputMono {
+  font-family: var(--mono);
+}
 .textarea {
   resize: vertical;
   min-height: 80px;
@@ -163,7 +171,6 @@
   padding: 16px;
   border-radius: 8px;
 }
-
 .toggleRow {
   display: flex;
   justify-content: space-between;
@@ -185,11 +192,9 @@
   cursor: pointer;
   border: none;
 }
-
 .toggleSwitch.on {
   background-color: #2ecc71;
 }
-
 .toggleHandle {
   position: absolute;
   top: 3px;
@@ -200,7 +205,6 @@
   border-radius: 50%;
   transition: transform 0.2s ease;
 }
-
 .toggleSwitch.on .toggleHandle {
   transform: translateX(20px);
 }
