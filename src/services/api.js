@@ -22,7 +22,8 @@ const lockJob = async (jobData, shopId, customerId, enteredPin) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create job");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
@@ -148,6 +149,40 @@ const registerShop = async (shopData, authData) => {
 
     const data = await response.json();
     return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+export const updateJobStatus = async (jobId, newStatus) => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    if (!response.ok) throw new Error("Failed to update status");
+
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+export const addPayment = async (jobId, amount, method = "Cash") => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/payments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: Number(amount), method }),
+    });
+
+    if (!response.ok) throw new Error("Failed to log payment");
+
+    return await response.json();
   } catch (error) {
     console.error("API Error:", error);
     throw error;

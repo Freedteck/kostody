@@ -25,7 +25,6 @@ const Login = () => {
 
     await loginShop(authData)
       .then((data) => {
-        // Save to localStorage
         localStorage.setItem("kostody_token", data.token);
         localStorage.setItem("kostody_shop", JSON.stringify(data.data));
 

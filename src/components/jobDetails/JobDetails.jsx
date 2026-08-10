@@ -6,7 +6,7 @@ import ProcessCollection from "../processCollection/ProcessCollection";
 import RaiseQuote from "../raiseQuote/RaiseQuote";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
-import { getJobsById } from "../../services/api";
+import { getJobsById, updateJobStatus, addPayment } from "../../services/api";
 import useToast from "../../hooks/useToast";
 import { Skeleton } from "../skeleton/Skeleton";
 import ErrorState from "../errorState/ErrorState";
@@ -34,6 +34,9 @@ const JobDetails = () => {
     validity: "7",
   });
 
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isSavingPayment, setIsSavingPayment] = useState(false);
+
   useEffect(() => {
     const fetchJobDetails = async () => {
       setIsLoading(true);
@@ -41,7 +44,6 @@ const JobDetails = () => {
       await getJobsById(jobId)
         .then((data) => {
           setJobData(data);
-
           if (
             new Date(data.expiresAt) < new Date() &&
             data.status !== "Completed"
@@ -51,13 +53,7 @@ const JobDetails = () => {
             setStatus(data.status);
           }
 
-          setPayments(
-            data.payments?.length > 0
-              ? data.payments.map((p) => p.amount)
-              : data.upfrontPayment > 0
-                ? [data.upfrontPayment]
-                : [],
-          );
+          setPayments(data.payments?.map((p) => p.amount) || []);
 
           const formattedTimeline = (data.events || []).map((e) => ({
             time: new Date(e.createdAt).toLocaleString("en-US", {
@@ -90,22 +86,22 @@ const JobDetails = () => {
           <Skeleton width="24px" height="24px" radius="4px" />
           <div style={{ flex: 1 }}>
             <Skeleton width="60%" height="1.4rem" radius="4px" />
+            <div style={{ height: "4px" }}></div>
             <Skeleton width="40%" height="0.85rem" radius="4px" />
           </div>
         </div>
-        <Skeleton
-          width="100%"
-          height="60px"
-          radius="12px"
-          style={{ marginBottom: "16px" }}
-        />
-        <Skeleton
-          width="100%"
-          height="200px"
-          radius="12px"
-          style={{ marginBottom: "16px" }}
-        />
+
+        <div style={{ height: "16px" }}></div>
+        <Skeleton width="100%" height="50px" radius="12px" />
+
+        <div style={{ height: "16px" }}></div>
+        <Skeleton width="100%" height="200px" radius="12px" />
+
+        <div style={{ height: "16px" }}></div>
         <Skeleton width="100%" height="150px" radius="12px" />
+
+        <div style={{ height: "16px" }}></div>
+        <Skeleton width="100%" height="100px" radius="12px" />
       </div>
     );
   }
@@ -122,23 +118,37 @@ const JobDetails = () => {
   const outstandingBalance = jobData.quotedPrice - totalPaid;
   const isExpired = status === "Expired";
 
-  const handleAdvanceStatus = () => {
-    let newStatus = status;
-    let newEvent = "";
+  const handleAdvanceStatus = async () => {
+    let newStatus = "";
+    let eventText = "";
+
     if (status === "Pending Confirmation") {
       newStatus = "In Progress";
-      newEvent = "Status updated to In Progress";
+      eventText = "Status updated to In Progress";
     } else if (status === "In Progress") {
       newStatus = "Ready for Pickup";
-      newEvent = "Marked as Ready for Pickup";
+      eventText = "Marked as Ready for Pickup";
     } else if (status === "Ready for Pickup") {
       setIsCollectionOpen(true);
       return;
     }
-    if (newEvent) {
-      setStatus(newStatus);
-      setTimeline((prev) => [...prev, { time: "Just now", event: newEvent }]);
-    }
+
+    setIsUpdatingStatus(true);
+    await updateJobStatus(jobId, newStatus)
+      .then(() => {
+        setStatus(newStatus);
+        setTimeline((prev) => [
+          ...prev,
+          { time: "Just now", event: eventText },
+        ]);
+        showToast("Status updated successfully.", "success");
+      })
+      .catch(() => {
+        showToast("Failed to update status.", "error");
+      })
+      .finally(() => {
+        setIsUpdatingStatus(false);
+      });
   };
 
   const getButtonLabel = () => {
@@ -148,21 +158,31 @@ const JobDetails = () => {
     return "Job Completed";
   };
 
-  const handleLogPayment = (e) => {
+  const handleLogPayment = async (e) => {
     e.preventDefault();
     const amount = parseFloat(newPaymentAmount);
     if (amount > 0) {
-      setPayments((prev) => [...prev, amount]);
-      setTimeline((prev) => [
-        ...prev,
-        {
-          time: "Just now",
-          event: `Payment of ₦${amount.toLocaleString()} logged`,
-        },
-      ]);
-      setNewPaymentAmount("");
-      setShowPaymentInput(false);
-      showToast("Payment logged successfully.", "success");
+      setIsSavingPayment(true);
+      await addPayment(jobId, amount)
+        .then(() => {
+          setPayments((prev) => [...prev, amount]);
+          setTimeline((prev) => [
+            ...prev,
+            {
+              time: "Just now",
+              event: `Payment of ₦${amount.toLocaleString()} logged`,
+            },
+          ]);
+          setNewPaymentAmount("");
+          setShowPaymentInput(false);
+          showToast("Payment logged successfully.", "success");
+        })
+        .catch(() => {
+          showToast("Failed to log payment.", "error");
+        })
+        .finally(() => {
+          setIsSavingPayment(false);
+        });
     }
   };
 
@@ -384,14 +404,24 @@ const JobDetails = () => {
               onChange={(e) => setNewPaymentAmount(e.target.value)}
               autoFocus
               required
+              disabled={isSavingPayment}
             />
-            <button type="submit" className={styles.logPaymentSubmit}>
-              Add
+            <button
+              type="submit"
+              className={styles.logPaymentSubmit}
+              disabled={isSavingPayment}
+            >
+              {isSavingPayment ? (
+                <span className={styles.spinner}></span>
+              ) : (
+                "Add"
+              )}
             </button>
             <button
               type="button"
               className={styles.cancelPaymentBtn}
               onClick={() => setShowPaymentInput(false)}
+              disabled={isSavingPayment}
             >
               Cancel
             </button>
@@ -465,9 +495,15 @@ const JobDetails = () => {
             <button
               className={`${styles.statusBtn} ${status !== "Completed" ? styles.statusBtnPrimary : ""}`}
               onClick={handleAdvanceStatus}
-              disabled={status === "Completed"}
+              disabled={status === "Completed" || isUpdatingStatus}
             >
-              {getButtonLabel()}
+              {isUpdatingStatus ? (
+                <>
+                  <span className={styles.spinner}></span> Updating...
+                </>
+              ) : (
+                getButtonLabel()
+              )}
             </button>
             {status === "Pending Confirmation" && (
               <button
