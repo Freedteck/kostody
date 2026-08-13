@@ -47,4 +47,63 @@ const checkCustomer = async (req, res) => {
   }
 };
 
-export { createCustomer, checkCustomer };
+const getShopCustomers = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const { search } = req.query;
+
+    const whereCondition = {
+      jobs: { some: { shopId: shopId } },
+    };
+
+    if (search && search.trim() !== "") {
+      const searchTerm = search.trim();
+      whereCondition.OR = [
+        { name: { contains: searchTerm, mode: "insensitive" } },
+        { phone: { contains: searchTerm } },
+      ];
+    }
+
+    const customers = await prisma.customer.findMany({
+      where: whereCondition,
+      include: {
+        jobs: {
+          where: { shopId: shopId, status: "Completed" },
+          select: {
+            id: true,
+            deviceModel: true,
+            faultDescription: true,
+            quotedPrice: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+
+    const mappedCustomers = customers.map((c) => {
+      const totalSpent = c.jobs.reduce((sum, job) => sum + job.quotedPrice, 0);
+      return {
+        id: c.id,
+        name: c.name,
+        phone: c.phone,
+        jobs: c.jobs.map((j) => ({
+          id: j.id,
+          device: j.deviceModel,
+          fault: j.faultDescription,
+          price: j.quotedPrice,
+          date: new Date(j.updatedAt).toLocaleDateString(),
+        })),
+        totalSpent,
+      };
+    });
+
+    return res.status(200).json(mappedCustomers);
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    return res
+      .status(500)
+      .json({ message: "Server Error: Could not fetch customers" });
+  }
+};
+
+export { createCustomer, checkCustomer, getShopCustomers };

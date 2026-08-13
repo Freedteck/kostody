@@ -13,14 +13,16 @@ const IntakeForm = () => {
   const [referralId, setReferralId] = useState("");
 
   const [formData, setFormData] = useState({
-    customerName: editJobData?.customerName || returnJobData?.customer || "",
-    customerPhone: editJobData?.customerPhone || returnJobData?.phone || "",
-    deviceModel: editJobData?.device || returnJobData?.device || "",
-    faultDescription: editJobData?.fault || "",
+    customerName:
+      editJobData?.customer.name || returnJobData?.customer.name || "",
+    customerPhone: editJobData?.customer.phone || returnJobData?.phone || "",
+    deviceModel: editJobData?.deviceModel || returnJobData?.device || "",
+    faultDescription: editJobData?.faultDescription || "",
     quotedPrice: editJobData?.quotedPrice || "",
     upfrontPayment: editJobData?.upfrontPayment || "",
-    quoteValidity: "7",
-    accessoriesRetained: editJobData?.accessories?.join(", ") || "",
+    quoteValidity: editJobData?.quoteValidityDays || "7",
+    accessoriesRetained: editJobData?.accessoriesRetained?.join(", ") || "",
+    id: editJobData?.id || returnJobData?.id || null,
   });
 
   const isReturnJob = !!returnJobData;

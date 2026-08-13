@@ -3,8 +3,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./JobSummary.module.css";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
-import { checkCustomer, lockJob } from "../../services/api";
+import {
+  checkCustomer,
+  createPendingJob,
+  lockJob,
+  updateJob,
+} from "../../services/api";
 import useShop from "../../hooks/useShop";
+import useToast from "../../hooks/useToast";
 
 const JobSummary = () => {
   const [shareWithCustomer, setShareWithCustomer] = useState(false);
@@ -16,8 +22,10 @@ const JobSummary = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { shopId } = useShop();
+  const { showToast } = useToast();
 
   const formData = location.state?.formData;
+  const isEditJob = formData?.id ? true : false;
 
   if (!formData) {
     navigate("/app/intake");
@@ -28,8 +36,19 @@ const JobSummary = () => {
     (formData.quotedPrice || 0) - (formData.upfrontPayment || 0);
 
   const handleShare = () => {
-    console.log("Link sent to customer via WhatsApp");
-    setIsSuccessOpen(true);
+    setIsLoading(true);
+    createPendingJob(formData, shopId)
+      .then((data) => {
+        console.log("Pending job saved:", data.id);
+        setIsSuccessOpen(true);
+        // In the future: window.open(`https://wa.me/?text=...${data.id}`)
+      })
+      .catch(() => {
+        showToast("Failed to generate share link.", "error");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleSuccessClose = () => {
@@ -45,9 +64,8 @@ const JobSummary = () => {
         setCustomerData(customer);
         setIsPinOpen(true);
       })
-      .catch((error) => {
-        console.error("Error locking job:", error);
-        throw new Error(error.message || "Failed to lock job");
+      .catch(() => {
+        showToast("Failed to check customer. Please try again.", "error");
       })
       .finally(() => {
         setIsLoading(false);
@@ -57,14 +75,36 @@ const JobSummary = () => {
   const handleAgreementLock = async (pin) => {
     return await lockJob(formData, shopId, customerData?.customerId, pin)
       .then((data) => {
-        console.log("Job locked successfully:", data);
+        console.log("Agreement Locked:", data);
         setIsPinOpen(false);
         setIsSuccessOpen(true);
       })
       .catch((error) => {
-        console.error("Error locking job:", error);
         throw new Error(error.message || "Failed to lock job");
       });
+  };
+
+  const handleEditSave = () => {
+    setIsLoading(true);
+    updateJob(formData.id, formData)
+      .then((updatedJob) => {
+        showToast("Job updated successfully.", "success");
+        navigate(`/app/job/${updatedJob.id}`);
+      })
+      .catch((error) => {
+        showToast(error.message || "Failed to update job.", "error");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const handlePrimaryAction = () => {
+    if (isEditJob) {
+      handleEditSave();
+    } else {
+      handleLock();
+    }
   };
 
   return (
@@ -81,11 +121,10 @@ const JobSummary = () => {
             />
           </svg>
         </button>
-        <h1>Job Summary</h1>
+        <h1>{isEditJob ? "Review Changes" : "Job Summary"}</h1>
       </div>
 
       <div className={styles.receiptPaper}>
-        {/* Customer & Device */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Customer & Device</h2>
           <div className={styles.detailRow}>
@@ -102,7 +141,6 @@ const JobSummary = () => {
           </div>
         </div>
 
-        {/* Diagnosis */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Diagnosis</h2>
           <p className={styles.faultText}>{formData.faultDescription}</p>
@@ -123,7 +161,6 @@ const JobSummary = () => {
           )}
         </div>
 
-        {/* Condition Photos */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Condition Photos</h2>
           <div className={styles.photoGrid}>
@@ -133,7 +170,6 @@ const JobSummary = () => {
           </div>
         </div>
 
-        {/* Financials */}
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Financial Agreement</h2>
           <div className={styles.priceRow}>
@@ -163,41 +199,44 @@ const JobSummary = () => {
         </div>
       </div>
 
-      {/* Action Area */}
       <div className={styles.actionArea}>
-        <div className={styles.toggleRow}>
-          <div>
-            <span className={styles.toggleLabel}>Share with Customer</span>
-            <p className={styles.toggleSubtext}>
-              Toggle ON if customer is not present
-            </p>
+        {!isEditJob && (
+          <div className={styles.toggleRow}>
+            <div>
+              <span className={styles.toggleLabel}>Share with Customer</span>
+              <p className={styles.toggleSubtext}>
+                Toggle ON if customer is not present
+              </p>
+            </div>
+            <button
+              type="button"
+              className={`${styles.toggleSwitch} ${shareWithCustomer ? styles.on : ""}`}
+              onClick={() => setShareWithCustomer(!shareWithCustomer)}
+            >
+              <div className={styles.toggleHandle}></div>
+            </button>
           </div>
-          <button
-            type="button"
-            className={`${styles.toggleSwitch} ${shareWithCustomer ? styles.on : ""}`}
-            onClick={() => setShareWithCustomer(!shareWithCustomer)}
-          >
-            <div className={styles.toggleHandle}></div>
-          </button>
-        </div>
+        )}
 
-        {!shareWithCustomer ? (
+        {!isEditJob && shareWithCustomer ? (
+          <button className={styles.shareBtn} onClick={handleShare}>
+            Share via WhatsApp
+          </button>
+        ) : (
           <button
             className={styles.lockBtn}
-            onClick={handleLock}
+            onClick={handlePrimaryAction}
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 <span className={styles.spinner}></span> Processing...
               </>
+            ) : isEditJob ? (
+              "Save Changes"
             ) : (
               "Lock Agreement"
             )}
-          </button>
-        ) : (
-          <button className={styles.shareBtn} onClick={handleShare}>
-            Share via WhatsApp
           </button>
         )}
       </div>

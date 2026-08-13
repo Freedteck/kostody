@@ -1,92 +1,49 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./History.module.css";
 import EmptyState from "../emptyState/EmptyState";
 import CustomerProfile from "../customerProfile/CustomerProfile";
-
-// Expanded mock data with multiple jobs per customer
-const mockHistory = [
-  {
-    id: "KSD-1A2B",
-    device: "iPhone 11",
-    customer: "Chidi O.",
-    phone: "0801 234 5678",
-    fault: "Battery Swap",
-    date: "Oct 12, 2024",
-    price: 15000,
-  },
-  {
-    id: "KSD-2B3C",
-    device: "iPhone 13 Pro",
-    customer: "Chidi O.",
-    phone: "0801 234 5678",
-    fault: "Screen Replacement",
-    date: "Sep 05, 2024",
-    price: 45000,
-  },
-  {
-    id: "KSD-3C4D",
-    device: "Samsung S21",
-    customer: "Amina B.",
-    phone: "0709 876 5432",
-    fault: "Charging Port",
-    date: "Oct 05, 2024",
-    price: 20000,
-  },
-  {
-    id: "KSD-4D5E",
-    device: "Tecno Camon 20",
-    customer: "Amina B.",
-    phone: "0709 876 5432",
-    fault: "Software Reset",
-    date: "Aug 22, 2024",
-    price: 5000,
-  },
-  {
-    id: "KSD-5E6F",
-    device: "Redmi Note 12",
-    customer: "Emeka N.",
-    phone: "0805 111 2222",
-    fault: "Water Damage",
-    date: "Oct 18, 2024",
-    price: 30000,
-  },
-];
+import { getJobHistory, getShopCustomers } from "../../services/api";
+import useShop from "../../hooks/useShop";
+import useToast from "../../hooks/useToast";
+import { Skeleton } from "../skeleton/Skeleton";
+import ErrorState from "../errorState/ErrorState";
 
 const History = () => {
+  const { shopId } = useShop();
+  const { showToast } = useToast();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("jobs");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [customers, setCustomers] = useState([]);
 
-  const customers = useMemo(() => {
-    const grouped = {};
-    mockHistory.forEach((job) => {
-      if (!grouped[job.phone]) {
-        grouped[job.phone] = {
-          name: job.customer,
-          phone: job.phone,
-          jobs: [],
-          totalSpent: 0,
-        };
-      }
-      grouped[job.phone].jobs.push(job);
-      grouped[job.phone].totalSpent += job.price;
-    });
-    return Object.values(grouped);
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      const response =
+        activeTab === "jobs"
+          ? getJobHistory(shopId, search)
+          : getShopCustomers(shopId, search);
 
-  const filteredJobs = mockHistory.filter(
-    (job) =>
-      job.customer.toLowerCase().includes(search.toLowerCase()) ||
-      job.device.toLowerCase().includes(search.toLowerCase()) ||
-      job.id.toLowerCase().includes(search.toLowerCase()),
-  );
+      await response
+        .then((data) => {
+          if (activeTab === "jobs") setJobs(data);
+          else setCustomers(data);
+        })
+        .catch(() => {
+          setError("Failed to load data.");
+          showToast("Could not fetch data.", "error");
+        })
+        .finally(() => setIsLoading(false));
+    };
 
-  const filteredCustomers = customers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(search.toLowerCase()) ||
-      customer.phone.includes(search),
-  );
+    const delayDebounceFn = setTimeout(fetchData, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }, [activeTab, search, shopId, showToast]);
 
   return (
     <div className={styles.historyContainer}>
@@ -95,7 +52,6 @@ const History = () => {
         <p>Archived Jobs & Customers</p>
       </div>
 
-      {/* Native Segmented Toggle */}
       <div className={styles.toggleContainer}>
         <button
           className={`${styles.toggleBtn} ${activeTab === "jobs" ? styles.toggleActive : ""}`}
@@ -121,65 +77,69 @@ const History = () => {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {activeTab === "jobs" ? (
-        <div className={styles.listContainer}>
-          {filteredJobs.length === 0 ? (
+      <div className={styles.listContainer}>
+        {isLoading ? (
+          [1, 2, 3].map((i) => (
+            <Skeleton key={i} width="100%" height="100px" radius="12px" />
+          ))
+        ) : error ? (
+          <ErrorState message={error} />
+        ) : activeTab === "jobs" ? (
+          jobs.length === 0 ? (
             <EmptyState
               title="No History Yet"
               message="Completed and archived jobs will appear here."
             />
           ) : (
-            filteredJobs.map((job) => (
+            jobs.map((job) => (
               <Link
                 key={job.id}
                 to={`/app/job/${job.id}`}
                 className={styles.jobCard}
               >
                 <div className={styles.jobHeader}>
-                  <h2 className={styles.deviceName}>{job.device}</h2>
+                  <h2 className={styles.deviceName}>{job.deviceModel}</h2>
                   <span className={styles.jobIdPill}>#{job.id}</span>
                 </div>
-                <p className={styles.customerName}>{job.customer}</p>
-                <p className={styles.jobFault}>{job.fault}</p>
-                <p className={styles.dateText}>Completed: {job.date}</p>
+                <p className={styles.customerName}>{job.customer?.name}</p>
+                <p className={styles.jobFault}>{job.faultDescription}</p>
+                <p className={styles.dateText}>
+                  Completed: {new Date(job.updatedAt).toLocaleDateString()}
+                </p>
               </Link>
             ))
-          )}
-        </div>
-      ) : (
-        <div className={styles.listContainer}>
-          {filteredCustomers.length === 0 ? (
-            <EmptyState
-              title="No Customers Yet"
-              message="Customers will appear here once they complete a job."
-            />
-          ) : (
-            filteredCustomers.map((customer) => (
-              <div
-                key={customer.phone}
-                className={styles.customerCard}
-                onClick={() => setSelectedCustomer(customer)}
-              >
-                <div className={styles.customerAvatar}>
-                  {customer.name.charAt(0)}
-                </div>
-                <div className={styles.customerInfo}>
-                  <h2 className={styles.customerName}>{customer.name}</h2>
-                  <p className={styles.customerPhone}>{customer.phone}</p>
-                </div>
-                <div className={styles.customerMeta}>
-                  <span className={styles.customerCount}>
-                    {customer.jobs.length} Repairs
-                  </span>
-                  <span className={styles.customerSpent}>
-                    ₦{customer.totalSpent.toLocaleString()}
-                  </span>
-                </div>
+          )
+        ) : customers.length === 0 ? (
+          <EmptyState
+            title="No Customers Yet"
+            message="Customers will appear here once they complete a job."
+          />
+        ) : (
+          customers.map((customer) => (
+            <div
+              key={customer.id}
+              className={styles.customerCard}
+              onClick={() => setSelectedCustomer(customer)}
+            >
+              <div className={styles.customerAvatar}>
+                {customer.name.charAt(0)}
               </div>
-            ))
-          )}
-        </div>
-      )}
+              <div className={styles.customerInfo}>
+                <h2 className={styles.customerName}>{customer.name}</h2>
+                <p className={styles.customerPhone}>{customer.phone}</p>
+              </div>
+              <div className={styles.customerMeta}>
+                <span className={styles.customerCount}>
+                  {customer.jobs.length} Repairs
+                </span>
+                <span className={styles.customerSpent}>
+                  ₦{customer.totalSpent.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
       {selectedCustomer && (
         <CustomerProfile

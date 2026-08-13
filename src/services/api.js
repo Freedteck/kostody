@@ -34,6 +34,25 @@ const lockJob = async (jobData, shopId, customerId, enteredPin) => {
   }
 };
 
+const createPendingJob = async (jobData, shopId) => {
+  const response = await fetch(`${API_URL}/jobs/share`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...jobData,
+      shopId,
+      accessoriesRetained: jobData.accessoriesRetained
+        ? jobData.accessoriesRetained.split(",").map((i) => i.trim())
+        : [],
+      quotedPrice: Number(jobData.quotedPrice),
+      upfrontPayment: Number(jobData.upfrontPayment),
+      quoteValidityDays: Number(jobData.quoteValidity),
+    }),
+  });
+  if (!response.ok) throw new Error("Failed to share job");
+  return response.json();
+};
+
 const checkCustomer = async (phone) => {
   try {
     const response = await fetch(`${API_URL}/customers/check`, {
@@ -47,7 +66,8 @@ const checkCustomer = async (phone) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to check user");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
@@ -70,7 +90,8 @@ const getJobsByShop = async (shopId, filter = "", search = "") => {
 
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error("Failed to get Jobs");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
@@ -85,10 +106,12 @@ const getJobsById = async (jobId) => {
   try {
     const response = await fetch(`${API_URL}/jobs/${jobId}`);
     if (!response.ok) {
-      throw new Error("Failed to get Jobs");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.error("API Error:", error);
@@ -111,7 +134,8 @@ const loginShop = async (authData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Login failed");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
@@ -144,7 +168,8 @@ const registerShop = async (shopData, authData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Register failed");
+      const message = await response.json();
+      throw new Error(message.message);
     }
 
     const data = await response.json();
@@ -155,7 +180,7 @@ const registerShop = async (shopData, authData) => {
   }
 };
 
-export const updateJobStatus = async (jobId, newStatus) => {
+const updateJobStatus = async (jobId, newStatus) => {
   try {
     const response = await fetch(`${API_URL}/jobs/${jobId}/status`, {
       method: "PUT",
@@ -172,7 +197,7 @@ export const updateJobStatus = async (jobId, newStatus) => {
   }
 };
 
-export const addPayment = async (jobId, amount, method = "Cash") => {
+const addPayment = async (jobId, amount, method = "Cash") => {
   try {
     const response = await fetch(`${API_URL}/jobs/${jobId}/payments`, {
       method: "POST",
@@ -180,7 +205,10 @@ export const addPayment = async (jobId, amount, method = "Cash") => {
       body: JSON.stringify({ amount: Number(amount), method }),
     });
 
-    if (!response.ok) throw new Error("Failed to log payment");
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
 
     return await response.json();
   } catch (error) {
@@ -189,11 +217,92 @@ export const addPayment = async (jobId, amount, method = "Cash") => {
   }
 };
 
+const processPayment = async (
+  jobId,
+  enteredPin,
+  finalPaymentAmount,
+  method = "Cash",
+) => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/collect`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        enteredPin,
+        finalPaymentAmount,
+        method,
+      }),
+    });
+
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const requoteJob = async (jobId, enteredPin, newPrice, validityDays) => {
+  const response = await fetch(`${API_URL}/jobs/${jobId}/requote`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ enteredPin, newPrice, validityDays }),
+  });
+  if (!response.ok) {
+    const message = await response.json();
+    throw new Error(message.message);
+  }
+  return response.json();
+};
+
+const updateJob = async (jobId, jobData) => {
+  const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(jobData),
+  });
+  if (!response.ok) {
+    const message = await response.json();
+    throw new Error(message.message);
+  }
+  return response.json();
+};
+
+const getJobHistory = async (shopId, search = "") => {
+  const response = await fetch(
+    `${API_URL}/jobs/history/${shopId}?search=${search}`,
+  );
+  if (!response.ok) throw new Error("Failed to fetch history");
+  return response.json();
+};
+
+const getShopCustomers = async (shopId, search = "") => {
+  const response = await fetch(
+    `${API_URL}/customers/${shopId}?search=${search}`,
+  );
+  if (!response.ok) throw new Error("Failed to fetch customers");
+  return response.json();
+};
+
 export {
   lockJob,
+  createPendingJob,
   checkCustomer,
   getJobsByShop,
   getJobsById,
   loginShop,
   registerShop,
+  addPayment,
+  updateJobStatus,
+  processPayment,
+  requoteJob,
+  updateJob,
+  getJobHistory,
+  getShopCustomers,
 };

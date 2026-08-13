@@ -6,7 +6,12 @@ import ProcessCollection from "../processCollection/ProcessCollection";
 import RaiseQuote from "../raiseQuote/RaiseQuote";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
-import { getJobsById, updateJobStatus, addPayment } from "../../services/api";
+import {
+  getJobsById,
+  updateJobStatus,
+  addPayment,
+  requoteJob,
+} from "../../services/api";
 import useToast from "../../hooks/useToast";
 import { Skeleton } from "../skeleton/Skeleton";
 import ErrorState from "../errorState/ErrorState";
@@ -56,7 +61,7 @@ const JobDetails = () => {
           setPayments(data.payments?.map((p) => p.amount) || []);
 
           const formattedTimeline = (data.events || []).map((e) => ({
-            time: new Date(e.createdAt).toLocaleString("en-US", {
+            time: new Date(e.createdAt).toString("en-US", {
               month: "short",
               day: "numeric",
               hour: "2-digit",
@@ -114,8 +119,11 @@ const JobDetails = () => {
     );
   }
 
-  const totalPaid = payments.reduce((sum, amount) => sum + amount, 0);
-  const outstandingBalance = jobData.quotedPrice - totalPaid;
+  const totalPaid = (payments || []).reduce(
+    (sum, amount) => sum + (Number(amount) || 0),
+    0,
+  );
+  const outstandingBalance = (Number(jobData?.quotedPrice) || 0) - totalPaid;
   const isExpired = status === "Expired";
 
   const handleAdvanceStatus = async () => {
@@ -170,7 +178,7 @@ const JobDetails = () => {
             ...prev,
             {
               time: "Just now",
-              event: `Payment of ₦${amount.toLocaleString()} logged`,
+              event: `Payment of ₦${amount.toString()} logged`,
             },
           ]);
           setNewPaymentAmount("");
@@ -226,22 +234,30 @@ const JobDetails = () => {
     setIsRequotePinOpen(true);
   };
 
-  const handleRequotePinSuccess = () => {
-    setIsRequotePinOpen(false);
-    setJobData((prev) => ({
-      ...prev,
-      quotedPrice: Number(newQuoteData.price),
-      quoteValidityDays: newQuoteData.validity,
-    }));
-    setStatus("Pending Confirmation");
-    setTimeline((prev) => [
-      ...prev,
-      {
-        time: "Just now",
-        event: `New quote raised (₦${Number(newQuoteData.price).toLocaleString()}) and authorized by customer.`,
-      },
-    ]);
-    setIsSuccessOpen(true);
+  const handleRequotePinSuccess = async (pin) => {
+    return await requoteJob(
+      jobData.id,
+      pin,
+      Number(newQuoteData.price),
+      Number(newQuoteData.validity),
+    )
+      .then((updatedJob) => {
+        setIsRequotePinOpen(false);
+        setJobData(updatedJob);
+        setStatus(updatedJob.status);
+        setTimeline((prev) => [
+          ...prev,
+          {
+            time: "Just now",
+            event: `New quote raised (₦${Number(newQuoteData.price).toString()}) and authorized by customer.`,
+          },
+        ]);
+        setIsSuccessOpen(true);
+      })
+      .catch((error) => {
+        showToast(error.message || "Failed to requote job", "error");
+        throw new Error(error.message || "Failed to requote job");
+      });
   };
 
   return (
@@ -321,13 +337,13 @@ const JobDetails = () => {
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>Quoted Price</span>
           <span className={`${styles.detailValue} ${styles.detailValueMono}`}>
-            ₦{jobData.quotedPrice.toLocaleString()}
+            ₦{(jobData.quotedPrice || 0).toLocaleString()}
           </span>
         </div>
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>Total Paid</span>
           <span className={`${styles.detailValue} ${styles.detailValueMono}`}>
-            ₦{totalPaid.toLocaleString()}
+            ₦{(totalPaid || 0).toLocaleString()}
           </span>
         </div>
         <div className={styles.detailRow}>
@@ -341,7 +357,7 @@ const JobDetails = () => {
             className={`${styles.detailValue} ${styles.detailValueMono}`}
             style={{ color: "var(--accent)" }}
           >
-            ₦{outstandingBalance.toLocaleString()}
+            ₦{(outstandingBalance || 0).toLocaleString()}
           </span>
         </div>
 
@@ -388,12 +404,14 @@ const JobDetails = () => {
         </div>
 
         {!showPaymentInput ? (
-          <button
-            className={styles.logPaymentBtn}
-            onClick={() => setShowPaymentInput(true)}
-          >
-            + Log New Payment
-          </button>
+          outstandingBalance > 0 && (
+            <button
+              className={styles.logPaymentBtn}
+              onClick={() => setShowPaymentInput(true)}
+            >
+              + Log New Payment
+            </button>
+          )
         ) : (
           <form className={styles.logPaymentInline} onSubmit={handleLogPayment}>
             <input
@@ -505,16 +523,17 @@ const JobDetails = () => {
                 getButtonLabel()
               )}
             </button>
-            {status === "Pending Confirmation" && (
-              <button
-                className={styles.handoffBtn}
-                onClick={() =>
-                  navigate("/app/intake", { state: { editJobData: jobData } })
-                }
-              >
-                Edit Details
-              </button>
-            )}
+            {status === "Pending Confirmation" &&
+              !jobData.customerConfirmed && (
+                <button
+                  className={styles.handoffBtn}
+                  onClick={() =>
+                    navigate("/app/intake", { state: { editJobData: jobData } })
+                  }
+                >
+                  Edit Details
+                </button>
+              )}
           </>
         )}
       </div>
@@ -544,7 +563,7 @@ const JobDetails = () => {
       )}
       {isRequotePinOpen && (
         <PinPad
-          onSuccess={handleRequotePinSuccess}
+          onProcess={handleRequotePinSuccess}
           onClose={() => setIsRequotePinOpen(false)}
           title="Authorize New Quote"
         />

@@ -94,21 +94,64 @@
   color: var(--text-secondary);
 }
 
+.instruction {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+}
+
 .pinDots {
   display: flex;
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+  transition: transform 0.2s;
 }
+
 .dot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
   border: 1px solid var(--text-secondary);
   background-color: transparent;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
+
 .dot.active {
   background-color: #2ecc71;
   border-color: #2ecc71;
+}
+
+.errorDot {
+  background-color: #ff4d4d !important;
+  border-color: #ff4d4d !important;
+}
+
+.errorText {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
 }
 
 .keypad {
@@ -129,21 +172,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.1s;
 }
-.key:active {
+
+.key:active:not(:disabled) {
   background-color: #2ecc71;
   color: var(--bg-primary);
   transform: scale(0.95);
 }
+
+.key:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .delKey {
   background: none;
   color: var(--text-secondary);
 }
-.delKey:active {
+.delKey:active:not(:disabled) {
   background-color: transparent;
   color: var(--text-primary);
   opacity: 0.5;
 }
+
 .blankKey {
   visibility: hidden;
 }
