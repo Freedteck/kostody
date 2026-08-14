@@ -23,3 +23,9 @@
   max-width: 280px;
   line-height: 1.5;
 }
+
+@media (min-width: 768px) {
+  .container {
+    grid-column: 1 / -1;
+  }
+}

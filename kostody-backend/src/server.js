@@ -25,7 +25,7 @@ app.use("/api/shops", shopRoutes);
 
 app.use("/api/analytics", analyticsRoutes);
 
-app.use("api/notifications", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Kostody API is running...");

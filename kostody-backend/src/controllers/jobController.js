@@ -63,6 +63,7 @@ const lockJob = async (req, res) => {
           quoteValidityDays: Number(quoteValidityDays),
           expiresAt,
           status: "In Progress",
+          customerConfirmed: true,
         },
       });
 
