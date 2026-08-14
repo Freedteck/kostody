@@ -265,7 +265,15 @@ const updateJob = async (jobId, jobData) => {
   const response = await fetch(`${API_URL}/jobs/${jobId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(jobData),
+    body: JSON.stringify({
+      ...jobData,
+      accessoriesRetained: jobData.accessoriesRetained
+        ? jobData.accessoriesRetained.split(",").map((item) => item.trim())
+        : [],
+      quotedPrice: Number(jobData.quotedPrice),
+      upfrontPayment: Number(jobData.upfrontPayment),
+      quoteValidityDays: Number(jobData.quoteValidity),
+    }),
   });
   if (!response.ok) {
     const message = await response.json();
@@ -290,6 +298,70 @@ const getShopCustomers = async (shopId, search = "") => {
   return response.json();
 };
 
+const getShopProfile = async (shopId) => {
+  try {
+    const response = await fetch(`${API_URL}/shops/${shopId}`);
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const updateShopProfile = async (shopId, profileData) => {
+  try {
+    const response = await fetch(`${API_URL}/shops/${shopId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profileData),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const getShopAnalytics = async (shopId) => {
+  try {
+    const response = await fetch(`${API_URL}/analytics/${shopId}`);
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const getShopNotifications = async (shopId) => {
+  try {
+    const response = await fetch(`${API_URL}/notifications/${shopId}`);
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
 export {
   lockJob,
   createPendingJob,
@@ -305,4 +377,8 @@ export {
   updateJob,
   getJobHistory,
   getShopCustomers,
+  getShopProfile,
+  updateShopProfile,
+  getShopAnalytics,
+  getShopNotifications,
 };

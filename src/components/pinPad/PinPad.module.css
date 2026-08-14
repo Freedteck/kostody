@@ -126,3 +126,9 @@
 .forgotBtn:active {
   color: var(--accent);
 }
+
+@media (min-width: 768px) {
+  .keypad {
+    max-width: 380px;
+  }
+}

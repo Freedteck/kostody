@@ -7,6 +7,8 @@ import { router } from "./routes/jobRoutes.js";
 import { customerRoutes } from "./routes/customerRoutes.js";
 import { shopRoutes } from "./routes/shopRoutes.js";
 import { authRoutes } from "./routes/authRoutes.js";
+import { analyticsRoutes } from "./routes/analyticsRoutes.js";
+import { notificationRoutes } from "./routes/notificationRoutes.js";
 
 const app = express();
 
@@ -20,6 +22,10 @@ app.use("/api/jobs", router);
 app.use("/api/customers", customerRoutes);
 
 app.use("/api/shops", shopRoutes);
+
+app.use("/api/analytics", analyticsRoutes);
+
+app.use("api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Kostody API is running...");

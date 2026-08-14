@@ -201,3 +201,17 @@
   background-color: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
 }
+
+@media (min-width: 768px) {
+  .workbench {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 32px;
+    padding-bottom: 100px;
+  }
+  .jobList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}

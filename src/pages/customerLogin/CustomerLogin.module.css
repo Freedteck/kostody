@@ -116,3 +116,9 @@
 .pinInput:focus {
   border-color: var(--accent);
 }
+
+@media (min-width: 768px) {
+  .formArea {
+    max-width: 500px;
+  }
+}

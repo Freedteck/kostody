@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./EditProfile.module.css";
 import BottomSheet from "../bottomSheet/BottomSheet";
 
-const EditProfile = ({ onClose, onSave, currentData }) => {
+const EditProfile = ({ onClose, onSave, currentData, isSaving }) => {
   const [formData, setFormData] = useState(currentData);
 
   const handleChange = (e) => {
@@ -30,6 +30,7 @@ const EditProfile = ({ onClose, onSave, currentData }) => {
             value={formData.shopName || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           />
         </div>
 
@@ -45,36 +46,55 @@ const EditProfile = ({ onClose, onSave, currentData }) => {
             value={formData.engineerName || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           />
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="shopPhone">
+          <label className={styles.label} htmlFor="phone">
             Contact Phone (WhatsApp)
           </label>
           <input
             type="tel"
-            id="shopPhone"
-            name="shopPhone"
+            id="phone"
+            name="phone"
             className={styles.input}
-            value={formData.shopPhone || ""}
+            value={formData.phone || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           />
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="shopAddress">
+          <label className={styles.label} htmlFor="email">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className={styles.input}
+            value={formData.email || ""}
+            onChange={handleChange}
+            required
+            disabled={isSaving}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="address">
             Shop Address / Area
           </label>
           <input
             type="text"
-            id="shopAddress"
-            name="shopAddress"
+            id="address"
+            name="address"
             className={styles.input}
-            value={formData.shopAddress || ""}
+            value={formData.address || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           />
         </div>
 
@@ -89,6 +109,7 @@ const EditProfile = ({ onClose, onSave, currentData }) => {
             value={formData.specialty || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           >
             <option value="General Repairs">
               General Repairs (Hardware/Software)
@@ -101,8 +122,14 @@ const EditProfile = ({ onClose, onSave, currentData }) => {
           </select>
         </div>
 
-        <button type="submit" className={styles.submitBtn}>
-          Save Changes
+        <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <span className={styles.spinner}></span> Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </button>
       </form>
     </BottomSheet>

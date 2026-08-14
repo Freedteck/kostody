@@ -185,3 +185,17 @@
   color: var(--text-primary);
   font-family: var(--mono);
 }
+
+@media (min-width: 768px) {
+  .historyContainer {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 32px;
+    padding-bottom: 100px;
+  }
+  .listContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}

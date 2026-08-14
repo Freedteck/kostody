@@ -14,6 +14,7 @@
   position: fixed;
   bottom: 0;
   left: 0;
+  right: 0;
   width: 100%;
   background-color: var(--surface);
   border-top-left-radius: 16px;
@@ -57,5 +58,11 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .sheet {
+    max-width: 768px;
   }
 }

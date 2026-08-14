@@ -130,3 +130,13 @@
   text-transform: uppercase;
   font-weight: bold;
 }
+
+@media (min-width: 768px) {
+  .jobList {
+    max-height: 55vh;
+    gap: 14px;
+  }
+  .statsRow {
+    gap: 20px;
+  }
+}

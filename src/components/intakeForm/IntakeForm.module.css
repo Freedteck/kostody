@@ -208,3 +208,11 @@
 .toggleSwitch.on .toggleHandle {
   transform: translateX(20px);
 }
+
+@media (min-width: 768px) {
+  .formContainer {
+    max-width: 768px;
+    padding: 32px;
+    padding-bottom: 100px;
+  }
+}

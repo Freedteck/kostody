@@ -416,3 +416,11 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (min-width: 768px) {
+  .detailsContainer {
+    max-width: 768px;
+    padding: 32px;
+    padding-bottom: 100px;
+  }
+}
