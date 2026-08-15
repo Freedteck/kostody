@@ -15,6 +15,7 @@ const lockJob = async (req, res) => {
       upfrontPayment,
       quoteValidityDays,
       enteredPin,
+      referralId,
     } = req.body;
 
     const expiresAt = new Date();
@@ -64,6 +65,7 @@ const lockJob = async (req, res) => {
           expiresAt,
           status: "In Progress",
           customerConfirmed: true,
+          parentJobId: referralId || null,
         },
       });
 
@@ -83,6 +85,24 @@ const lockJob = async (req, res) => {
           eventText: "Job Created & Authorized by Customer",
         },
       });
+
+      if (referralId) {
+        await tx.job.update({
+          where: { id: referralId },
+          data: {
+            status: "Transferred",
+            transferStatus: "pending_acceptance",
+          },
+        });
+
+        await tx.jobEvent.create({
+          data: {
+            jobId: referralId,
+            eventText:
+              "Device transferred to another engineer. Awaiting acceptance.",
+          },
+        });
+      }
 
       return job;
     });
@@ -179,6 +199,63 @@ const createPendingJob = async (req, res) => {
   }
 };
 
+const checkReferralJob = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const looksLikeId = q.toUpperCase().startsWith("KSD-");
+
+    if (looksLikeId) {
+      const job = await prisma.job.findUnique({
+        where: { id: q.toUpperCase() },
+        include: { customer: true },
+      });
+
+      if (!job) {
+        return res.status(404).json({ message: "Job ID not found" });
+      }
+
+      return res.status(200).json({
+        results: [
+          {
+            id: job.id,
+            deviceModel: job.deviceModel,
+            customerName: job.customer?.name,
+            customerPhone: job.customer?.phone,
+            customerId: job.customer?.id,
+          },
+        ],
+      });
+    }
+
+    const jobs = await prisma.job.findMany({
+      where: {
+        customer: { phone: { contains: q, mode: "insensitive" } },
+        status: "Completed",
+      },
+      include: { customer: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.status(200).json({
+      results: jobs.map((job) => ({
+        id: job.id,
+        deviceModel: job.deviceModel,
+        customerName: job.customer?.name,
+        customerPhone: job.customer?.phone,
+        customerId: job.customer?.id,
+      })),
+    });
+  } catch (error) {
+    console.error("Error checking referral job:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
 const getJobsByShop = async (req, res) => {
   try {
     const { shopId } = req.params;
@@ -235,6 +312,7 @@ const getJobById = async (req, res) => {
           events: {
             orderBy: { createdAt: "asc" },
           },
+          shop: true,
           payments: true,
         },
       });
@@ -334,6 +412,66 @@ const addPayment = async (req, res) => {
   }
 };
 
+const acceptTransfer = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { enteredPin } = req.body;
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: { shop: true },
+    });
+
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    if (job.transferStatus !== "pending_acceptance") {
+      return res.status(400).json({ message: "Transfer is not pending" });
+    }
+
+    const shop = job.shop;
+
+    if (!shop.pinHash) {
+      const salt = await bcrypt.genSalt(10);
+      const pinHash = await bcrypt.hash(enteredPin, salt);
+      await prisma.shop.update({
+        where: { id: shop.id },
+        data: { pinHash },
+      });
+    } else {
+      const isMatch = await bcrypt.compare(enteredPin, shop.pinHash);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid PIN" });
+      }
+    }
+
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      const updated = await tx.job.update({
+        where: { id: jobId },
+        data: { transferStatus: "None" },
+      });
+
+      await tx.jobEvent.create({
+        data: {
+          jobId,
+          eventText:
+            "Transfer Accepted. Device is currently with the specialist.",
+        },
+      });
+
+      return updated;
+    });
+
+    return res.status(200).json(updatedJob);
+  } catch (error) {
+    console.error("Error accepting transfer:", error);
+    return res
+      .status(500)
+      .json({ message: "Server Error: Could not accept transfer" });
+  }
+};
+
 const processCollection = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -398,6 +536,23 @@ const processCollection = async (req, res) => {
           events: { orderBy: { createdAt: "asc" } },
         },
       });
+
+      if (job.parentJobId) {
+        await tx.job.update({
+          where: { id: job.parentJobId },
+          data: {
+            status: "In Progress",
+            transferStatus: "None",
+          },
+        });
+
+        await tx.jobEvent.create({
+          data: {
+            jobId: job.parentJobId,
+            eventText: "Device collected from specialist. Back in possession.",
+          },
+        });
+      }
 
       return jobUpdated;
     });
@@ -560,11 +715,13 @@ const getJobHistory = async (req, res) => {
 export {
   lockJob,
   createPendingJob,
+  checkReferralJob,
   getJobsByShop,
   getJobById,
   updateJobStatus,
   addPayment,
   processCollection,
+  acceptTransfer,
   requoteJob,
   updateJob,
   getJobHistory,

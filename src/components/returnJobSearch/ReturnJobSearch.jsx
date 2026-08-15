@@ -1,45 +1,33 @@
 import { useState } from "react";
 import styles from "./ReturnJobSearch.module.css";
 import BottomSheet from "../bottomSheet/BottomSheet";
-
-// Mock database of OLD/PAST jobs
-const mockPastJobs = [
-  {
-    id: "KSD-9F3A",
-    device: "iPhone 13 Pro",
-    customer: "Chidi O.",
-    phone: "08012345678",
-  },
-  {
-    id: "KSD-5G2H",
-    device: "iPhone 12 Mini",
-    customer: "Chidi O.",
-    phone: "08012345678",
-  }, // Same customer, second phone
-  {
-    id: "KSD-4K1L",
-    device: "Samsung S22 Ultra",
-    customer: "Ada E.",
-    phone: "07098765432",
-  },
-];
+import { searchJobs } from "../../services/api";
+import useToast from "../../hooks/useToast";
+import { Skeleton } from "../skeleton/Skeleton";
 
 const ReturnJobSearch = ({ onSelectJob, title, onClose }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useToast();
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setHasSearched(true);
+    setIsLoading(true);
+    setHasSearched(false);
 
-    // Simple mock search logic
-    const filtered = mockPastJobs.filter(
-      (job) =>
-        job.phone.includes(query) ||
-        job.id.toLowerCase().includes(query.toLowerCase()),
-    );
-    setResults(filtered);
+    searchJobs(query)
+      .then((data) => {
+        setResults(data);
+        setHasSearched(true);
+      })
+      .catch(() => {
+        showToast("Search failed. Please try again.", "error");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -55,34 +43,42 @@ const ReturnJobSearch = ({ onSelectJob, title, onClose }) => {
             autoFocus
             required
           />
-          <button type="submit" className={styles.searchBtn}>
-            Search
+          <button type="submit" className={styles.searchBtn} disabled={isLoading}>
+            {isLoading ? "..." : "Search"}
           </button>
         </form>
 
         <div className={styles.resultsContainer}>
-          {hasSearched && results.length === 0 && (
+          {isLoading && (
+            <>
+              <Skeleton width="100%" height="70px" radius="8px" />
+              <Skeleton width="100%" height="70px" radius="8px" />
+            </>
+          )}
+
+          {!isLoading && hasSearched && results.length === 0 && (
             <p className={styles.noResults}>
               No previous jobs found for that search.
             </p>
           )}
 
-          {results.map((job) => (
-            <div
-              key={job.id}
-              className={styles.resultCard}
-              onClick={() => onSelectJob(job)}
-            >
-              <div className={styles.resultHeader}>
-                <h3 className={styles.resultDevice}>{job.device}</h3>
-                <span className={styles.resultId}>#{job.id}</span>
+          {!isLoading &&
+            results.map((job) => (
+              <div
+                key={job.id}
+                className={styles.resultCard}
+                onClick={() => onSelectJob(job)}
+              >
+                <div className={styles.resultHeader}>
+                  <h3 className={styles.resultDevice}>{job.deviceModel}</h3>
+                  <span className={styles.resultId}>#{job.id}</span>
+                </div>
+                <p className={styles.resultCustomer}>
+                  {job.customerName} · {job.customerPhone}
+                </p>
+                <button className={styles.selectBtn}>Create Return Job</button>
               </div>
-              <p className={styles.resultCustomer}>
-                {job.customer} · {job.phone}
-              </p>
-              <button className={styles.selectBtn}>Create Return Job</button>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </BottomSheet>

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styles from "./IntakeForm.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import { checkReferralJob } from "../../services/api";
+import useToast from "../../hooks/useToast";
 
 const IntakeForm = () => {
   const navigate = useNavigate();
@@ -11,18 +13,23 @@ const IntakeForm = () => {
 
   const [hasReferralId, setHasReferralId] = useState(false);
   const [referralId, setReferralId] = useState("");
+  const [referralError, setReferralError] = useState(null);
+  const [isCheckingReferral, setIsCheckingReferral] = useState(false);
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
     customerName:
-      editJobData?.customer.name || returnJobData?.customer.name || "",
-    customerPhone: editJobData?.customer.phone || returnJobData?.phone || "",
-    deviceModel: editJobData?.deviceModel || returnJobData?.device || "",
+      editJobData?.customer.name || returnJobData?.customerName || "",
+    customerPhone:
+      editJobData?.customer.phone || returnJobData?.customerPhone || "",
+    deviceModel:
+      editJobData?.deviceModel || returnJobData?.deviceModel || "",
     faultDescription: editJobData?.faultDescription || "",
     quotedPrice: editJobData?.quotedPrice || "",
     upfrontPayment: editJobData?.upfrontPayment || "",
     quoteValidity: editJobData?.quoteValidityDays || "7",
     accessoriesRetained: editJobData?.accessoriesRetained?.join(", ") || "",
-    id: editJobData?.id || returnJobData?.id || null,
+    id: editJobData?.id || null,
   });
 
   const isReturnJob = !!returnJobData;
@@ -35,23 +42,47 @@ const IntakeForm = () => {
 
   const handleReferralIdBlur = (e) => {
     const id = e.target.value.trim();
-    if (id === "KSD-9F3A") {
-      setFormData((prev) => ({
-        ...prev,
-        customerName: "Engr. Chidi (Via Transfer)",
-        deviceModel: "iPhone 13 Pro",
-      }));
-    } else if (id !== "") {
-      alert("Job ID not found in system.");
-    }
+    if (!id) return;
+
+    setIsCheckingReferral(true);
+    setReferralError(null);
+
+    checkReferralJob(id)
+      .then((result) => {
+        if (!result) throw new Error("Job ID not found in system.");
+        setFormData((prev) => ({
+          ...prev,
+          customerName: result.customerName || "",
+          customerPhone: result.customerPhone || "",
+          deviceModel: result.deviceModel || "",
+        }));
+        showToast("Referral Job ID verified.", "success");
+      })
+      .catch((error) => {
+        setReferralError(error.message || "Job ID not found in system.");
+        showToast("Job ID not found in system.", "error");
+      })
+      .finally(() => {
+        setIsCheckingReferral(false);
+      });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/app/summary", { state: { formData } });
+    const finalData = { ...formData };
+
+    if (hasReferralId && referralId && !referralError) {
+      finalData.referralId = referralId;
+    }
+
+    if (isReturnJob && returnJobData?.id) {
+      finalData.referralId = returnJobData.id;
+    }
+
+    navigate("/app/summary", { state: { formData: finalData } });
   };
 
-  const isLocked = (hasReferralId && referralId === "KSD-9F3A") || isReturnJob;
+  const isLocked = (hasReferralId && referralId && !referralError) || isReturnJob;
 
   return (
     <div className={styles.formContainer}>
@@ -110,6 +141,8 @@ const IntakeForm = () => {
               placeholder="e.g. KSD-9F3A"
               required={hasReferralId}
             />
+            {referralError && <p className={styles.referralError}>{referralError}</p>}
+            {isCheckingReferral && <p className={styles.referralError} style={{ color: "var(--text-secondary)" }}>Checking...</p>}
           </div>
         )}
 

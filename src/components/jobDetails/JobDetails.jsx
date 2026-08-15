@@ -11,6 +11,8 @@ import {
   updateJobStatus,
   addPayment,
   requoteJob,
+  acceptTransfer,
+  checkCustomer,
 } from "../../services/api";
 import useToast from "../../hooks/useToast";
 import { Skeleton } from "../skeleton/Skeleton";
@@ -29,11 +31,14 @@ const JobDetails = () => {
   const [timeline, setTimeline] = useState([]);
   const [showPaymentInput, setShowPaymentInput] = useState(false);
   const [newPaymentAmount, setNewPaymentAmount] = useState("");
+
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [isRequoteOpen, setIsRequoteOpen] = useState(false);
   const [isRequotePinOpen, setIsRequotePinOpen] = useState(false);
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isAcceptPinOpen, setIsAcceptPinOpen] = useState(false);
+
+  const [isExist, setIsExist] = useState(false);
   const [newQuoteData, setNewQuoteData] = useState({
     price: "",
     validity: "7",
@@ -41,6 +46,12 @@ const JobDetails = () => {
 
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isSavingPayment, setIsSavingPayment] = useState(false);
+
+  const [successSheet, setSuccessSheet] = useState({
+    open: false,
+    title: "",
+    message: "",
+  });
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -61,7 +72,7 @@ const JobDetails = () => {
           setPayments(data.payments?.map((p) => p.amount) || []);
 
           const formattedTimeline = (data.events || []).map((e) => ({
-            time: new Date(e.createdAt).toString("en-US", {
+            time: new Date(e.createdAt).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
               hour: "2-digit",
@@ -149,7 +160,11 @@ const JobDetails = () => {
           ...prev,
           { time: "Just now", event: eventText },
         ]);
-        showToast("Status updated successfully.", "success");
+        setSuccessSheet({
+          open: true,
+          title: "Status Updated",
+          message: `Job status successfully updated to ${newStatus}.`,
+        });
       })
       .catch(() => {
         showToast("Failed to update status.", "error");
@@ -178,12 +193,16 @@ const JobDetails = () => {
             ...prev,
             {
               time: "Just now",
-              event: `Payment of ₦${amount.toString()} logged`,
+              event: `Payment of ₦${amount.toLocaleString()} logged`,
             },
           ]);
           setNewPaymentAmount("");
           setShowPaymentInput(false);
-          showToast("Payment logged successfully.", "success");
+          setSuccessSheet({
+            open: true,
+            title: "Payment Logged",
+            message: "The payment has been successfully recorded.",
+          });
         })
         .catch(() => {
           showToast("Failed to log payment.", "error");
@@ -192,6 +211,30 @@ const JobDetails = () => {
           setIsSavingPayment(false);
         });
     }
+  };
+
+  const handleAcceptPinSuccess = async (pin) => {
+    return await acceptTransfer(jobData.id, pin)
+      .then(() => {
+        setIsAcceptPinOpen(false);
+        setJobData((prev) => ({ ...prev, transferStatus: "None" }));
+        setTimeline((prev) => [
+          ...prev,
+          {
+            time: "Just now",
+            event:
+              "Transfer Accepted. Device is currently with the specialist.",
+          },
+        ]);
+        setSuccessSheet({
+          open: true,
+          title: "Transfer Accepted",
+          message: "Device is currently with the specialist.",
+        });
+      })
+      .catch((error) => {
+        throw new Error(error.message || "Failed to accept transfer");
+      });
   };
 
   const handleCollectionSuccess = (pin, finalPayment) => {
@@ -205,19 +248,23 @@ const JobDetails = () => {
         event: `Job Closed. Device collected. Customer PIN verified.`,
       },
     ]);
-    showToast("Job completed successfully!", "success");
+    setSuccessSheet({
+      open: true,
+      title: "Job Completed",
+      message: "Device collected and job closed successfully.",
+    });
   };
 
-  const handleAcceptTransfer = () => {
-    setIsSheetOpen(false);
-    setStatus("In Progress");
-    setTimeline((prev) => [
-      ...prev,
-      {
-        time: "Just now",
-        event: "Transfer Accepted. Device back in possession.",
-      },
-    ]);
+  const handleAcceptTransfer = async () => {
+    await checkCustomer(jobData.shop.phone)
+      .then((res) => {
+        setIsExist(res.exists); // Fixed: res.exists instead of res.isExist
+        setIsSheetOpen(false);
+        setIsAcceptPinOpen(true);
+      })
+      .catch((err) => {
+        showToast(err.message || "Failed to check customer", "error");
+      });
   };
 
   const handleDeclineTransfer = () => {
@@ -226,6 +273,11 @@ const JobDetails = () => {
       ...prev,
       { time: "Just now", event: "Transfer Declined. Negotiation required." },
     ]);
+    setSuccessSheet({
+      open: true,
+      title: "Transfer Declined",
+      message: "The transfer request has been declined.",
+    });
   };
 
   const handleRequoteSubmit = (price, validity) => {
@@ -249,10 +301,14 @@ const JobDetails = () => {
           ...prev,
           {
             time: "Just now",
-            event: `New quote raised (₦${Number(newQuoteData.price).toString()}) and authorized by customer.`,
+            event: `New quote raised (₦${Number(newQuoteData.price).toLocaleString()}) and authorized by customer.`,
           },
         ]);
-        setIsSuccessOpen(true);
+        setSuccessSheet({
+          open: true,
+          title: "Quote Updated",
+          message: "Customer authorized the new price. Job is now active.",
+        });
       })
       .catch((error) => {
         showToast(error.message || "Failed to requote job", "error");
@@ -568,11 +624,22 @@ const JobDetails = () => {
           title="Authorize New Quote"
         />
       )}
-      {isSuccessOpen && (
+      {isAcceptPinOpen && (
+        <PinPad
+          onClose={() => setIsAcceptPinOpen(false)}
+          onProcess={handleAcceptPinSuccess}
+          title="Authorize Transfer"
+          isNewUser={!isExist}
+        />
+      )}
+
+      {successSheet.open && (
         <SuccessSheet
-          title="Quote Updated"
-          message="Customer authorized the new price. Job is now active."
-          onClose={() => setIsSuccessOpen(false)}
+          title={successSheet.title}
+          message={successSheet.message}
+          onClose={() =>
+            setSuccessSheet({ open: false, title: "", message: "" })
+          }
         />
       )}
     </div>

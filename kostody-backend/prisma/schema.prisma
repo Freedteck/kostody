@@ -15,6 +15,7 @@ model Shop {
   phone        String   @unique 
   email        String   @unique
   passwordHash String
+  pinHash      String?
   specialty    String
   address      String
   createdAt    DateTime @default(now())

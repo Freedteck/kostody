@@ -209,6 +209,12 @@
   transform: translateX(20px);
 }
 
+.referralError {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
 @media (min-width: 768px) {
   .formContainer {
     max-width: 768px;

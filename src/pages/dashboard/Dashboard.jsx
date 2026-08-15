@@ -164,7 +164,22 @@ const Dashboard = () => {
               to={`/app/job/${job.id}`}
             >
               <div className={styles.jobHeader}>
-                <h2 className={styles.deviceName}>{job.deviceModel}</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <h2 className={styles.deviceName}>{job.deviceModel}</h2>
+                  {job.parentJobId && (
+                    <span className={styles.returnBadge} title="Return Job">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M9 14L4 9L9 4M4 9H15C18.866 9 22 12.134 22 16C22 19.866 18.866 23 15 23H12"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  )}
+                </div>
                 <p className={styles.jobId}>#{job.id}</p>
               </div>
               <p className={styles.customerName}>

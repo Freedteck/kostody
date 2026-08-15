@@ -18,6 +18,7 @@ const lockJob = async (jobData, shopId, customerId, enteredPin) => {
         upfrontPayment: Number(jobData.upfrontPayment),
         quoteValidityDays: Number(jobData.quoteValidity),
         enteredPin,
+        referralId: jobData.referralId,
       }),
     });
 
@@ -361,7 +362,57 @@ const getShopNotifications = async (shopId) => {
     throw error;
   }
 };
+const acceptTransfer = async (jobId, enteredPin) => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/accept-transfer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enteredPin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
 
+const checkReferralJob = async (referralId) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(referralId)}`
+    );
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data.results[0] || null;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const searchJobs = async (query) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(query)}`
+    );
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
 export {
   lockJob,
   createPendingJob,
@@ -381,4 +432,7 @@ export {
   updateShopProfile,
   getShopAnalytics,
   getShopNotifications,
+  acceptTransfer,
+  checkReferralJob,
+  searchJobs,
 };
