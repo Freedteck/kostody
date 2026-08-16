@@ -124,6 +124,24 @@ const JobSummary = () => {
         <h1>{isEditJob ? "Review Changes" : "Job Summary"}</h1>
       </div>
 
+      {formData.isReturnJob && (
+        <div className={styles.warrantyBanner}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div>
+            <h4>Return Job</h4>
+            <p>You are processing a return Job</p>
+          </div>
+        </div>
+      )}
+
       <div className={styles.receiptPaper}>
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Customer & Device</h2>

@@ -16,6 +16,8 @@ const lockJob = async (req, res) => {
       quoteValidityDays,
       enteredPin,
       referralId,
+      parentJobId,
+      isReturnJob,
     } = req.body;
 
     const expiresAt = new Date();
@@ -65,7 +67,8 @@ const lockJob = async (req, res) => {
           expiresAt,
           status: "In Progress",
           customerConfirmed: true,
-          parentJobId: referralId || null,
+          parentJobId: referralId || parentJobId || null,
+          isReturn: isReturnJob || false,
         },
       });
 
@@ -85,6 +88,15 @@ const lockJob = async (req, res) => {
           eventText: "Job Created & Authorized by Customer",
         },
       });
+
+      if (isReturnJob && parentJobId) {
+        await tx.jobEvent.create({
+          data: {
+            jobId: parentJobId,
+            eventText: `Device returned. New Return Job #${job.id} created due to imperfection.`,
+          },
+        });
+      }
 
       if (referralId) {
         await tx.job.update({
@@ -133,6 +145,8 @@ const createPendingJob = async (req, res) => {
       quotedPrice,
       upfrontPayment,
       quoteValidityDays,
+      parentJobId,
+      isReturnJob,
     } = req.body;
 
     const expiresAt = new Date();
@@ -166,6 +180,8 @@ const createPendingJob = async (req, res) => {
           upfrontPayment: Number(upfrontPayment),
           quoteValidityDays: Number(quoteValidityDays),
           expiresAt,
+          parentJobId: parentJobId || null,
+          isReturn: isReturnJob || false,
           status: "Pending Confirmation",
         },
       });
@@ -186,6 +202,15 @@ const createPendingJob = async (req, res) => {
           eventText: "Job created. Link sent to customer for confirmation.",
         },
       });
+
+      if (isReturnJob && parentJobId) {
+        await tx.jobEvent.create({
+          data: {
+            jobId: parentJobId,
+            eventText: `Device returned. New Return Job #${job.id} created due to imperfection.`,
+          },
+        });
+      }
 
       return job;
     });
@@ -212,7 +237,7 @@ const checkReferralJob = async (req, res) => {
     if (looksLikeId) {
       const job = await prisma.job.findUnique({
         where: { id: q.toUpperCase() },
-        include: { customer: true },
+        include: { shop: true },
       });
 
       if (!job) {
@@ -224,9 +249,8 @@ const checkReferralJob = async (req, res) => {
           {
             id: job.id,
             deviceModel: job.deviceModel,
-            customerName: job.customer?.name,
-            customerPhone: job.customer?.phone,
-            customerId: job.customer?.id,
+            customerName: job.shop?.shopName,
+            customerPhone: job.shop?.phone,
           },
         ],
       });

@@ -549,6 +549,27 @@ const JobDetails = () => {
         </div>
       </div>
 
+      {jobData.parentJobId && jobData.isReturn && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Linked History</h2>
+          <button
+            className={styles.linkedJobBtn}
+            onClick={() => navigate(`/app/job/${jobData.parentJobId}`)}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M9 14L4 9L9 4M4 9H15C18.866 9 22 12.134 22 16C22 19.866 18.866 23 15 23H12"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            View Original Repair (#{jobData.parentJobId})
+          </button>
+        </div>
+      )}
+
       <div className={styles.actionsContainer}>
         {jobData.transferStatus === "pending_acceptance" ? (
           <button

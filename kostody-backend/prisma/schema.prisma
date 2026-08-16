@@ -55,6 +55,7 @@ model Job {
   status             String   @default("Pending Confirmation")
   transferStatus     String   @default("None")
   customerConfirmed  Boolean  @default(false)
+  isReturn           Boolean  @default(false)
   
   // For Return Jobs (Chain of Custody)
   parentJobId        String? 

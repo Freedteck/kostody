@@ -15,6 +15,7 @@ const IntakeForm = () => {
   const [referralId, setReferralId] = useState("");
   const [referralError, setReferralError] = useState(null);
   const [isCheckingReferral, setIsCheckingReferral] = useState(false);
+  const [returnReason, setReturnReason] = useState("imperfection");
   const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -22,8 +23,7 @@ const IntakeForm = () => {
       editJobData?.customer.name || returnJobData?.customerName || "",
     customerPhone:
       editJobData?.customer.phone || returnJobData?.customerPhone || "",
-    deviceModel:
-      editJobData?.deviceModel || returnJobData?.deviceModel || "",
+    deviceModel: editJobData?.deviceModel || returnJobData?.deviceModel || "",
     faultDescription: editJobData?.faultDescription || "",
     quotedPrice: editJobData?.quotedPrice || "",
     upfrontPayment: editJobData?.upfrontPayment || "",
@@ -76,13 +76,21 @@ const IntakeForm = () => {
     }
 
     if (isReturnJob && returnJobData?.id) {
-      finalData.referralId = returnJobData.id;
+      if (returnReason === "imperfection") {
+        finalData.parentJobId = returnJobData.id;
+        finalData.isReturnJob = true;
+      } else {
+        finalData.parentJobId = null;
+        finalData.isReturnJob = false;
+      }
     }
 
     navigate("/app/summary", { state: { formData: finalData } });
   };
 
-  const isLocked = (hasReferralId && referralId && !referralError) || isReturnJob;
+  const isLocked =
+    (hasReferralId && referralId && !referralError) ||
+    (isReturnJob && returnReason === "imperfection");
 
   return (
     <div className={styles.formContainer}>
@@ -141,8 +149,39 @@ const IntakeForm = () => {
               placeholder="e.g. KSD-9F3A"
               required={hasReferralId}
             />
-            {referralError && <p className={styles.referralError}>{referralError}</p>}
-            {isCheckingReferral && <p className={styles.referralError} style={{ color: "var(--text-secondary)" }}>Checking...</p>}
+            {referralError && (
+              <p className={styles.referralError}>{referralError}</p>
+            )}
+            {isCheckingReferral && (
+              <p
+                className={styles.referralError}
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Checking...
+              </p>
+            )}
+          </div>
+        )}
+
+        {isReturnJob && (
+          <div className={styles.referralToggleContainer}>
+            <label className={styles.label}>Return Reason</label>
+            <div className={styles.returnReasonRow}>
+              <button
+                type="button"
+                className={`${styles.reasonBtn} ${returnReason === "imperfection" ? styles.reasonActive : ""}`}
+                onClick={() => setReturnReason("imperfection")}
+              >
+                Imperfection
+              </button>
+              <button
+                type="button"
+                className={`${styles.reasonBtn} ${returnReason === "new" ? styles.reasonActive : ""}`}
+                onClick={() => setReturnReason("new")}
+              >
+                New Issue
+              </button>
+            </div>
           </div>
         )}
 

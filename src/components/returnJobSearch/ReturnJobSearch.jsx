@@ -37,13 +37,17 @@ const ReturnJobSearch = ({ onSelectJob, title, onClose }) => {
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="Enter Phone Number or Job ID"
+            placeholder="Enter Phone Number"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
             required
           />
-          <button type="submit" className={styles.searchBtn} disabled={isLoading}>
+          <button
+            type="submit"
+            className={styles.searchBtn}
+            disabled={isLoading}
+          >
             {isLoading ? "..." : "Search"}
           </button>
         </form>

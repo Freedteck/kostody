@@ -333,6 +333,27 @@
   margin: 0;
 }
 
+.linkedJobBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--bg-primary);
+  border: none;
+  color: var(--accent);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+
+.linkedJobBtn:active {
+  opacity: 0.7;
+}
+
 .logPaymentBtn {
   width: 100%;
   padding: 12px;

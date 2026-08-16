@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import useToast from "../../hooks/useToast";
+import useShop from "../../hooks/useShop";
 import { loginShop } from "../../services/api";
 
 const Login = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { setShop } = useShop();
   const [isLoading, setIsLoading] = useState(false);
 
   const [authData, setAuthData] = useState({
@@ -26,7 +28,7 @@ const Login = () => {
     await loginShop(authData)
       .then((data) => {
         localStorage.setItem("kostody_token", data.token);
-        localStorage.setItem("kostody_shop", JSON.stringify(data.data));
+        setShop(data.data);
 
         showToast("Login successful! Welcome back.", "success");
         navigate("/app/dashboard");
