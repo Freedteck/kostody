@@ -217,27 +217,33 @@
 
 .returnReasonRow {
   display: flex;
-  gap: 10px;
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  padding: 4px;
   margin-top: 12px;
+  gap: 4px;
 }
 
 .reasonBtn {
   flex: 1;
-  background: var(--bg-primary);
-  border: 1px solid transparent;
+  background: none;
+  border: none;
   color: var(--text-secondary);
-  padding: 12px;
-  font-size: 0.85rem;
+  padding: 10px;
+  font-size: 0.8rem;
   font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 6px;
   transition: all 0.2s;
 }
 
 .reasonActive {
-  background: var(--accent-bg);
+  background-color: var(--surface);
   color: var(--accent);
-  border-color: var(--accent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.reasonBtn:active:not(.reasonActive) {
+  opacity: 0.6;
 }
 
 @media (min-width: 768px) {

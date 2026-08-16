@@ -38,10 +38,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background-color: rgba(255, 152, 0, 0.1);
-  border: 1px solid #ff9800;
-  border-radius: 8px;
-  padding: 12px;
+  background-color: rgba(255, 152, 0, 0.15); /* Slightly more opaque */
+  border: none; /* Removed hard border */
+  border-radius: 12px; /* Matches native cards */
+  padding: 16px;
   margin-bottom: 16px;
 }
 
@@ -52,14 +52,14 @@
 
 .warrantyBanner h4 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #ff9800;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .warrantyBanner p {
   margin: 2px 0 0 0;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
