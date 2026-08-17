@@ -1,18 +1,51 @@
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.formContainer {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding: 20px;
+  padding-bottom: 100px;
+  font-family: var(--sans);
+  color: var(--text-primary);
+  max-width: 600px;
+  margin: 0 auto;
 }
-.formGroup {
+
+.formHeader {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 5px;
+  margin-left: -5px;
+  transition: opacity 0.1s;
+}
+
+.backBtn:active {
+  opacity: 0.5;
+}
+
+.formHeader h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.formGroup {
+  margin-bottom: 24px;
 }
 
 .label {
+  display: block;
   font-size: 0.85rem;
   text-transform: uppercase;
   color: var(--text-secondary);
+  margin-bottom: 8px;
   letter-spacing: 0.5px;
   font-weight: 600;
 }
@@ -20,7 +53,7 @@
 .input,
 .select {
   width: 100%;
-  background-color: var(--bg-primary);
+  background-color: var(--surface);
   border: 1px solid transparent;
   color: var(--text-primary);
   padding: 16px;
@@ -36,23 +69,37 @@
   border-color: var(--accent);
 }
 
+.select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%239ca3af" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
 .submitBtn {
   width: 100%;
+  padding: 16px;
   background-color: var(--accent);
   color: var(--bg-primary);
   border: none;
-  padding: 16px;
-  border-radius: 8px;
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
   cursor: pointer;
-  margin-top: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  transition: transform 0.1s;
 }
 
 .submitBtn:active {
   transform: scale(0.98);
   opacity: 0.9;
+}
+
+.submitBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 
 .spinner {

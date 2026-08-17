@@ -16,6 +16,8 @@ const IntakeForm = () => {
   const [referralError, setReferralError] = useState(null);
   const [isCheckingReferral, setIsCheckingReferral] = useState(false);
   const [returnReason, setReturnReason] = useState("imperfection");
+  const [photos, setPhotos] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
   const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -67,9 +69,22 @@ const IntakeForm = () => {
       });
   };
 
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files);
+    setPhotos((prev) => [...prev, ...files]);
+
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPhotoPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const handleRemovePhoto = (index) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const finalData = { ...formData };
+    const finalData = { ...formData, photos };
 
     if (hasReferralId && referralId && !referralError) {
       finalData.referralId = referralId;
@@ -271,6 +286,26 @@ const IntakeForm = () => {
 
         <div className={styles.formGroup}>
           <label className={styles.label}>Device Condition Photos</label>
+          {photoPreviews.length > 0 && (
+            <div className={styles.previewGrid}>
+              {photoPreviews.map((preview, index) => (
+                <div key={index} className={styles.previewItem}>
+                  <img
+                    src={preview}
+                    alt={`Preview ${index}`}
+                    className={styles.previewImage}
+                  />
+                  <button
+                    type="button"
+                    className={styles.removePhotoBtn}
+                    onClick={() => handleRemovePhoto(index)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <label htmlFor="photoUpload" className={styles.photoUploadArea}>
             <span className={styles.cameraBtn}>+ Snap Condition</span>
             <p className={styles.photoHint}>
@@ -284,6 +319,7 @@ const IntakeForm = () => {
             capture="environment"
             multiple
             style={{ display: "none" }}
+            onChange={handlePhotoChange}
           />
         </div>
 

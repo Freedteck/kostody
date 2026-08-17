@@ -12,7 +12,9 @@ import {
   updateJobStatus,
   acceptTransfer,
   checkReferralJob,
+  cancelJob,
 } from "../controllers/jobController.js";
+import { upload, uploadJobPhotos } from "../controllers/photoController.js";
 
 export const router = Router();
 router.route("/lock").post(lockJob);
@@ -29,3 +31,7 @@ router.route("/:jobId/payments").post(addPayment);
 router.route("/:jobId/collect").post(processCollection);
 router.route("/:jobId/accept-transfer").post(acceptTransfer);
 router.route("/:jobId/requote").post(requoteJob);
+router.route("/:jobId/cancel").post(cancelJob);
+router
+  .route("/:jobId/photos")
+  .post(upload.array("photos", 10), uploadJobPhotos);

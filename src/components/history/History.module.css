@@ -74,7 +74,6 @@
   gap: 12px;
 }
 
-/* Native Card Style (No borders, just background) */
 .jobCard,
 .customerCard {
   background-color: var(--surface);
@@ -183,6 +182,62 @@
   font-size: 0.95rem;
   font-weight: bold;
   color: var(--text-primary);
+  font-family: var(--mono);
+}
+
+.filterTabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 5px;
+  scrollbar-width: none;
+}
+
+.filterTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tabActive {
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.statusBadge {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.statusCompleted {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.statusCancelled {
+  background-color: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+}
+
+.dateText {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 12px 0 0 0;
   font-family: var(--mono);
 }
 

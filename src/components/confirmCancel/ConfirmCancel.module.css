@@ -1,0 +1,45 @@
+.sheetText {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 30px;
+  line-height: 1.4;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 15px;
+}
+
+.btnDecline,
+.btnAccept {
+  flex: 1;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border: none;
+  transition: transform 0.1s;
+}
+
+.btnDecline {
+  background-color: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}
+
+.btnDecline:active {
+  background-color: rgba(255, 77, 77, 0.2);
+  transform: scale(0.98);
+}
+
+.btnAccept {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+}
+
+.btnAccept:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}

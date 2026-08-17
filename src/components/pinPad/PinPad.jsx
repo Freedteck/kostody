@@ -2,7 +2,13 @@ import { useState } from "react";
 import styles from "./PinPad.module.css";
 import BottomSheet from "../bottomSheet/BottomSheet";
 
-const PinPad = ({ onProcess, onClose, title, isNewUser = false }) => {
+const PinPad = ({
+  onProcess,
+  onClose,
+  title,
+  isNewUser = false,
+  onForgotPin,
+}) => {
   const [pin, setPin] = useState("");
   const [tempPin, setTempPin] = useState("");
   const [phase, setPhase] = useState(isNewUser ? "create" : "enter");
@@ -87,7 +93,6 @@ const PinPad = ({ onProcess, onClose, title, isNewUser = false }) => {
       <div className={styles.pinContainer}>
         <p className={styles.instruction}>{getInstruction()}</p>
 
-        {/* PIN Dots with Shake & Red Error State */}
         <div className={`${styles.pinDots} ${isMismatch ? styles.shake : ""}`}>
           {[0, 1, 2, 3].map((i) => (
             <div
@@ -97,10 +102,8 @@ const PinPad = ({ onProcess, onClose, title, isNewUser = false }) => {
           ))}
         </div>
 
-        {/* Inline Error Message */}
         {error && <p className={styles.errorText}>{error}</p>}
 
-        {/* Custom Keypad */}
         <div className={styles.keypad}>
           {keys.map((key, index) => {
             if (key === "blank")
@@ -119,11 +122,8 @@ const PinPad = ({ onProcess, onClose, title, isNewUser = false }) => {
           })}
         </div>
 
-        {phase === "enter" && !isLoading && (
-          <button
-            className={styles.forgotBtn}
-            onClick={() => alert("Mock: SMS sent to reset PIN.")}
-          >
+        {phase === "enter" && !isLoading && onForgotPin && (
+          <button className={styles.forgotBtn} onClick={onForgotPin}>
             Forgot PIN?
           </button>
         )}

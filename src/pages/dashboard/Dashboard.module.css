@@ -160,11 +160,27 @@
   border-radius: 4px;
 }
 
+.dateText {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+}
+
 .jobDetails {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-top: 12px;
+}
+
+.returnBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 2px 4px;
 }
 
 .customerName {
@@ -200,16 +216,6 @@
 .statusReady {
   background-color: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
-}
-
-.returnBadge {
-  background: var(--accent-bg);
-  color: var(--accent);
-  padding: 4px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 @media (min-width: 768px) {

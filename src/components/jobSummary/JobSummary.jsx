@@ -1,13 +1,16 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./JobSummary.module.css";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
+import ForgotPinSheet from "../forgotPinSheet/ForgotPinSheet";
 import {
   checkCustomer,
   createPendingJob,
   lockJob,
   updateJob,
+  uploadPhotos,
 } from "../../services/api";
 import useShop from "../../hooks/useShop";
 import useToast from "../../hooks/useToast";
@@ -16,6 +19,7 @@ const JobSummary = () => {
   const [shareWithCustomer, setShareWithCustomer] = useState(false);
   const [isPinOpen, setIsPinOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isForgotPinOpen, setIsForgotPinOpen] = useState(false);
   const [exists, setExists] = useState(false);
   const [customerData, setCustomerData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,9 +43,13 @@ const JobSummary = () => {
     setIsLoading(true);
     createPendingJob(formData, shopId)
       .then((data) => {
-        console.log("Pending job saved:", data.id);
+        if (formData.photos && formData.photos.length > 0) {
+          return uploadPhotos(data.id, formData.photos).then(() => data);
+        }
+        return data;
+      })
+      .then((data) => {
         setIsSuccessOpen(true);
-        // In the future: window.open(`https://wa.me/?text=...${data.id}`)
       })
       .catch(() => {
         showToast("Failed to generate share link.", "error");
@@ -75,7 +83,12 @@ const JobSummary = () => {
   const handleAgreementLock = async (pin) => {
     return await lockJob(formData, shopId, customerData?.customerId, pin)
       .then((data) => {
-        console.log("Agreement Locked:", data);
+        if (formData.photos && formData.photos.length > 0) {
+          return uploadPhotos(data.id, formData.photos).then(() => data);
+        }
+        return data;
+      })
+      .then((data) => {
         setIsPinOpen(false);
         setIsSuccessOpen(true);
       })
@@ -87,6 +100,14 @@ const JobSummary = () => {
   const handleEditSave = () => {
     setIsLoading(true);
     updateJob(formData.id, formData)
+      .then((updatedJob) => {
+        if (formData.photos && formData.photos.length > 0) {
+          return uploadPhotos(updatedJob.id, formData.photos).then(
+            () => updatedJob,
+          );
+        }
+        return updatedJob;
+      })
       .then((updatedJob) => {
         showToast("Job updated successfully.", "success");
         navigate(`/app/job/${updatedJob.id}`);
@@ -182,9 +203,24 @@ const JobSummary = () => {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Condition Photos</h2>
           <div className={styles.photoGrid}>
-            <div className={styles.photoBox}>No Image</div>
-            <div className={styles.photoBox}>No Image</div>
-            <div className={styles.photoBox}>No Image</div>
+            {formData.photos && formData.photos.length > 0 ? (
+              formData.photos.map((photo, index) => (
+                <div key={index} className={styles.photoBox}>
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Preview ${index}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className={styles.photoBox}>No Image</div>
+            )}
           </div>
         </div>
 
@@ -265,8 +301,24 @@ const JobSummary = () => {
           onClose={() => setIsPinOpen(false)}
           title="Authorize Agreement"
           isNewUser={!exists}
+          onForgotPin={() => setIsForgotPinOpen(true)}
         />
       )}
+
+      {isForgotPinOpen && (
+        <ForgotPinSheet
+          onClose={() => setIsForgotPinOpen(false)}
+          onSuccess={() => {
+            setIsForgotPinOpen(false);
+            showToast(
+              "PIN reset successfully. Please enter your new PIN.",
+              "success",
+            );
+          }}
+          initialPhone={formData.customerPhone}
+        />
+      )}
+
       {isSuccessOpen && (
         <SuccessSheet
           title={shareWithCustomer ? "Link Sent" : "Agreement Locked"}

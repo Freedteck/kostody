@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./JobDetails.module.css";
 import ConfirmTransfer from "../confirmTransfer/ConfirmTransfer";
+import ConfirmCancel from "../confirmCancel/ConfirmCancel";
 import ProcessCollection from "../processCollection/ProcessCollection";
 import RaiseQuote from "../raiseQuote/RaiseQuote";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
+import ForgotPinSheet from "../forgotPinSheet/ForgotPinSheet"; // Import ForgotPinSheet
 import {
   getJobsById,
   updateJobStatus,
@@ -13,6 +15,7 @@ import {
   requoteJob,
   acceptTransfer,
   checkCustomer,
+  cancelJob,
 } from "../../services/api";
 import useToast from "../../hooks/useToast";
 import { Skeleton } from "../skeleton/Skeleton";
@@ -33,10 +36,13 @@ const JobDetails = () => {
   const [newPaymentAmount, setNewPaymentAmount] = useState("");
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false);
   const [isCollectionOpen, setIsCollectionOpen] = useState(false);
   const [isRequoteOpen, setIsRequoteOpen] = useState(false);
   const [isRequotePinOpen, setIsRequotePinOpen] = useState(false);
   const [isAcceptPinOpen, setIsAcceptPinOpen] = useState(false);
+  const [isCancelPinOpen, setIsCancelPinOpen] = useState(false);
+  const [isForgotPinOpen, setIsForgotPinOpen] = useState(false); // Add state for Forgot PIN
 
   const [isExist, setIsExist] = useState(false);
   const [newQuoteData, setNewQuoteData] = useState({
@@ -46,6 +52,7 @@ const JobDetails = () => {
 
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isSavingPayment, setIsSavingPayment] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const [successSheet, setSuccessSheet] = useState({
     open: false,
@@ -62,7 +69,9 @@ const JobDetails = () => {
           setJobData(data);
           if (
             new Date(data.expiresAt) < new Date() &&
-            data.status !== "Completed"
+            data.status !== "Completed" &&
+            data.status !== "Transferred" &&
+            data.status !== "Cancelled"
           ) {
             setStatus("Expired");
           } else {
@@ -82,8 +91,7 @@ const JobDetails = () => {
           }));
           setTimeline(formattedTimeline);
         })
-        .catch((err) => {
-          console.error("Error:", err);
+        .catch(() => {
           setError("Failed to load job details.");
           showToast("Could not fetch job details.", "error");
         })
@@ -106,16 +114,12 @@ const JobDetails = () => {
             <Skeleton width="40%" height="0.85rem" radius="4px" />
           </div>
         </div>
-
         <div style={{ height: "16px" }}></div>
         <Skeleton width="100%" height="50px" radius="12px" />
-
         <div style={{ height: "16px" }}></div>
         <Skeleton width="100%" height="200px" radius="12px" />
-
         <div style={{ height: "16px" }}></div>
         <Skeleton width="100%" height="150px" radius="12px" />
-
         <div style={{ height: "16px" }}></div>
         <Skeleton width="100%" height="100px" radius="12px" />
       </div>
@@ -136,6 +140,8 @@ const JobDetails = () => {
   );
   const outstandingBalance = (Number(jobData?.quotedPrice) || 0) - totalPaid;
   const isExpired = status === "Expired";
+  const isTransferred = status === "Transferred";
+  const isCancelled = status === "Cancelled";
 
   const handleAdvanceStatus = async () => {
     let newStatus = "";
@@ -258,7 +264,7 @@ const JobDetails = () => {
   const handleAcceptTransfer = async () => {
     await checkCustomer(jobData.shop.phone)
       .then((res) => {
-        setIsExist(res.exists); // Fixed: res.exists instead of res.isExist
+        setIsExist(res.exists);
         setIsSheetOpen(false);
         setIsAcceptPinOpen(true);
       })
@@ -313,6 +319,50 @@ const JobDetails = () => {
       .catch((error) => {
         showToast(error.message || "Failed to requote job", "error");
         throw new Error(error.message || "Failed to requote job");
+      });
+  };
+
+  const handleCancelClick = () => {
+    setIsConfirmCancelOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setIsConfirmCancelOpen(false);
+    if (jobData.customerConfirmed) {
+      setIsCancelPinOpen(true);
+    } else {
+      executeCancel(null);
+    }
+  };
+
+  const executeCancel = async (pin) => {
+    setIsCancelling(true);
+    return await cancelJob(jobData.id, pin)
+      .then(() => {
+        setIsCancelPinOpen(false);
+        setStatus("Cancelled");
+        setTimeline((prev) => [
+          ...prev,
+          {
+            time: "Just now",
+            event: jobData.customerConfirmed
+              ? "Job Cancelled. Customer PIN verified."
+              : "Job Cancelled by Engineer (Pre-confirmation).",
+          },
+        ]);
+        setSuccessSheet({
+          open: true,
+          title: "Job Cancelled",
+          message:
+            "The job has been successfully cancelled and moved to history.",
+        });
+      })
+      .catch((error) => {
+        showToast(error.message || "Failed to cancel job", "error");
+        throw new Error(error.message || "Failed to cancel job");
+      })
+      .finally(() => {
+        setIsCancelling(false);
       });
   };
 
@@ -460,6 +510,8 @@ const JobDetails = () => {
         </div>
 
         {!showPaymentInput ? (
+          !isTransferred &&
+          !isCancelled &&
           outstandingBalance > 0 && (
             <button
               className={styles.logPaymentBtn}
@@ -549,7 +601,7 @@ const JobDetails = () => {
         </div>
       </div>
 
-      {jobData.parentJobId && jobData.isReturn && (
+      {jobData.isReturn && jobData.parentJobId && (
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Linked History</h2>
           <button
@@ -565,7 +617,7 @@ const JobDetails = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            View Original Repair (#{jobData.parentJobId})
+            View Original Repair
           </button>
         </div>
       )}
@@ -578,12 +630,23 @@ const JobDetails = () => {
           >
             Accept Transfer
           </button>
+        ) : isTransferred || jobData.childJob ? (
+          <button
+            className={`${styles.statusBtn} ${styles.statusBtnPrimary}`}
+            onClick={() => navigate(`/app/job/${jobData.childJob.id}`)}
+          >
+            View Specialist's Job
+          </button>
         ) : isExpired ? (
           <button
             className={`${styles.statusBtn} ${styles.statusBtnPrimary}`}
             onClick={() => setIsRequoteOpen(true)}
           >
             Raise New Quote
+          </button>
+        ) : isCancelled ? (
+          <button className={`${styles.statusBtn}`} disabled>
+            Job Cancelled
           </button>
         ) : (
           <>
@@ -611,6 +674,15 @@ const JobDetails = () => {
                   Edit Details
                 </button>
               )}
+            {status !== "Completed" && (
+              <button
+                className={styles.cancelJobBtn}
+                onClick={handleCancelClick}
+                disabled={isCancelling}
+              >
+                {isCancelling ? "Cancelling..." : "Cancel Job"}
+              </button>
+            )}
           </>
         )}
       </div>
@@ -621,6 +693,12 @@ const JobDetails = () => {
           onDecline={handleDeclineTransfer}
           title="Accept Device Transfer?"
           onClose={() => setIsSheetOpen(false)}
+        />
+      )}
+      {isConfirmCancelOpen && (
+        <ConfirmCancel
+          onConfirm={handleConfirmCancel}
+          onClose={() => setIsConfirmCancelOpen(false)}
         />
       )}
       {isCollectionOpen && (
@@ -638,11 +716,14 @@ const JobDetails = () => {
           currentPrice={jobData.quotedPrice}
         />
       )}
+
+      {/* Updated PinPads with onForgotPin */}
       {isRequotePinOpen && (
         <PinPad
           onProcess={handleRequotePinSuccess}
           onClose={() => setIsRequotePinOpen(false)}
           title="Authorize New Quote"
+          onForgotPin={() => setIsForgotPinOpen(true)}
         />
       )}
       {isAcceptPinOpen && (
@@ -651,6 +732,30 @@ const JobDetails = () => {
           onProcess={handleAcceptPinSuccess}
           title="Authorize Transfer"
           isNewUser={!isExist}
+          onForgotPin={() => setIsForgotPinOpen(true)}
+        />
+      )}
+      {isCancelPinOpen && (
+        <PinPad
+          onClose={() => setIsCancelPinOpen(false)}
+          onProcess={executeCancel}
+          title="Authorize Cancellation"
+          onForgotPin={() => setIsForgotPinOpen(true)}
+        />
+      )}
+
+      {/* Forgot PIN Sheet */}
+      {isForgotPinOpen && (
+        <ForgotPinSheet
+          onClose={() => setIsForgotPinOpen(false)}
+          onSuccess={() => {
+            setIsForgotPinOpen(false);
+            showToast(
+              "PIN reset successfully. Please enter your new PIN.",
+              "success",
+            );
+          }}
+          initialPhone={jobData.customer?.phone || jobData.shop?.phone}
         />
       )}
 

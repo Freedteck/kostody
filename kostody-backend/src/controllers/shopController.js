@@ -41,7 +41,12 @@ const getShopProfile = async (req, res) => {
       return res.status(404).json({ message: "Shop not found" });
     }
 
-    return res.status(200).json(shop);
+    const customer = await prisma.customer.findUnique({
+      where: { phone: shop.phone },
+      select: { id: true },
+    });
+
+    return res.status(200).json({ ...shop, customerId: customer?.id || null });
   } catch (error) {
     console.error("Error fetching shop profile:", error);
     return res.status(500).json({ message: "Server Error" });

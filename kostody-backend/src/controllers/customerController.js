@@ -1,4 +1,5 @@
 import { prisma } from "../config/db.js";
+import bcrypt from "bcryptjs";
 
 const createCustomer = async (req, res) => {
   try {
@@ -106,4 +107,100 @@ const getShopCustomers = async (req, res) => {
   }
 };
 
-export { createCustomer, checkCustomer, getShopCustomers };
+const changePin = async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    const { oldPin, newPin } = req.body;
+
+    const customer = await prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+    if (!customer)
+      return res.status(404).json({ message: "Customer not found" });
+    if (!customer.pinHash)
+      return res
+        .status(400)
+        .json({ message: "No PIN set. Please set up a PIN first." });
+
+    const isMatch = await bcrypt.compare(oldPin, customer.pinHash);
+    if (!isMatch) return res.status(401).json({ message: "Incorrect old PIN" });
+
+    const salt = await bcrypt.genSalt(10);
+    const pinHash = await bcrypt.hash(newPin, salt);
+
+    await prisma.customer.update({
+      where: { id: customerId },
+      data: { pinHash },
+    });
+
+    return res.status(200).json({ message: "PIN updated successfully" });
+  } catch (error) {
+    console.error("Error changing PIN:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const requestOtp = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const customer = await prisma.customer.findUnique({ where: { phone } });
+    if (!customer)
+      return res
+        .status(404)
+        .json({ message: "No account found with this phone number" });
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const otpExpiry = new Date();
+    otpExpiry.setMinutes(otpExpiry.getMinutes() + 10);
+
+    await prisma.customer.update({
+      where: { id: customer.id },
+      data: { otp, otpExpiry },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "OTP sent successfully", devOtp: otp });
+  } catch (error) {
+    console.error("Error requesting OTP:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const resetPin = async (req, res) => {
+  try {
+    const { phone, otp, newPin } = req.body;
+    const customer = await prisma.customer.findUnique({ where: { phone } });
+
+    if (!customer)
+      return res.status(404).json({ message: "Customer not found" });
+    if (!customer.otp || !customer.otpExpiry)
+      return res.status(400).json({ message: "Please request an OTP first" });
+    if (customer.otp !== otp)
+      return res.status(401).json({ message: "Invalid OTP" });
+    if (new Date(customer.otpExpiry) < new Date())
+      return res.status(401).json({ message: "OTP expired" });
+
+    const salt = await bcrypt.genSalt(10);
+    const pinHash = await bcrypt.hash(newPin, salt);
+
+    await prisma.customer.update({
+      where: { id: customer.id },
+      data: { pinHash, otp: null, otpExpiry: null },
+    });
+
+    return res.status(200).json({ message: "PIN reset successfully" });
+  } catch (error) {
+    console.error("Error resetting PIN:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export {
+  createCustomer,
+  checkCustomer,
+  getShopCustomers,
+  changePin,
+  requestOtp,
+  resetPin,
+};

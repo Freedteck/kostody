@@ -283,12 +283,28 @@ const updateJob = async (jobId, jobData) => {
   return response.json();
 };
 
-const getJobHistory = async (shopId, search = "") => {
-  const response = await fetch(
-    `${API_URL}/jobs/history/${shopId}?search=${search}`,
-  );
-  if (!response.ok) throw new Error("Failed to fetch history");
-  return response.json();
+const getJobHistory = async (shopId, search = "", status = "Completed") => {
+  try {
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+    if (status) params.append("status", status);
+
+    const url = `${API_URL}/jobs/history/${shopId}${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
 };
 
 const getShopCustomers = async (shopId, search = "") => {
@@ -362,6 +378,7 @@ const getShopNotifications = async (shopId) => {
     throw error;
   }
 };
+
 const acceptTransfer = async (jobId, enteredPin) => {
   try {
     const response = await fetch(`${API_URL}/jobs/${jobId}/accept-transfer`, {
@@ -383,7 +400,7 @@ const acceptTransfer = async (jobId, enteredPin) => {
 const checkReferralJob = async (referralId) => {
   try {
     const response = await fetch(
-      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(referralId)}`
+      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(referralId)}`,
     );
     if (!response.ok) {
       const message = await response.json();
@@ -400,7 +417,7 @@ const checkReferralJob = async (referralId) => {
 const searchJobs = async (query) => {
   try {
     const response = await fetch(
-      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(query)}`
+      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(query)}`,
     );
     if (!response.ok) {
       const message = await response.json();
@@ -413,6 +430,119 @@ const searchJobs = async (query) => {
     throw error;
   }
 };
+
+const uploadPhotos = async (jobId, files) => {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("photos", file);
+    });
+
+    const response = await fetch(`${API_URL}/jobs/${jobId}/photos`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const cancelJob = async (jobId, enteredPin = null) => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enteredPin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const changePin = async (customerId, oldPin, newPin) => {
+  try {
+    const response = await fetch(`${API_URL}/customers/${customerId}/pin`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oldPin, newPin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const requestOtp = async (phone) => {
+  try {
+    const response = await fetch(`${API_URL}/customers/request-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const resetPin = async (phone, otp, newPin) => {
+  try {
+    const response = await fetch(`${API_URL}/customers/reset-pin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, otp, newPin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const getShopStats = async (shopId, period = "month") => {
+  try {
+    const response = await fetch(
+      `${API_URL}/analytics/${shopId}?period=${period}`,
+    );
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
 export {
   lockJob,
   createPendingJob,
@@ -435,4 +565,10 @@ export {
   acceptTransfer,
   checkReferralJob,
   searchJobs,
+  uploadPhotos,
+  cancelJob,
+  changePin,
+  requestOtp,
+  resetPin,
+  getShopStats,
 };

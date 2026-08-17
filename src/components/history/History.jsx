@@ -14,6 +14,7 @@ const History = () => {
   const { showToast } = useToast();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("jobs");
+  const [jobFilter, setJobFilter] = useState("Completed");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +27,7 @@ const History = () => {
       setError(null);
       const response =
         activeTab === "jobs"
-          ? getJobHistory(shopId, search)
+          ? getJobHistory(shopId, search, jobFilter)
           : getShopCustomers(shopId, search);
 
       await response
@@ -43,7 +44,7 @@ const History = () => {
 
     const delayDebounceFn = setTimeout(fetchData, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [activeTab, search, shopId, showToast]);
+  }, [activeTab, search, shopId, showToast, jobFilter]);
 
   return (
     <div className={styles.historyContainer}>
@@ -77,6 +78,23 @@ const History = () => {
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {activeTab === "jobs" && (
+        <div className={styles.filterTabs}>
+          <button
+            className={`${styles.tabBtn} ${jobFilter === "Completed" ? styles.tabActive : ""}`}
+            onClick={() => setJobFilter("Completed")}
+          >
+            Completed
+          </button>
+          <button
+            className={`${styles.tabBtn} ${jobFilter === "Cancelled" ? styles.tabActive : ""}`}
+            onClick={() => setJobFilter("Cancelled")}
+          >
+            Cancelled
+          </button>
+        </div>
+      )}
+
       <div className={styles.listContainer}>
         {isLoading ? (
           [1, 2, 3].map((i) => (
@@ -88,7 +106,7 @@ const History = () => {
           jobs.length === 0 ? (
             <EmptyState
               title="No History Yet"
-              message="Completed and archived jobs will appear here."
+              message={`No ${jobFilter.toLowerCase()} jobs found.`}
             />
           ) : (
             jobs.map((job) => (
@@ -99,12 +117,21 @@ const History = () => {
               >
                 <div className={styles.jobHeader}>
                   <h2 className={styles.deviceName}>{job.deviceModel}</h2>
-                  <span className={styles.jobIdPill}>#{job.id}</span>
+                  <span
+                    className={`${styles.statusBadge} ${
+                      job.status === "Completed"
+                        ? styles.statusCompleted
+                        : styles.statusCancelled
+                    }`}
+                  >
+                    {job.status}
+                  </span>
                 </div>
                 <p className={styles.customerName}>{job.customer?.name}</p>
                 <p className={styles.jobFault}>{job.faultDescription}</p>
                 <p className={styles.dateText}>
-                  Completed: {new Date(job.updatedAt).toLocaleDateString()}
+                  {job.status === "Completed" ? "Completed" : "Cancelled"}:{" "}
+                  {new Date(job.updatedAt).toLocaleDateString()}
                 </p>
               </Link>
             ))

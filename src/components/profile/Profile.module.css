@@ -47,40 +47,72 @@
   font-size: 0.9rem;
 }
 
-/* Financial Banner */
-.financialBanner {
+/* Stats Section */
+.statsSection {
+  margin-bottom: 40px;
+}
+
+.periodFilter {
+  display: flex;
+  background-color: var(--surface);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 16px;
+  gap: 4px;
+}
+
+.periodBtn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.periodActive {
+  background-color: var(--bg-primary);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.statsBanner {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: var(--surface);
   border-radius: 12px;
   padding: 20px 15px;
-  margin-bottom: 40px;
 }
 
-.finStat {
+.statBox {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
-.finValue {
+.statValue {
   font-family: var(--mono);
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: var(--accent);
 }
-.finLabel {
+.statLabel {
   font-size: 0.7rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   margin-top: 4px;
   letter-spacing: 0.5px;
 }
-.finDivider {
+.statDivider {
   width: 1px;
-  height: 30px;
+  height: 40px;
   background-color: #3a3f44;
 }
 

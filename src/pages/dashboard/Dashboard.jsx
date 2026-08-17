@@ -47,7 +47,7 @@ const Dashboard = () => {
         });
     };
 
-    const delayDebounceFn = setTimeout(fetchJobs, 300); // Debounce search
+    const delayDebounceFn = setTimeout(fetchJobs, 300);
     return () => clearTimeout(delayDebounceFn);
   }, [activeFilter, searchQuery, showToast, shopId]);
 
@@ -194,6 +194,13 @@ const Dashboard = () => {
               </p>
               <p className={styles.jobFault}>Fault: {job.faultDescription}</p>
               <div className={styles.jobDetails}>
+                <span className={styles.dateText}>
+                  {new Date(job.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
                 <span
                   className={`${styles.statusBadge} ${getStatusClass(job.status)}`}
                 >

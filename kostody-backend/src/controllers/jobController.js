@@ -280,6 +280,80 @@ const checkReferralJob = async (req, res) => {
   }
 };
 
+const cancelJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { enteredPin } = req.body;
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: { customer: true },
+    });
+
+    if (!job) {
+      throw new Error("JOB_NOT_FOUND");
+    }
+
+    if (job.status === "Completed") {
+      throw new Error("ALREADY_COMPLETED");
+    }
+
+    if (job.status === "Cancelled") {
+      throw new Error("ALREADY_CANCELLED");
+    }
+
+    if (job.customerConfirmed) {
+      if (!enteredPin) {
+        throw new Error("PIN_REQUIRED");
+      }
+      const isMatch = await bcrypt.compare(enteredPin, job.customer.pinHash);
+      if (!isMatch) {
+        throw new Error("INVALID_PIN");
+      }
+    }
+
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      const updated = await tx.job.update({
+        where: { id: jobId },
+        data: { status: "Cancelled" },
+      });
+
+      await tx.jobEvent.create({
+        data: {
+          jobId: jobId,
+          eventText: job.customerConfirmed
+            ? "Job Cancelled. Customer PIN verified."
+            : "Job Cancelled by Engineer (Pre-confirmation).",
+        },
+      });
+
+      return updated;
+    });
+
+    return res.status(200).json(updatedJob);
+  } catch (error) {
+    if (error.message === "JOB_NOT_FOUND")
+      return res.status(404).json({ message: "Job not found" });
+    if (error.message === "ALREADY_COMPLETED")
+      return res
+        .status(400)
+        .json({ message: "Completed jobs cannot be cancelled" });
+    if (error.message === "ALREADY_CANCELLED")
+      return res.status(400).json({ message: "Job is already cancelled" });
+    if (error.message === "PIN_REQUIRED")
+      return res
+        .status(400)
+        .json({ message: "Customer PIN is required to cancel this job" });
+    if (error.message === "INVALID_PIN")
+      return res.status(401).json({ message: "Invalid PIN" });
+
+    console.error("Error cancelling job:", error);
+    return res
+      .status(500)
+      .json({ message: "Server Error: Could not cancel job" });
+  }
+};
+
 const getJobsByShop = async (req, res) => {
   try {
     const { shopId } = req.params;
@@ -292,7 +366,7 @@ const getJobsByShop = async (req, res) => {
     const statusFilter =
       filter && filter !== "undefined" && filter !== ""
         ? filter
-        : { not: "Completed" };
+        : { notIn: ["Completed", "Cancelled"] };
 
     const whereCondition = {
       shopId: shopId,
@@ -305,6 +379,7 @@ const getJobsByShop = async (req, res) => {
         { deviceModel: { contains: searchTerm, mode: "insensitive" } },
         { id: { contains: searchTerm, mode: "insensitive" } },
         { customer: { name: { contains: searchTerm, mode: "insensitive" } } },
+        { customer: { phone: { contains: searchTerm, mode: "insensitive" } } },
       ];
     }
 
@@ -338,10 +413,20 @@ const getJobById = async (req, res) => {
           },
           shop: true,
           payments: true,
+          photos: true,
         },
       });
 
-      res.status(200).json(job);
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+
+      const childJob = await prisma.job.findFirst({
+        where: { parentJobId: jobId },
+        select: { id: true, shopId: true, status: true },
+      });
+
+      res.status(200).json({ ...job, childJob });
     } else {
       return res.status(404).json({ message: "Job not found" });
     }
@@ -456,15 +541,36 @@ const acceptTransfer = async (req, res) => {
 
     const shop = job.shop;
 
-    if (!shop.pinHash) {
+    let engineerCustomer = await prisma.customer.findUnique({
+      where: { phone: shop.phone },
+    });
+
+    if (!engineerCustomer) {
+      if (!enteredPin) {
+        return res
+          .status(400)
+          .json({ message: "Please set up your Shop PIN first" });
+      }
       const salt = await bcrypt.genSalt(10);
       const pinHash = await bcrypt.hash(enteredPin, salt);
-      await prisma.shop.update({
-        where: { id: shop.id },
-        data: { pinHash },
+
+      engineerCustomer = await prisma.customer.create({
+        data: {
+          phone: shop.phone,
+          name: shop.shopName,
+          pinHash,
+        },
       });
     } else {
-      const isMatch = await bcrypt.compare(enteredPin, shop.pinHash);
+      if (!engineerCustomer.pinHash) {
+        return res
+          .status(400)
+          .json({ message: "Please set up your PIN first" });
+      }
+      const isMatch = await bcrypt.compare(
+        enteredPin,
+        engineerCustomer.pinHash,
+      );
       if (!isMatch) {
         return res.status(401).json({ message: "Invalid PIN" });
       }
@@ -705,11 +811,11 @@ const updateJob = async (req, res) => {
 const getJobHistory = async (req, res) => {
   try {
     const { shopId } = req.params;
-    const { search } = req.query;
+    const { search, status } = req.query;
 
     const whereCondition = {
       shopId: shopId,
-      status: "Completed",
+      status: status || "Completed",
     };
 
     if (search && search.trim() !== "") {
@@ -718,6 +824,7 @@ const getJobHistory = async (req, res) => {
         { deviceModel: { contains: searchTerm, mode: "insensitive" } },
         { id: { contains: searchTerm, mode: "insensitive" } },
         { customer: { name: { contains: searchTerm, mode: "insensitive" } } },
+        { customer: { phone: { contains: searchTerm, mode: "insensitive" } } },
       ];
     }
 
@@ -740,6 +847,7 @@ export {
   lockJob,
   createPendingJob,
   checkReferralJob,
+  cancelJob,
   getJobsByShop,
   getJobById,
   updateJobStatus,

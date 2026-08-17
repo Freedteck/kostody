@@ -1,23 +1,65 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./EditProfile.module.css";
-import BottomSheet from "../bottomSheet/BottomSheet";
+import { updateShopProfile } from "../../services/api";
+import useShop from "../../hooks/useShop";
+import useToast from "../../hooks/useToast";
 
-const EditProfile = ({ onClose, onSave, currentData, isSaving }) => {
-  const [formData, setFormData] = useState(currentData);
+const EditProfile = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { shopId } = useShop();
+  const { showToast } = useToast();
+
+  const initialData = location.state?.currentData;
+  const [formData, setFormData] = useState(initialData || {});
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+
+    await updateShopProfile(shopId, formData)
+      .then(() => {
+        showToast("Profile updated successfully.", "success");
+        navigate("/app/profile");
+      })
+      .catch((error) => {
+        showToast(error.message || "Failed to update profile.", "error");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
+  if (!initialData) {
+    navigate("/app/profile");
+    return null;
+  }
+
   return (
-    <BottomSheet onClose={onClose} title="Edit Shop Profile">
-      <form className={styles.form} onSubmit={handleSubmit}>
+    <div className={styles.formContainer}>
+      <div className={styles.formHeader}>
+        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <h1>Edit Profile</h1>
+      </div>
+
+      <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="shopName">
             Shop / Business Name
@@ -132,7 +174,7 @@ const EditProfile = ({ onClose, onSave, currentData, isSaving }) => {
           )}
         </button>
       </form>
-    </BottomSheet>
+    </div>
   );
 };
 

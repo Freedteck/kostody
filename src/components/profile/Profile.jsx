@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
-import EditProfile from "../editProfile/EditProfile";
 import ErrorState from "../errorState/ErrorState";
 import useShop from "../../hooks/useShop";
-import {
-  getShopAnalytics,
-  getShopProfile,
-  updateShopProfile,
-} from "../../services/api";
+import { getShopProfile, getShopStats } from "../../services/api";
 import { Skeleton } from "../skeleton/Skeleton";
+import ChangePinSheet from "../changePin/ChangePin";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { shopId } = useShop();
   const [profileData, setProfileData] = useState(null);
-  const [analytics, setAnalytics] = useState(null);
+  const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPinOpen, setIsPinOpen] = useState(false);
+  const [period, setPeriod] = useState("month");
 
   useEffect(() => {
     if (!shopId) return;
@@ -39,39 +35,29 @@ const Profile = () => {
         });
     };
 
-    const fetchAnalytics = async () => {
-      await getShopAnalytics(shopId)
+    fetchProfileData();
+  }, [shopId]);
+
+  useEffect(() => {
+    if (!shopId) return;
+
+    const fetchStats = async () => {
+      await getShopStats(shopId, period)
         .then((data) => {
-          setAnalytics(data);
+          setStats(data);
         })
         .catch(() => {
-          console.error("Failed to fetch analytics");
+          console.error("Failed to fetch stats");
         });
     };
 
-    fetchProfileData();
-    fetchAnalytics();
-  }, [shopId]);
+    fetchStats();
+  }, [shopId, period]);
 
   const handleLogout = () => {
     localStorage.removeItem("kostody_token");
     localStorage.removeItem("kostody_shop");
     navigate("/login");
-  };
-
-  const handleSave = (newData) => {
-    setIsSaving(true);
-    updateShopProfile(shopId, newData)
-      .then((updatedShop) => {
-        setProfileData(updatedShop);
-        setIsEditOpen(false);
-      })
-      .catch(() => {
-        console.error("Failed to update profile");
-      })
-      .finally(() => {
-        setIsSaving(false);
-      });
   };
 
   const getInitials = (name) => {
@@ -141,33 +127,54 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className={styles.financialBanner}>
-        {analytics ? (
-          <>
-            <div className={styles.finStat}>
-              <span className={styles.finValue}>
-                ₦{analytics.totalRevenue.toLocaleString()}
-              </span>
-              <span className={styles.finLabel}>Revenue</span>
-            </div>
-            <div className={styles.finDivider}></div>
-            <div className={styles.finStat}>
-              <span className={styles.finValue} style={{ color: "#ff4d4d" }}>
-                ₦{analytics.outstandingDebts.toLocaleString()}
-              </span>
-              <span className={styles.finLabel}>Debts</span>
-            </div>
-            <div className={styles.finDivider}></div>
-            <div className={styles.finStat}>
-              <span className={styles.finValue} style={{ color: "#2ecc71" }}>
-                ₦{analytics.cashInHand.toLocaleString()}
-              </span>
-              <span className={styles.finLabel}>Cash</span>
-            </div>
-          </>
-        ) : (
-          <Skeleton width="100%" height="40px" radius="8px" />
-        )}
+      <div className={styles.statsSection}>
+        <div className={styles.periodFilter}>
+          <button
+            className={`${styles.periodBtn} ${period === "week" ? styles.periodActive : ""}`}
+            onClick={() => setPeriod("week")}
+          >
+            Week
+          </button>
+          <button
+            className={`${styles.periodBtn} ${period === "month" ? styles.periodActive : ""}`}
+            onClick={() => setPeriod("month")}
+          >
+            Month
+          </button>
+          <button
+            className={`${styles.periodBtn} ${period === "year" ? styles.periodActive : ""}`}
+            onClick={() => setPeriod("year")}
+          >
+            Year
+          </button>
+        </div>
+
+        <div className={styles.statsBanner}>
+          {stats ? (
+            <>
+              <div className={styles.statBox}>
+                <span className={styles.statValue}>{stats.active}</span>
+                <span className={styles.statLabel}>Active</span>
+              </div>
+              <div className={styles.statDivider}></div>
+              <div className={styles.statBox}>
+                <span className={styles.statValue} style={{ color: "#2ecc71" }}>
+                  {stats.completed}
+                </span>
+                <span className={styles.statLabel}>Completed</span>
+              </div>
+              <div className={styles.statDivider}></div>
+              <div className={styles.statBox}>
+                <span className={styles.statValue} style={{ color: "#ff4d4d" }}>
+                  {stats.cancelled}
+                </span>
+                <span className={styles.statLabel}>Cancelled</span>
+              </div>
+            </>
+          ) : (
+            <Skeleton width="100%" height="40px" radius="8px" />
+          )}
+        </div>
       </div>
 
       <div className={styles.settingsGroup}>
@@ -245,7 +252,14 @@ const Profile = () => {
       <div className={styles.settingsGroup}>
         <h3 className={styles.groupTitle}>Settings</h3>
         <div className={styles.listContainer}>
-          <div className={styles.listItem} onClick={() => setIsEditOpen(true)}>
+          <div
+            className={styles.listItem}
+            onClick={() =>
+              navigate("/app/profile/edit", {
+                state: { currentData: profileData },
+              })
+            }
+          >
             <div className={styles.itemLeft}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path
@@ -263,17 +277,41 @@ const Profile = () => {
         </div>
       </div>
 
+      <div className={styles.settingsGroup}>
+        <h3 className={styles.groupTitle}>Security</h3>
+        <div className={styles.listContainer}>
+          <div className={styles.listItem} onClick={() => setIsPinOpen(true)}>
+            <div className={styles.itemLeft}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M16 8C16 10.2091 14.2091 12 12 12C9.79086 12 8 10.2091 8 8C8 5.79086 9.79086 4 12 4C14.2091 4 16 5.79086 16 8Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span>Change Transfer PIN</span>
+            </div>
+            {chevron}
+          </div>
+        </div>
+      </div>
+
       <button className={styles.logoutBtn} onClick={handleLogout}>
         Log Out
       </button>
       <p className={styles.versionText}>Kostody Engineer App v1.0.0</p>
 
-      {isEditOpen && (
-        <EditProfile
-          onClose={() => setIsEditOpen(false)}
-          onSave={handleSave}
-          currentData={profileData}
-          isSaving={isSaving}
+      {isPinOpen && (
+        <ChangePinSheet
+          onClose={() => setIsPinOpen(false)}
+          customerId={profileData.customerId}
+          onSuccess={() => setIsPinOpen(false)}
         />
       )}
     </div>

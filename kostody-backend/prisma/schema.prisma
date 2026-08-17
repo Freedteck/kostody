@@ -15,7 +15,6 @@ model Shop {
   phone        String   @unique 
   email        String   @unique
   passwordHash String
-  pinHash      String?
   specialty    String
   address      String
   createdAt    DateTime @default(now())
@@ -31,6 +30,8 @@ model Customer {
   name      String
   pinHash   String   
   createdAt DateTime @default(now())
+  otp       String? 
+  otpExpiry DateTime?
   
   // Relations
   jobs      Job[]
