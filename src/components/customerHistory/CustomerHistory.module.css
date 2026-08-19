@@ -91,6 +91,10 @@
   font-weight: bold;
   text-transform: uppercase;
 }
+.statusCancelled {
+  background-color: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+}
 .cardMeta {
   display: flex;
   align-items: center;

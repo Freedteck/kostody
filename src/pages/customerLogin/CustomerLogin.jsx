@@ -1,38 +1,60 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CustomerLogin.module.css";
+import {
+  checkCustomer,
+  loginCustomer,
+  createCustomer,
+} from "../../services/api";
+import useToast from "../../hooks/useToast";
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [stage, setStage] = useState("phone");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [pin, setPin] = useState(["", "", "", ""]);
   const [tempPin, setTempPin] = useState("");
   const [existingUserName, setExistingUserName] = useState("");
+  // const [customerId, setCustomerId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Refs for focus management
   const inputRefs = useRef([]);
 
-  // Force focus to the first PIN box whenever the stage changes to a PIN entry phase
   useEffect(() => {
     if (
       stage === "createPin" ||
       stage === "confirmPin" ||
       stage === "enterPin"
     ) {
-      inputRefs.current[0]?.focus();
+      const timer = setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [stage]);
 
   const handlePhoneSubmit = (e) => {
     e.preventDefault();
-    if (phone === "08012345678") {
-      setExistingUserName("Chidi O.");
-      setStage("enterPin");
-    } else {
-      setStage("name");
-    }
+    setIsLoading(true);
+
+    checkCustomer(phone)
+      .then((res) => {
+        if (res.exists) {
+          setExistingUserName(res.name);
+          // setCustomerId(res.customerId);
+          setStage("enterPin");
+        } else {
+          setStage("name");
+        }
+      })
+      .catch((err) => {
+        showToast(err.message || "Failed to check account", "error");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleNameSubmit = (e) => {
@@ -41,6 +63,7 @@ const CustomerLogin = () => {
   };
 
   const handlePinChange = (e, index) => {
+    if (isLoading) return;
     const value = e.target.value;
     if (!/^\d?$/.test(value)) return;
 
@@ -48,32 +71,70 @@ const CustomerLogin = () => {
     newPin[index] = value;
     setPin(newPin);
 
-    // Use ref instead of getElementById
     if (value && index < 3) {
       inputRefs.current[index + 1]?.focus();
     }
 
     if (index === 3 && value) {
       const fullPin = newPin.join("");
+
       if (stage === "createPin") {
         setTempPin(fullPin);
         setPin(["", "", "", ""]);
         setStage("confirmPin");
       } else if (stage === "confirmPin") {
-        if (fullPin === tempPin) navigate("/c/dashboard");
-        else {
-          alert("PINs do not match. Please try again.");
+        if (fullPin === tempPin) {
+          submitRegistration(fullPin);
+        } else {
+          showToast("PINs do not match", "error");
           setPin(["", "", "", ""]);
           setTempPin("");
           setStage("createPin");
         }
       } else if (stage === "enterPin") {
-        navigate("/c/dashboard");
+        submitLogin(fullPin);
       }
     }
   };
 
+  const submitLogin = (finalPin) => {
+    setIsLoading(true);
+    loginCustomer(phone, finalPin)
+      .then((data) => {
+        localStorage.setItem("kostody_token", data.token);
+        localStorage.setItem("kostody_customer", JSON.stringify(data.data));
+        navigate("/c/dashboard");
+      })
+      .catch((err) => {
+        showToast(err.message || "Invalid PIN", "error");
+        setPin(["", "", "", ""]);
+        inputRefs.current[0]?.focus();
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const submitRegistration = (finalPin) => {
+    setIsLoading(true);
+    createCustomer(phone, name, finalPin)
+      .then((data) => {
+        localStorage.setItem("kostody_token", data.token);
+        localStorage.setItem("kostody_customer", JSON.stringify(data.data));
+        navigate("/c/dashboard");
+      })
+      .catch((err) => {
+        showToast(err.message || "Failed to create account", "error");
+        setPin(["", "", "", ""]);
+        setStage("phone");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   const renderHeader = () => {
+    if (isLoading) return "Processing...";
     if (stage === "phone") return "Welcome to Kostody";
     if (stage === "name") return "Create Account";
     if (stage === "createPin") return "Create 4-digit PIN";
@@ -114,9 +175,14 @@ const CustomerLogin = () => {
               onChange={(e) => setPhone(e.target.value)}
               autoFocus
               required
+              disabled={isLoading}
             />
-            <button type="submit" className={styles.submitBtn}>
-              Continue
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isLoading}
+            >
+              {isLoading ? "Checking..." : "Continue"}
             </button>
           </form>
         )}
@@ -131,8 +197,13 @@ const CustomerLogin = () => {
               onChange={(e) => setName(e.target.value)}
               autoFocus
               required
+              disabled={isLoading}
             />
-            <button type="submit" className={styles.submitBtn}>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isLoading}
+            >
               Continue
             </button>
           </form>
@@ -152,7 +223,8 @@ const CustomerLogin = () => {
                   className={styles.pinInput}
                   value={digit}
                   onChange={(e) => handlePinChange(e, index)}
-                  ref={(el) => (inputRefs.current[index] = el)} // Attach ref here
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  disabled={isLoading}
                 />
               ))}
             </div>

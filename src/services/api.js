@@ -543,6 +543,78 @@ const getShopStats = async (shopId, period = "month") => {
   }
 };
 
+const loginCustomer = async (phone, pin) => {
+  try {
+    const response = await fetch(`${API_URL}/auth/customers/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, pin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const getCustomerJobs = async (customerId, search = "") => {
+  try {
+    const params = new URLSearchParams();
+    if (search) params.append("search", search);
+
+    const url = `${API_URL}/customers/${customerId}/jobs${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Failed to fetch jobs");
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const confirmJob = async (jobId, enteredPin) => {
+  try {
+    const response = await fetch(`${API_URL}/jobs/${jobId}/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enteredPin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const createCustomer = async (phone, name, pin) => {
+  try {
+    const response = await fetch(`${API_URL}/customers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, name, pin }),
+    });
+    if (!response.ok) {
+      const message = await response.json();
+      throw new Error(message.message);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
 export {
   lockJob,
   createPendingJob,
@@ -571,4 +643,8 @@ export {
   requestOtp,
   resetPin,
   getShopStats,
+  loginCustomer,
+  getCustomerJobs,
+  confirmJob,
+  createCustomer,
 };

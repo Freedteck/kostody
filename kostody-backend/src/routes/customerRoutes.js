@@ -3,6 +3,7 @@ import {
   changePin,
   checkCustomer,
   createCustomer,
+  getCustomerJobs,
   getShopCustomers,
   requestOtp,
   resetPin,
@@ -16,3 +17,5 @@ customerRoutes.route("/:shopId").get(getShopCustomers);
 customerRoutes.route("/:customerId/pin").put(changePin);
 customerRoutes.route("/request-otp").post(requestOtp);
 customerRoutes.route("/reset-pin").post(resetPin);
+
+customerRoutes.route("/:customerId/jobs").get(getCustomerJobs);

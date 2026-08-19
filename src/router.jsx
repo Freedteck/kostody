@@ -36,10 +36,6 @@ export const router = createBrowserRouter([
     Component: CustomerLogin,
   },
   {
-    path: "/c/:jobId",
-    Component: CustomerJobPage,
-  },
-  {
     path: "/app",
     element: <AuthGuard requiredRole="ENGINEER" />,
     children: [
@@ -96,6 +92,10 @@ export const router = createBrowserRouter([
           {
             path: "profile",
             Component: CustomerProfilePage,
+          },
+          {
+            path: "/c/:jobId",
+            Component: CustomerJobPage,
           },
         ],
       },

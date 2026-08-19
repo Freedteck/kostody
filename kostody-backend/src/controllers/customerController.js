@@ -1,28 +1,33 @@
 import { prisma } from "../config/db.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const createCustomer = async (req, res) => {
   try {
-    const { phone, name } = req.body;
+    const { phone, name, pin } = req.body;
 
-    let customer = await prisma.customer.findUnique({
-      where: { phone },
-    });
-
-    if (!customer) {
-      customer = await prisma.customer.create({
-        data: {
-          phone,
-          name,
-          pinHash: "temp-pin-1234",
-        },
-      });
+    let customer = await prisma.customer.findUnique({ where: { phone } });
+    if (customer) {
+      return res.status(400).json({ message: "Customer already exists" });
     }
 
-    res.status(200).json(customer);
+    const salt = await bcrypt.genSalt(10);
+    const pinHash = await bcrypt.hash(pin, salt);
+
+    customer = await prisma.customer.create({
+      data: { phone, name, pinHash },
+    });
+
+    const token = jwt.sign(
+      { id: customer.id, role: "CUSTOMER" },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" },
+    );
+
+    return res.status(201).json({ token, data: customer });
   } catch (error) {
     console.error("Error creating customer:", error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -196,6 +201,74 @@ const resetPin = async (req, res) => {
   }
 };
 
+const loginCustomer = async (req, res) => {
+  try {
+    const { phone, pin } = req.body;
+    const customer = await prisma.customer.findUnique({ where: { phone } });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+
+    if (!customer.pinHash) {
+      return res.status(400).json({ message: "Please set up your PIN first" });
+    }
+
+    const isMatch = await bcrypt.compare(pin, customer.pinHash);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid PIN" });
+    }
+
+    const token = jwt.sign(
+      { id: customer.id, role: "CUSTOMER" },
+      process.env.JWT_SECRET,
+      { expiresIn: "30d" },
+    );
+
+    return res.status(200).json({ token, data: customer });
+  } catch (error) {
+    console.error("Error logging in customer:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const getCustomerJobs = async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    const { search } = req.query;
+
+    const whereCondition = {
+      customerId: customerId,
+    };
+
+    if (search && search.trim() !== "") {
+      const searchTerm = search.trim();
+      whereCondition.OR = [
+        { deviceModel: { contains: searchTerm, mode: "insensitive" } },
+        { id: { contains: searchTerm, mode: "insensitive" } },
+        { shop: { shopName: { contains: searchTerm, mode: "insensitive" } } },
+      ];
+    }
+
+    const jobs = await prisma.job.findMany({
+      where: whereCondition,
+      include: {
+        shop: {
+          select: { shopName: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.status(200).json(jobs);
+  } catch (error) {
+    console.error("Error fetching customer jobs:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
 export {
   createCustomer,
   checkCustomer,
@@ -203,4 +276,6 @@ export {
   changePin,
   requestOtp,
   resetPin,
+  loginCustomer,
+  getCustomerJobs,
 };

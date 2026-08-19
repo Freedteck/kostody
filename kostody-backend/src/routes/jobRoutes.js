@@ -13,6 +13,7 @@ import {
   acceptTransfer,
   checkReferralJob,
   cancelJob,
+  confirmJob,
 } from "../controllers/jobController.js";
 import { upload, uploadJobPhotos } from "../controllers/photoController.js";
 
@@ -32,6 +33,7 @@ router.route("/:jobId/collect").post(processCollection);
 router.route("/:jobId/accept-transfer").post(acceptTransfer);
 router.route("/:jobId/requote").post(requoteJob);
 router.route("/:jobId/cancel").post(cancelJob);
+router.route("/:jobId/confirm").post(confirmJob);
 router
   .route("/:jobId/photos")
   .post(upload.array("photos", 10), uploadJobPhotos);

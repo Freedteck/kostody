@@ -9,16 +9,40 @@
   display: flex;
   flex-direction: column;
 }
+
 .summaryHeader {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 15px;
   margin-bottom: 24px;
 }
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 5px;
+  margin-left: -5px;
+  transition: opacity 0.1s;
+}
+
+.backBtn:active {
+  opacity: 0.5;
+}
+
+.headerInfo {
+  flex: 1;
+}
+
 .summaryHeader h1 {
   font-size: 1.4rem;
   margin: 0;
   color: var(--text-primary);
   font-weight: 700;
+  text-align: left;
 }
+
 .shopName {
   font-size: 0.9rem;
   color: var(--accent);
@@ -26,6 +50,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
+  text-align: left;
 }
 .receiptPaper {
   flex: 1;
@@ -159,33 +184,61 @@
   opacity: 0.9;
 }
 
-.statusBanner {
+.statusCard {
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  text-align: center;
   background-color: var(--surface);
-  color: var(--text-secondary);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: inline-block;
-  margin-top: 15px;
 }
-.blue {
+
+.statusText {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.statusDefault {
+  background-color: var(--surface);
+}
+.statusDefault .statusText {
+  color: var(--text-secondary);
+}
+
+.statusProgress {
   background-color: rgba(0, 180, 216, 0.15);
+}
+.statusProgress .statusText {
   color: #00b4d8;
 }
-.orange {
+
+.statusTransferred {
   background-color: var(--accent-bg);
+}
+.statusTransferred .statusText {
   color: var(--accent);
 }
-.green {
+
+.statusReady {
   background-color: rgba(46, 204, 113, 0.15);
+}
+.statusReady .statusText {
   color: #2ecc71;
 }
-.grey {
+
+.statusCompleted {
   background-color: var(--surface);
+}
+.statusCompleted .statusText {
   color: var(--text-secondary);
+}
+
+.statusCancelled {
+  background-color: rgba(255, 77, 77, 0.15);
+}
+.statusCancelled .statusText {
+  color: #ff4d4d;
 }
 
 .highlightSection {

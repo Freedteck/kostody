@@ -843,6 +843,68 @@ const getJobHistory = async (req, res) => {
   }
 };
 
+const confirmJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { enteredPin } = req.body;
+
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: { customer: true },
+    });
+
+    if (!job) {
+      throw new Error("JOB_NOT_FOUND");
+    }
+
+    if (job.customerConfirmed) {
+      throw new Error("ALREADY_CONFIRMED");
+    }
+
+    const customer = job.customer;
+    if (!customer || !customer.pinHash) {
+      throw new Error("CUSTOMER_NOT_FOUND");
+    }
+
+    const isMatch = await bcrypt.compare(enteredPin, customer.pinHash);
+    if (!isMatch) {
+      throw new Error("INVALID_PIN");
+    }
+
+    const updatedJob = await prisma.$transaction(async (tx) => {
+      const updated = await tx.job.update({
+        where: { id: jobId },
+        data: { status: "In Progress", customerConfirmed: true },
+      });
+
+      await tx.jobEvent.create({
+        data: {
+          jobId: jobId,
+          eventText: "Job Confirmed by Customer.",
+        },
+      });
+
+      return updated;
+    });
+
+    return res.status(200).json(updatedJob);
+  } catch (error) {
+    if (error.message === "JOB_NOT_FOUND")
+      return res.status(404).json({ message: "Job not found" });
+    if (error.message === "ALREADY_CONFIRMED")
+      return res.status(400).json({ message: "Job is already confirmed" });
+    if (error.message === "CUSTOMER_NOT_FOUND")
+      return res.status(404).json({ message: "Customer record not found" });
+    if (error.message === "INVALID_PIN")
+      return res.status(401).json({ message: "Invalid PIN" });
+
+    console.error("Error confirming job:", error);
+    return res
+      .status(500)
+      .json({ message: "Server Error: Could not confirm job" });
+  }
+};
+
 export {
   lockJob,
   createPendingJob,
@@ -857,4 +919,5 @@ export {
   requoteJob,
   updateJob,
   getJobHistory,
+  confirmJob,
 };
