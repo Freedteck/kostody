@@ -1,15 +1,24 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Splash.module.css";
+import mark from "../../assets/mark.png";
 
 const Splash = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Wait 2 seconds, then go to login
     const timer = setTimeout(() => {
-      navigate("/login");
-    }, 5000);
+      const shopData = localStorage.getItem("kostody_shop");
+      const customerData = localStorage.getItem("kostody_customer");
+
+      if (shopData) {
+        navigate("/app/dashboard");
+      } else if (customerData) {
+        navigate("/c/dashboard");
+      } else {
+        navigate("/login");
+      }
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -17,8 +26,7 @@ const Splash = () => {
   return (
     <div className={styles.splashContainer}>
       <div className={styles.logoWrapper}>
-        <h1 className={styles.logoText}>Kostody</h1>
-        <div className={styles.underline}></div>
+        <img src={mark} alt="Kostody" className={styles.logoMark} />
       </div>
       <p className={styles.tagline}>Device Repair Chain of Custody</p>
     </div>

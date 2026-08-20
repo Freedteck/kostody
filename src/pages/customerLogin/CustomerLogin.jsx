@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CustomerLogin.module.css";
+import mark from "../../assets/mark.png";
 import {
   checkCustomer,
   loginCustomer,
@@ -157,7 +158,7 @@ const CustomerLogin = () => {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.header}>
-        <h1 className={styles.logo}>Kostody</h1>
+        <img src={mark} alt="Kostody" className={styles.logo} />
         <p className={styles.subtitle}>Customer Portal</p>
       </div>
 

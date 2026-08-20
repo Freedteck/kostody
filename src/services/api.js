@@ -1,45 +1,74 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const lockJob = async (jobData, shopId, customerId, enteredPin) => {
+const TOKEN_KEY = "kostody_token";
+
+const apiFetch = async (path, opts = {}) => {
+  const { method = "GET", body, headers = {}, ...rest } = opts;
+
+  const token = localStorage.getItem(TOKEN_KEY);
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
+
+  const finalHeaders = { ...headers };
+  if (token) finalHeaders.Authorization = `Bearer ${token}`;
+
+  let finalBody = body;
+  if (body !== undefined && body !== null && !isFormData) {
+    finalHeaders["Content-Type"] = "application/json";
+    finalBody = typeof body === "string" ? body : JSON.stringify(body);
+  }
+
+  let response;
   try {
-    const response = await fetch(`${API_URL}/jobs/lock`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...jobData,
-        shopId,
-        customerId,
-        accessoriesRetained: jobData.accessoriesRetained
-          ? jobData.accessoriesRetained.split(",").map((item) => item.trim())
-          : [],
-        quotedPrice: Number(jobData.quotedPrice),
-        upfrontPayment: Number(jobData.upfrontPayment),
-        quoteValidityDays: Number(jobData.quoteValidity),
-        enteredPin,
-        referralId: jobData.referralId,
-      }),
+    response = await fetch(`${API_URL}${path}`, {
+      method,
+      headers: finalHeaders,
+      body: finalBody,
+      ...rest,
     });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
   } catch (error) {
+    console.error("API Error:", error);
+    throw new Error("Network error. Please check your connection.", {
+      cause: error,
+    });
+  }
+
+  if (!response.ok) {
+    let message = response.statusText || "Request failed";
+    const data = await response.json().catch(() => null);
+    if (data && data.message) message = data.message;
+    const error = new Error(message);
+    error.status = response.status;
     console.error("API Error:", error);
     throw error;
   }
+
+  if (response.status === 204) return null;
+  return response.json().catch(() => null);
 };
 
-const createPendingJob = async (jobData, shopId) => {
-  const response = await fetch(`${API_URL}/jobs/share`, {
+const lockJob = async (jobData, shopId, customerId, enteredPin) =>
+  apiFetch("/jobs/lock", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+    body: {
+      ...jobData,
+      shopId,
+      customerId,
+      accessoriesRetained: jobData.accessoriesRetained
+        ? jobData.accessoriesRetained.split(",").map((item) => item.trim())
+        : [],
+      quotedPrice: Number(jobData.quotedPrice),
+      upfrontPayment: Number(jobData.upfrontPayment),
+      quoteValidityDays: Number(jobData.quoteValidity),
+      enteredPin,
+      referralId: jobData.referralId,
+    },
+  });
+
+const createPendingJob = async (jobData, shopId) =>
+  apiFetch("/jobs/share", {
+    method: "POST",
+    body: {
       ...jobData,
       shopId,
       accessoriesRetained: jobData.accessoriesRetained
@@ -48,225 +77,84 @@ const createPendingJob = async (jobData, shopId) => {
       quotedPrice: Number(jobData.quotedPrice),
       upfrontPayment: Number(jobData.upfrontPayment),
       quoteValidityDays: Number(jobData.quoteValidity),
-    }),
+    },
   });
-  if (!response.ok) throw new Error("Failed to share job");
-  return response.json();
-};
 
-const checkCustomer = async (phone) => {
-  try {
-    const response = await fetch(`${API_URL}/customers/check`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        phone,
-      }),
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const checkCustomer = async (phone) =>
+  apiFetch("/customers/check", {
+    method: "POST",
+    body: { phone },
+  });
 
 const getJobsByShop = async (shopId, filter = "", search = "") => {
-  try {
-    const params = new URLSearchParams();
-    if (filter) params.append("filter", filter);
-    if (search) params.append("search", search);
-
-    const url = `${API_URL}/jobs/shop/${shopId}${
-      params.toString() ? `?${params.toString()}` : ""
-    }`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const params = new URLSearchParams();
+  if (filter) params.append("filter", filter);
+  if (search) params.append("search", search);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiFetch(`/jobs/shop/${shopId}${query}`);
 };
 
-const getJobsById = async (jobId) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}`);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getJobsById = async (jobId) => apiFetch(`/jobs/${jobId}`);
 
 const loginShop = async (authData) => {
   const { email, password } = authData;
-  try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  return apiFetch("/auth/login", {
+    method: "POST",
+    body: { email, password },
+  });
 };
 
 const registerShop = async (shopData, authData) => {
   const { shopName, engineerName, shopPhone, specialty, shopAddress } =
     shopData;
   const { email, password } = authData;
-  try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        shopName,
-        engineerName,
-        phone: shopPhone,
-        email,
-        password,
-        specialty,
-        address: shopAddress,
-      }),
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  return apiFetch("/auth/register", {
+    method: "POST",
+    body: {
+      shopName,
+      engineerName,
+      phone: shopPhone,
+      email,
+      password,
+      specialty,
+      address: shopAddress,
+    },
+  });
 };
 
-const updateJobStatus = async (jobId, newStatus) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
+const updateJobStatus = async (jobId, newStatus) =>
+  apiFetch(`/jobs/${jobId}/status`, {
+    method: "PUT",
+    body: { status: newStatus },
+  });
 
-    if (!response.ok) throw new Error("Failed to update status");
-
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
-
-const addPayment = async (jobId, amount, method = "Cash") => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/payments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: Number(amount), method }),
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const addPayment = async (jobId, amount, method = "Cash") =>
+  apiFetch(`/jobs/${jobId}/payments`, {
+    method: "POST",
+    body: { amount: Number(amount), method },
+  });
 
 const processPayment = async (
   jobId,
   enteredPin,
   finalPaymentAmount,
   method = "Cash",
-) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/collect`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        enteredPin,
-        finalPaymentAmount,
-        method,
-      }),
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
-
-const requoteJob = async (jobId, enteredPin, newPrice, validityDays) => {
-  const response = await fetch(`${API_URL}/jobs/${jobId}/requote`, {
+) =>
+  apiFetch(`/jobs/${jobId}/collect`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ enteredPin, newPrice, validityDays }),
+    body: { enteredPin, finalPaymentAmount, method },
   });
-  if (!response.ok) {
-    const message = await response.json();
-    throw new Error(message.message);
-  }
-  return response.json();
-};
 
-const updateJob = async (jobId, jobData) => {
-  const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+const requoteJob = async (jobId, enteredPin, newPrice, validityDays) =>
+  apiFetch(`/jobs/${jobId}/requote`, {
+    method: "POST",
+    body: { enteredPin, newPrice, validityDays },
+  });
+
+const updateJob = async (jobId, jobData) =>
+  apiFetch(`/jobs/${jobId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+    body: {
       ...jobData,
       accessoriesRetained: jobData.accessoriesRetained
         ? jobData.accessoriesRetained.split(",").map((item) => item.trim())
@@ -274,346 +162,115 @@ const updateJob = async (jobId, jobData) => {
       quotedPrice: Number(jobData.quotedPrice),
       upfrontPayment: Number(jobData.upfrontPayment),
       quoteValidityDays: Number(jobData.quoteValidity),
-    }),
+    },
   });
-  if (!response.ok) {
-    const message = await response.json();
-    throw new Error(message.message);
-  }
-  return response.json();
-};
 
 const getJobHistory = async (shopId, search = "", status = "Completed") => {
-  try {
-    const params = new URLSearchParams();
-    if (search) params.append("search", search);
-    if (status) params.append("status", status);
-
-    const url = `${API_URL}/jobs/history/${shopId}${
-      params.toString() ? `?${params.toString()}` : ""
-    }`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  if (status) params.append("status", status);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiFetch(`/jobs/history/${shopId}${query}`);
 };
 
-const getShopCustomers = async (shopId, search = "") => {
-  const response = await fetch(
-    `${API_URL}/customers/${shopId}?search=${search}`,
-  );
-  if (!response.ok) throw new Error("Failed to fetch customers");
-  return response.json();
-};
+const getShopCustomers = async (shopId, search = "") =>
+  apiFetch(`/customers/${shopId}?search=${encodeURIComponent(search)}`);
 
-const getShopProfile = async (shopId) => {
-  try {
-    const response = await fetch(`${API_URL}/shops/${shopId}`);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getShopProfile = async (shopId) => apiFetch(`/shops/${shopId}`);
 
-const updateShopProfile = async (shopId, profileData) => {
-  try {
-    const response = await fetch(`${API_URL}/shops/${shopId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profileData),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const updateShopProfile = async (shopId, profileData) =>
+  apiFetch(`/shops/${shopId}`, { method: "PUT", body: profileData });
 
-const getShopAnalytics = async (shopId) => {
-  try {
-    const response = await fetch(`${API_URL}/analytics/${shopId}`);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getShopAnalytics = async (shopId) => apiFetch(`/analytics/${shopId}`);
 
-const getShopNotifications = async (shopId) => {
-  try {
-    const response = await fetch(`${API_URL}/notifications/${shopId}`);
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getShopNotifications = async (shopId) =>
+  apiFetch(`/notifications/${shopId}`);
 
-const acceptTransfer = async (jobId, enteredPin) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/accept-transfer`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enteredPin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getCustomerNotifications = async (customerId) =>
+  apiFetch(`/notifications/customer/${customerId}`);
+
+const acceptTransfer = async (jobId, enteredPin) =>
+  apiFetch(`/jobs/${jobId}/accept-transfer`, {
+    method: "POST",
+    body: { enteredPin },
+  });
 
 const checkReferralJob = async (referralId) => {
-  try {
-    const response = await fetch(
-      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(referralId)}`,
-    );
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data.results[0] || null;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const data = await apiFetch(
+    `/jobs/check-referral?q=${encodeURIComponent(referralId)}`,
+  );
+  return data.results[0] || null;
 };
 
 const searchJobs = async (query) => {
-  try {
-    const response = await fetch(
-      `${API_URL}/jobs/check-referral?q=${encodeURIComponent(query)}`,
-    );
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data.results;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const data = await apiFetch(
+    `/jobs/check-referral?q=${encodeURIComponent(query)}`,
+  );
+  return data.results;
 };
 
 const uploadPhotos = async (jobId, files) => {
-  try {
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("photos", file);
-    });
-
-    const response = await fetch(`${API_URL}/jobs/${jobId}/photos`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append("photos", file);
+  });
+  return apiFetch(`/jobs/${jobId}/photos`, { method: "POST", body: formData });
 };
 
-const cancelJob = async (jobId, enteredPin = null) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/cancel`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enteredPin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const cancelJob = async (jobId, enteredPin = null) =>
+  apiFetch(`/jobs/${jobId}/cancel`, {
+    method: "POST",
+    body: { enteredPin },
+  });
 
-const changePin = async (customerId, oldPin, newPin) => {
-  try {
-    const response = await fetch(`${API_URL}/customers/${customerId}/pin`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ oldPin, newPin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const changePin = async (customerId, oldPin, newPin) =>
+  apiFetch(`/customers/${customerId}/pin`, {
+    method: "PUT",
+    body: { oldPin, newPin },
+  });
 
-const requestOtp = async (phone) => {
-  try {
-    const response = await fetch(`${API_URL}/customers/request-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const requestOtp = async (phone) =>
+  apiFetch("/customers/request-otp", {
+    method: "POST",
+    body: { phone },
+  });
 
-const resetPin = async (phone, otp, newPin) => {
-  try {
-    const response = await fetch(`${API_URL}/customers/reset-pin`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, otp, newPin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const resetPin = async (phone, otp, newPin) =>
+  apiFetch("/customers/reset-pin", {
+    method: "POST",
+    body: { phone, otp, newPin },
+  });
 
-const getShopStats = async (shopId, period = "month") => {
-  try {
-    const response = await fetch(
-      `${API_URL}/analytics/${shopId}?period=${period}`,
-    );
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const getShopStats = async (shopId, period = "month") =>
+  apiFetch(`/analytics/${shopId}?period=${encodeURIComponent(period)}`);
 
-const loginCustomer = async (phone, pin) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/customers/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, pin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const loginCustomer = async (phone, pin) =>
+  apiFetch("/auth/customers/login", {
+    method: "POST",
+    body: { phone, pin },
+  });
 
 const getCustomerJobs = async (customerId, search = "") => {
-  try {
-    const params = new URLSearchParams();
-    if (search) params.append("search", search);
-
-    const url = `${API_URL}/customers/${customerId}/jobs${
-      params.toString() ? `?${params.toString()}` : ""
-    }`;
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Failed to fetch jobs");
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
+  const params = new URLSearchParams();
+  if (search) params.append("search", search);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiFetch(`/customers/${customerId}/jobs${query}`);
 };
 
-const confirmJob = async (jobId, enteredPin) => {
-  try {
-    const response = await fetch(`${API_URL}/jobs/${jobId}/confirm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enteredPin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const confirmJob = async (jobId, enteredPin) =>
+  apiFetch(`/jobs/${jobId}/confirm`, {
+    method: "POST",
+    body: { enteredPin },
+  });
 
-const createCustomer = async (phone, name, pin) => {
-  try {
-    const response = await fetch(`${API_URL}/customers`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, name, pin }),
-    });
-    if (!response.ok) {
-      const message = await response.json();
-      throw new Error(message.message);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-};
+const createCustomer = async (phone, name, pin) =>
+  apiFetch("/customers", {
+    method: "POST",
+    body: { phone, name, pin },
+  });
+
+const updateCustomerProfile = async (customerId, profileData) =>
+  apiFetch(`/customers/${customerId}`, { method: "PUT", body: profileData });
 
 export {
   lockJob,
@@ -634,6 +291,7 @@ export {
   updateShopProfile,
   getShopAnalytics,
   getShopNotifications,
+  getCustomerNotifications,
   acceptTransfer,
   checkReferralJob,
   searchJobs,
@@ -647,4 +305,5 @@ export {
   getCustomerJobs,
   confirmJob,
   createCustomer,
+  updateCustomerProfile,
 };

@@ -49,6 +49,10 @@ const JobSummary = () => {
         return data;
       })
       .then((data) => {
+        const shareUrl = `https://wa.me/?text=${encodeURIComponent(
+          `Track your repair here: ${window.location.origin}/c/${data.id}`,
+        )}`;
+        window.open(shareUrl, "_blank");
         setIsSuccessOpen(true);
       })
       .catch(() => {

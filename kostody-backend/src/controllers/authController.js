@@ -80,9 +80,11 @@ const loginShop = async (req, res) => {
       where: { phone: shop.phone },
     });
 
+    const { passwordHash: _, ...shopWithoutPassword } = shop;
+
     res.status(200).json({
       token,
-      data: { ...shop, customerId: customer?.id || null },
+      data: { ...shopWithoutPassword, customerId: customer?.id || null },
     });
   } catch (error) {
     console.error("Failed to Login:", error);

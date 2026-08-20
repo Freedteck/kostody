@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
+import mark from "../../assets/mark.png";
 import ReturnJobSearch from "../../components/returnJobSearch/ReturnJobSearch";
 import EmptyState from "../../components/emptyState/EmptyState";
 import Notifications from "../../components/notifications/Notifications";
@@ -23,6 +24,7 @@ const Dashboard = () => {
   const { shopId } = useShop();
   const [isReturnOpen, setIsReturnOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
   const [jobs, setJobs] = useState([]);
@@ -65,58 +67,32 @@ const Dashboard = () => {
 
   return (
     <div className={styles.workbench}>
-      <div className={styles.header}>
-        <div>
-          <h1>Active Jobs</h1>
-          <p>Workbench: {isLoading ? "..." : jobs.length} devices</p>
+      <header className={styles.appBar}>
+        <div className={styles.brandGroup}>
+          <img src={mark} alt="Kostody" className={styles.brandMark} />
+          <div>
+            <h1 className={styles.title}>Active Jobs</h1>
+            <p className={styles.subtitle}>
+              Workbench: {isLoading ? "..." : jobs.length} devices
+            </p>
+          </div>
         </div>
-        <div className={styles.headerActions}>
-          <button
-            className={styles.iconBtn}
-            onClick={() => setIsNotifOpen(true)}
-            title="Notifications"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M15 17H9M18 17C18.5523 17 19 16.5523 19 16V15.4142C19 15.149 18.8946 14.8946 18.7071 14.7071L18 14V11C18 8.23858 15.7614 6 13 6H11C8.23858 6 6 8.23858 6 11V14L5.29289 14.7071C5.10536 14.8946 5 15.149 5 15.4142V16C5 16.5523 5.44772 17 6 17H18Z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button
-            className={styles.iconBtn}
-            onClick={() => setIsReturnOpen(true)}
-            title="Return Job"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M9 14L4 9L9 4M4 9H15C18.866 9 22 12.134 22 16C22 19.866 18.866 23 15 23H12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button
-            className={styles.iconBtnPrimary}
-            onClick={() => navigate("/app/intake")}
-            title="New Intake"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 5V19M5 12H19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+        <button
+          className={styles.iconBtn}
+          onClick={() => setIsNotifOpen(true)}
+          title="Notifications"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 17H9M18 17C18.5523 17 19 16.5523 19 16V15.4142C19 15.149 18.8946 14.8946 18.7071 14.7071L18 14V11C18 8.23858 15.7614 6 13 6H11C8.23858 6 6 8.23858 6 11V14L5.29289 14.7071C5.10536 14.8946 5 15.149 5 15.4142V16C5 16.5523 5.44772 17 6 17H18Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </header>
 
       <input
         type="text"
@@ -210,6 +186,54 @@ const Dashboard = () => {
             </Link>
           ))
         )}
+      </div>
+
+      {isAddOpen && (
+        <div className={styles.fabScrim} onClick={() => setIsAddOpen(false)} />
+      )}
+
+      <div className={styles.fabWrap}>
+        <div
+          className={`${styles.fabCapsule} ${isAddOpen ? styles.fabCapsuleOpen : ""}`}
+        >
+          {isAddOpen && (
+            <div className={styles.fabOptions}>
+              <button
+                className={styles.fabOption}
+                onClick={() => {
+                  setIsAddOpen(false);
+                  navigate("/app/intake");
+                }}
+              >
+                New
+              </button>
+              <span className={styles.fabDivider} />
+              <button
+                className={styles.fabOption}
+                onClick={() => {
+                  setIsAddOpen(false);
+                  setIsReturnOpen(true);
+                }}
+              >
+                Return
+              </button>
+            </div>
+          )}
+          <button
+            className={`${styles.fab} ${isAddOpen ? styles.fabOpen : ""}`}
+            onClick={() => setIsAddOpen((prev) => !prev)}
+            title="Add Job"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 5V19M5 12H19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {isReturnOpen && (

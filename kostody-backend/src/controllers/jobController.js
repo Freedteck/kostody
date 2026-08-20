@@ -1,6 +1,16 @@
 import { prisma } from "../config/db.js";
 import bcrypt from "bcryptjs";
 
+const SAFE_CUSTOMER = { id: true, name: true, phone: true };
+const SAFE_SHOP = {
+  id: true,
+  shopName: true,
+  phone: true,
+  engineerName: true,
+  specialty: true,
+  address: true,
+};
+
 const lockJob = async (req, res) => {
   try {
     const {
@@ -237,7 +247,7 @@ const checkReferralJob = async (req, res) => {
     if (looksLikeId) {
       const job = await prisma.job.findUnique({
         where: { id: q.toUpperCase() },
-        include: { shop: true },
+        include: { shop: { select: { shopName: true, phone: true } } },
       });
 
       if (!job) {
@@ -261,7 +271,7 @@ const checkReferralJob = async (req, res) => {
         customer: { phone: { contains: q, mode: "insensitive" } },
         status: "Completed",
       },
-      include: { customer: true },
+      include: { customer: { select: SAFE_CUSTOMER } },
       orderBy: { createdAt: "desc" },
     });
 
@@ -386,7 +396,7 @@ const getJobsByShop = async (req, res) => {
     const jobs = await prisma.job.findMany({
       where: whereCondition,
       include: {
-        customer: true,
+        customer: { select: SAFE_CUSTOMER },
       },
       orderBy: {
         createdAt: "desc",
@@ -407,11 +417,11 @@ const getJobById = async (req, res) => {
       const job = await prisma.job.findUnique({
         where: { id: jobId },
         include: {
-          customer: true,
+          customer: { select: SAFE_CUSTOMER },
           events: {
             orderBy: { createdAt: "asc" },
           },
-          shop: true,
+          shop: { select: SAFE_SHOP },
           payments: true,
           photos: true,
         },
@@ -661,7 +671,7 @@ const processCollection = async (req, res) => {
         where: { id: jobId },
         data: { status: "Completed" },
         include: {
-          customer: true,
+          customer: { select: SAFE_CUSTOMER },
           payments: true,
           events: { orderBy: { createdAt: "asc" } },
         },
@@ -830,7 +840,7 @@ const getJobHistory = async (req, res) => {
 
     const jobs = await prisma.job.findMany({
       where: whereCondition,
-      include: { customer: true },
+      include: { customer: { select: SAFE_CUSTOMER } },
       orderBy: { updatedAt: "desc" },
     });
 

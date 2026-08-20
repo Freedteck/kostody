@@ -1,18 +1,33 @@
 import { useState } from "react";
 import styles from "./CustomerEdit.module.css";
 import BottomSheet from "../bottomSheet/BottomSheet";
+import { updateCustomerProfile } from "../../services/api";
+import useToast from "../../hooks/useToast";
 
-const CustomerEditSheet = ({ onClose, onSave, currentData }) => {
+const CustomerEditSheet = ({ onClose, onSave, currentData, customerId }) => {
   const [formData, setFormData] = useState(currentData);
+  const [isSaving, setIsSaving] = useState(false);
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+
+    await updateCustomerProfile(customerId, formData)
+      .then((updatedData) => {
+        onSave(updatedData);
+      })
+      .catch((error) => {
+        showToast(error.message || "Failed to update profile.", "error");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   return (
@@ -31,6 +46,7 @@ const CustomerEditSheet = ({ onClose, onSave, currentData }) => {
             onChange={handleChange}
             required
             autoFocus
+            disabled={isSaving}
           />
         </div>
         <div className={styles.formGroup}>
@@ -45,10 +61,17 @@ const CustomerEditSheet = ({ onClose, onSave, currentData }) => {
             value={formData.phone || ""}
             onChange={handleChange}
             required
+            disabled={isSaving}
           />
         </div>
-        <button type="submit" className={styles.submitBtn}>
-          Save Changes
+        <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <span className={styles.spinner}></span> Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </button>
       </form>
     </BottomSheet>

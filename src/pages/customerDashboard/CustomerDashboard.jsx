@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CustomerDashboard.module.css";
+import mark from "../../assets/mark.png";
 import EmptyState from "../../components/emptyState/EmptyState";
+import CustomerNotifications from "../../components/customerNotifications/CustomerNotifications";
 import { getCustomerJobs } from "../../services/api";
 import { Skeleton } from "../../components/skeleton/Skeleton";
 import ErrorState from "../../components/errorState/ErrorState";
@@ -11,6 +13,7 @@ const CustomerDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
     const customerData = JSON.parse(localStorage.getItem("kostody_customer"));
@@ -45,15 +48,40 @@ const CustomerDashboard = () => {
   );
   const activeRepair = activeRepairs[0];
 
+  const calculateOutstanding = (job) => {
+    const totalPaid = (job.payments || []).reduce(
+      (sum, p) => sum + p.amount,
+      0,
+    );
+    return (job.quotedPrice || 0) - totalPaid;
+  };
+
   return (
     <div className={styles.dashboardContainer}>
-      <div className={styles.header}>
-        <div>
-          <h1>My Devices</h1>
-          <p>Track and manage your repairs</p>
+      <header className={styles.appBar}>
+        <div className={styles.brandGroup}>
+          <img src={mark} alt="Kostody" className={styles.brandMark} />
+          <div>
+            <h1 className={styles.title}>My Devices</h1>
+            <p className={styles.subtitle}>Track and manage your repairs</p>
+          </div>
         </div>
-        <div className={styles.avatar}>CO</div>
-      </div>
+        <button
+          className={styles.iconBtn}
+          onClick={() => setIsNotifOpen(true)}
+          title="Notifications"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M15 17H9M18 17C18.5523 17 19 16.5523 19 16V15.4142C19 15.149 18.8946 14.8946 18.7071 14.7071L18 14V11C18 8.23858 15.7614 6 13 6H11C8.23858 6 6 8.23858 6 11V14L5.29289 14.7071C5.10536 14.8946 5 15.149 5 15.4142V16C5 16.5523 5.44772 17 6 17H18Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </header>
 
       {isLoading ? (
         <>
@@ -88,11 +116,7 @@ const CustomerDashboard = () => {
             <div className={styles.balanceInfo}>
               <span className={styles.balanceLabel}>Outstanding Balance</span>
               <span className={styles.balanceAmount}>
-                ₦
-                {(
-                  (activeRepair.quotedPrice || 0) -
-                  (activeRepair.upfrontPayment || 0)
-                ).toLocaleString()}
+                ₦{calculateOutstanding(activeRepair).toLocaleString()}
               </span>
             </div>
             <button className={styles.trackBtn}>View Progress →</button>
@@ -160,6 +184,10 @@ const CustomerDashboard = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {isNotifOpen && (
+        <CustomerNotifications onClose={() => setIsNotifOpen(false)} />
       )}
     </div>
   );

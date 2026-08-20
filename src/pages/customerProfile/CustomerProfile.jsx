@@ -7,16 +7,23 @@ import SuccessSheet from "../../components/successSheet/SuccessSheet";
 
 const CustomerProfile = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
-    name: "Chidi O.",
-    phone: "0801 234 5678",
-  });
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("kostody_customer")) || {
+      name: "Guest",
+      phone: "",
+      id: null,
+    },
+  );
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPinOpen, setIsPinOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
 
-  const handleLogout = () => navigate("/c/login");
+  const handleLogout = () => {
+    localStorage.removeItem("kostody_token");
+    localStorage.removeItem("kostody_customer");
+    navigate("/c/login");
+  };
 
   const getInitials = (name) => {
     if (!name) return "";
@@ -165,15 +172,19 @@ const CustomerProfile = () => {
       </button>
       <p className={styles.versionText}>Kostody Customer App v1.0.0</p>
 
-      {/* Sheets */}
       {isEditOpen && (
         <CustomerEditSheet
           onClose={() => setIsEditOpen(false)}
           onSave={(newData) => {
             setUserData(newData);
+            localStorage.setItem(
+              "kostody_customer",
+              JSON.stringify({ ...userData, ...newData }),
+            );
             setIsEditOpen(false);
           }}
           currentData={userData}
+          customerId={userData.id}
         />
       )}
 
@@ -184,6 +195,7 @@ const CustomerProfile = () => {
             setIsPinOpen(false);
             setIsSuccessOpen(true);
           }}
+          customerId={userData.id}
         />
       )}
 

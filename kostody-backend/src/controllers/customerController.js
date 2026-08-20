@@ -2,6 +2,15 @@ import { prisma } from "../config/db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const sanitizeCustomer = (customer) => {
+  if (!customer) return null;
+  const safe = { ...customer };
+  delete safe.pinHash;
+  delete safe.otp;
+  delete safe.otpExpiry;
+  return safe;
+};
+
 const createCustomer = async (req, res) => {
   try {
     const { phone, name, pin } = req.body;
@@ -24,7 +33,7 @@ const createCustomer = async (req, res) => {
       { expiresIn: "30d" },
     );
 
-    return res.status(201).json({ token, data: customer });
+    return res.status(201).json({ token, data: sanitizeCustomer(customer) });
   } catch (error) {
     console.error("Error creating customer:", error);
     return res.status(500).json({ message: "Server Error" });
@@ -225,7 +234,7 @@ const loginCustomer = async (req, res) => {
       { expiresIn: "30d" },
     );
 
-    return res.status(200).json({ token, data: customer });
+    return res.status(200).json({ token, data: sanitizeCustomer(customer) });
   } catch (error) {
     console.error("Error logging in customer:", error);
     return res.status(500).json({ message: "Server Error" });
@@ -269,6 +278,27 @@ const getCustomerJobs = async (req, res) => {
   }
 };
 
+const updateCustomerProfile = async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    const { name, phone } = req.body;
+
+    const updatedCustomer = await prisma.customer.update({
+      where: { id: customerId },
+      data: { name, phone },
+      select: { id: true, name: true, phone: true },
+    });
+
+    return res.status(200).json(updatedCustomer);
+  } catch (error) {
+    if (error.code === "P2002") {
+      return res.status(400).json({ message: "Phone number already in use." });
+    }
+    console.error("Error updating customer profile:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
 export {
   createCustomer,
   checkCustomer,
@@ -278,4 +308,5 @@ export {
   resetPin,
   loginCustomer,
   getCustomerJobs,
+  updateCustomerProfile,
 };

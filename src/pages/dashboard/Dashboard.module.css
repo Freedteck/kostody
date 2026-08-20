@@ -7,58 +7,58 @@
   color: var(--text-primary);
 }
 
-.header {
+.appBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-  /* Removed border-bottom for a flatter, native feel */
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.header h1 {
-  font-size: 1.4rem; /* Slightly larger for native feel */
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brandMark {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.15rem;
   font-weight: 700;
   margin: 0;
+  line-height: 1.2;
 }
 
-.header p {
-  font-size: 0.85rem;
+.subtitle {
+  font-size: 0.8rem;
   color: var(--text-secondary);
-  margin: 5px 0 0 0;
+  margin: 2px 0 0 0;
 }
 
-.headerActions {
-  display: flex;
-  gap: 12px;
-}
-
-.iconBtn,
-.iconBtnPrimary {
-  width: 42px; /* Slightly larger touch target */
+.iconBtn {
+  width: 42px;
   height: 42px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none; /* Removed border */
+  border: none;
   background: var(--surface);
   color: var(--text-primary);
-  transition: opacity 0.1s; /* Native touch feedback */
+  flex-shrink: 0;
+  transition: opacity 0.1s;
 }
 
 .iconBtn:active {
-  opacity: 0.6; /* Dims slightly when tapped */
-}
-
-.iconBtnPrimary {
-  background-color: var(--accent);
-  color: var(--bg-primary);
-}
-
-.iconBtnPrimary:active {
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 /* Search Input - No border, uses surface color */
@@ -218,6 +218,103 @@
   color: #2ecc71;
 }
 
+.fabWrap {
+  position: fixed;
+  right: 20px;
+  bottom: 88px;
+  z-index: 45;
+}
+
+.fabCapsule {
+  display: flex;
+  align-items: center;
+  border-radius: 28px;
+  transition: background-color 0.18s ease-out;
+}
+
+.fabCapsuleOpen {
+  background-color: var(--surface);
+  padding-left: 22px;
+  gap: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fabOptions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fabExpand 0.18s ease-out;
+}
+
+@keyframes fabExpand {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fabOption {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 2px;
+  white-space: nowrap;
+  transition: opacity 0.1s;
+}
+
+.fabOption:active {
+  opacity: 0.5;
+}
+
+.fabDivider {
+  width: 1px;
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.35);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.1s;
+}
+
+.fab svg {
+  transition: transform 0.2s ease-out;
+}
+
+.fab:active {
+  transform: scale(0.92);
+}
+
+.fabOpen svg {
+  transform: rotate(45deg);
+}
+
+.fabScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+}
+
 @media (min-width: 768px) {
   .workbench {
     max-width: 768px;
@@ -229,5 +326,14 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+  }
+  .title {
+    font-size: 1.4rem;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  .fabWrap {
+    right: calc(50% - 384px + 20px);
   }
 }

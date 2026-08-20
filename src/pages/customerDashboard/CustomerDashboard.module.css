@@ -6,33 +6,52 @@
   font-family: var(--sans);
   color: var(--text-primary);
 }
-.header {
+.appBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 30px;
 }
-.header h1 {
-  font-size: 1.4rem;
-  margin: 0;
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.brandMark {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.title {
+  font-size: 1.15rem;
   font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
 }
-.header p {
-  font-size: 0.85rem;
+.subtitle {
+  font-size: 0.8rem;
   color: var(--text-secondary);
-  margin: 5px 0 0 0;
+  margin: 2px 0 0 0;
 }
-.avatar {
+.iconBtn {
   width: 42px;
   height: 42px;
-  background-color: var(--accent-bg);
   border-radius: 50%;
-  color: var(--accent);
-  font-size: 0.9rem;
-  font-weight: bold;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  background: var(--surface);
+  color: var(--text-primary);
+  flex-shrink: 0;
+  transition: opacity 0.1s;
+}
+.iconBtn:active {
+  opacity: 0.6;
 }
 
 .spotlightCard {
@@ -201,6 +220,12 @@
     margin: 0 auto;
     padding: 32px;
     padding-bottom: 100px;
+  }
+  .title {
+    font-size: 1.4rem;
+  }
+  .subtitle {
+    font-size: 0.85rem;
   }
   .historyList {
     display: grid;
