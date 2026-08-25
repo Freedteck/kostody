@@ -1,0 +1,162 @@
+.keypad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.instruction {
+  color: var(--md-sys-color-on-surface-variant);
+  text-align: center;
+  margin: 0;
+}
+
+.dots {
+  display: flex;
+  gap: 20px;
+  height: 20px;
+  align-items: center;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid var(--md-sys-color-outline);
+  background-color: transparent;
+  transition:
+    transform var(--md-sys-motion-duration-short3)
+      var(--md-sys-motion-easing-emphasized),
+    background-color var(--md-sys-motion-duration-short3) linear,
+    border-color var(--md-sys-motion-duration-short3) linear;
+}
+
+.dot.filled {
+  background-color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+  transform: scale(1.12);
+}
+
+.dot.error {
+  border-color: var(--md-sys-color-error);
+}
+
+.dot.filled.error {
+  background-color: var(--md-sys-color-error);
+}
+
+.shake {
+  animation: shake 0.5s var(--md-sys-motion-easing-standard);
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-7px);
+  }
+  80% {
+    transform: translateX(7px);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+  justify-items: center;
+}
+
+.spacer {
+  display: block;
+}
+
+.key {
+  width: clamp(64px, 20vw, 76px);
+  height: clamp(64px, 20vw, 76px);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 1.75rem;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color var(--md-sys-motion-duration-short3) linear,
+    color var(--md-sys-motion-duration-short3) linear,
+    transform var(--md-sys-motion-duration-short2)
+      var(--md-sys-motion-easing-standard);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.key:active {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: scale(0.94);
+}
+
+.key:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.ghost:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 8%,
+    transparent
+  );
+}
+
+.ghost:active {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 12%,
+    transparent
+  );
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.forgot {
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  cursor: pointer;
+}
+
+.forgot:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-primary) 8%,
+    transparent
+  );
+}

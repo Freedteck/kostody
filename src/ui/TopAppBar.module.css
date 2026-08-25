@@ -1,0 +1,65 @@
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  padding-top: var(--kd-safe-top);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 8px;
+}
+
+.leading {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.titles {
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+}
+
+.centerTitles {
+  text-align: center;
+}
+
+.title {
+  color: var(--md-sys-color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subtitle {
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.largeHead {
+  padding: 8px 16px 24px;
+}
+
+.largeTitle {
+  color: var(--md-sys-color-on-surface);
+}
+
+.large .largeTitle {
+  margin-bottom: 2px;
+}

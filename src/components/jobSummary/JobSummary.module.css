@@ -1,285 +1,168 @@
-.summaryContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
-  padding: 20px;
-  padding-bottom: 100px;
-  font-family: var(--sans);
-  max-width: 600px;
-  margin: 0 auto;
+.page {
+  padding-bottom: 32px;
+}
+
+.content {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+  box-sizing: border-box;
 }
 
-.summaryHeader {
+.warranty {
   display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 24px;
-}
-.backBtn {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 5px;
-  margin-left: -5px;
-}
-.backBtn:active {
-  opacity: 0.5;
-}
-.summaryHeader h1 {
-  font-size: 1.4rem;
-  margin: 0;
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-.warrantyBanner {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  background-color: rgba(255, 152, 0, 0.15); /* Slightly more opaque */
-  border: none; /* Removed hard border */
-  border-radius: 12px; /* Matches native cards */
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
 }
 
-.warrantyBanner svg {
-  color: #ff9800;
+.warranty > span {
   flex-shrink: 0;
 }
 
-.warrantyBanner h4 {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #ff9800;
-  font-weight: 700;
+.warrantyTitle {
+  margin-bottom: 2px;
 }
 
-.warrantyBanner p {
-  margin: 2px 0 0 0;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.receiptPaper {
-  flex: 1;
+.receipt {
+  overflow: hidden;
 }
 
 .section {
-  background-color: var(--surface);
+  display: flex;
+  flex-direction: column;
   padding: 18px;
-  border-radius: 12px;
-  margin-bottom: 16px;
 }
+
 .sectionTitle {
-  font-size: 0.8rem;
+  color: var(--md-sys-color-primary);
   text-transform: uppercase;
-  color: var(--text-secondary);
-  letter-spacing: 1px;
-  margin: 0 0 16px 0;
-  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
 }
 
 .detailRow {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 14px;
-}
-.detailRow:last-child {
-  margin-bottom: 0;
-}
-.detailLabel {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-.detailValue {
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-align: right;
+  gap: 16px;
+  padding: 5px 0;
 }
 
-.faultText {
-  width: 100%;
-  background-color: var(--bg-primary);
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: var(--text-primary);
+.detailLabel {
+  color: var(--md-sys-color-on-surface-variant);
+  flex-shrink: 0;
+}
+
+.detailValue {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 500;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--kd-font-mono, monospace);
+}
+
+.fault {
+  color: var(--md-sys-color-on-surface);
+  padding: 14px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: var(--md-sys-color-surface-container-high);
+  white-space: pre-wrap;
   margin: 0;
 }
 
-.pillContainer {
+.accessories {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: flex-end;
-}
-.pill {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  margin-top: 14px;
 }
 
-.photoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.photoBox {
-  aspect-ratio: 1;
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  display: flex;
+.chip {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--md-sys-shape-corner-small);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 
 .priceRow {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-}
-.mono {
-  font-family: var(--mono);
-  color: var(--text-primary);
-  font-weight: 500;
-}
-.outstanding {
-  border-top: 1px dashed var(--bg-primary);
-  padding-top: 12px;
-  margin-top: 8px;
-  font-weight: bold;
-  color: var(--text-primary);
-}
-.outstanding .mono {
-  color: var(--accent);
-}
-
-.actionArea {
-  margin-top: auto;
-  padding-top: 20px;
-}
-.toggleRow {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: var(--surface);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+  color: var(--md-sys-color-on-surface-variant);
 }
-.toggleLabel {
-  font-size: 0.95rem;
+
+.amount {
+  color: var(--md-sys-color-on-surface);
   font-weight: 500;
-  color: var(--text-primary);
-  display: block;
-}
-.toggleSubtext {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin: 2px 0 0 0;
+  font-family: var(--kd-font-mono, monospace);
 }
 
-.toggleSwitch {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  background-color: #3a3f44;
-  border-radius: 12px;
-  cursor: pointer;
-  border: none;
-  flex-shrink: 0;
-}
-.toggleSwitch.on {
-  background-color: #2ecc71;
-}
-.toggleHandle {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  background-color: var(--bg-primary);
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-}
-.toggleSwitch.on .toggleHandle {
-  transform: translateX(20px);
+.outstanding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
 
-.lockBtn {
-  width: 100%;
-  background-color: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-.lockBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+.outstandingAmount {
+  font-family: var(--kd-font-mono, monospace);
+  font-weight: 700;
 }
 
-.shareBtn {
-  width: 100%;
-  background-color: #25d366;
-  color: #111827;
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-.shareBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+.validity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--bg-primary);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+  padding-bottom: 8px;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.toggleCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.lockBtn:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
+.toggleText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-@media (min-width: 768px) {
-  .summaryContainer {
-    max-width: 768px;
-    padding-bottom: 100px;
-  }
+.toggleText p:first-child {
+  color: var(--md-sys-color-on-surface);
+}
+
+.toggleHint {
+  color: var(--md-sys-color-on-surface-variant);
 }

@@ -1,0 +1,171 @@
+.root {
+  min-height: 100dvh;
+  background-color: var(--md-sys-color-background);
+}
+
+.hasRail .frame {
+  margin-left: var(--kd-rail-width);
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.withBar {
+  padding-bottom: calc(var(--kd-nav-height) + var(--kd-safe-bottom));
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.twoPane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: start;
+}
+
+.content {
+  width: 100%;
+  min-width: 0;
+}
+
+.detail {
+  border-left: 1px solid var(--md-sys-color-outline-variant);
+  min-height: calc(100dvh - var(--kd-safe-top));
+}
+
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background-color: var(--md-sys-color-surface-container);
+  padding-bottom: var(--kd-safe-bottom);
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.barItems {
+  display: flex;
+  height: var(--kd-nav-height);
+}
+
+.rail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: var(--kd-rail-width);
+  background-color: var(--md-sys-color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(20px + var(--kd-safe-top)) 0 20px;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.railFab {
+  margin-bottom: 16px;
+}
+
+.railItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 12px 0 16px;
+  flex: 1;
+  min-width: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.railItem {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.indicator {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color var(--md-sys-motion-duration-short3)
+    var(--md-sys-motion-easing-standard);
+}
+
+.navItem:hover .indicator {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 8%,
+    transparent
+  );
+}
+
+.active .indicator {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.active {
+  color: var(--md-sys-color-on-surface);
+}
+
+.navLabel {
+  white-space: nowrap;
+}
+
+.badge {
+  position: absolute;
+  top: -2px;
+  right: 8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.fabWrap {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + var(--kd-safe-bottom));
+  z-index: 25;
+}
+
+.fabAboveBar {
+  bottom: calc(var(--kd-nav-height) + var(--kd-safe-bottom) + 16px);
+}
+
+@media (min-width: 840px) {
+  .fabAboveBar {
+    bottom: calc(24px + var(--kd-safe-bottom));
+  }
+}

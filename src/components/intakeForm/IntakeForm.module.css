@@ -1,298 +1,97 @@
-.formContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
-  padding: 20px;
-  padding-bottom: 100px;
-  font-family: var(--sans);
-  color: var(--text-primary);
-  max-width: 600px;
+.page {
+  padding-bottom: 32px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
+  padding: 12px 16px 0;
+  box-sizing: border-box;
 }
 
-.formHeader {
+.field {
+  width: 100%;
+}
+
+.form md-outlined-text-field,
+.form md-outlined-select {
+  width: 100%;
+}
+
+.mono {
+  --md-outlined-text-field-input-text-font: var(--kd-font-mono, monospace);
+}
+
+.pair {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.toggleCard {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-.backBtn {
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 5px;
-  margin-left: -5px;
-}
-.backBtn:active {
-  opacity: 0.5;
-}
-.formHeader h1 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.formGroup {
-  margin-bottom: 24px;
-}
-
-.label {
-  display: block;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.input,
-.textarea {
-  width: 100%;
-  background-color: var(--surface);
-  border: 1px solid transparent;
-  color: var(--text-primary);
-  padding: 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  font-family: var(--sans);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.input:focus,
-.textarea:focus {
-  border-color: var(--accent);
-}
-
-/* New Locked State */
-.inputLocked {
-  background-color: #1a1d21; /* Darker than surface */
-  color: #6b7280; /* Muted grey text */
-  border: 1px dashed #3a3f44; /* Dashed border to show it's read-only */
-  cursor: not-allowed;
-}
-
-.inputMono {
-  font-family: var(--mono);
-}
-.textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.priceRow {
-  display: flex;
-  gap: 15px;
-}
-.priceRow .formGroup {
-  flex: 1;
-}
-.priceInput {
-  font-family: var(--mono);
-  font-size: 1.1rem;
-}
-
-.submitBtn {
-  width: 100%;
-  padding: 16px;
-  background-color: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 8px;
-  margin-top: 20px;
-  transition: transform 0.1s;
-}
-
-.submitBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-.photoUploadArea {
-  border: 1px dashed #3a3f44;
-  background-color: var(--surface);
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  display: block;
-}
-
-.cameraBtn {
-  background: var(--bg-primary);
-  border: none;
-  color: var(--accent);
-  padding: 8px 15px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-  display: inline-block;
-  pointer-events: none;
-}
-
-.photoHint {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin: 0;
-  pointer-events: none;
-}
-
-.select {
-  width: 100%;
-  background-color: var(--surface);
-  border: 1px solid transparent;
-  color: var(--text-primary);
-  padding: 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  font-family: var(--sans);
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%239ca3af" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-}
-
-.select:focus {
-  border-color: var(--accent);
-}
-
-.referralToggleContainer {
-  margin-bottom: 24px;
-  background-color: var(--surface);
-  padding: 16px;
-  border-radius: 8px;
-}
-.toggleRow {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-}
-.toggleLabel {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-primary);
+  gap: 16px;
 }
 
-.toggleSwitch {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  background-color: #3a3f44;
-  border-radius: 12px;
-  cursor: pointer;
-  border: none;
-}
-.toggleSwitch.on {
-  background-color: #2ecc71;
-}
-.toggleHandle {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  background-color: var(--bg-primary);
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-}
-.toggleSwitch.on .toggleHandle {
-  transform: translateX(20px);
-}
-
-.referralError {
-  color: #ff4d4d;
-  font-size: 0.8rem;
-  margin-top: 4px;
-}
-
-.returnReasonRow {
+.toggleText {
   display: flex;
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  padding: 4px;
-  margin-top: 12px;
-  gap: 4px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.reasonBtn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  padding: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border-radius: 6px;
-  transition: all 0.2s;
+.toggleText p:first-child {
+  color: var(--md-sys-color-on-surface);
 }
 
-.reasonActive {
-  background-color: var(--surface);
-  color: var(--accent);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.toggleHint {
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.reasonBtn:active:not(.reasonActive) {
-  opacity: 0.6;
+.blockLabel {
+  display: block;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 6px;
 }
 
-.previewGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 15px;
+.blockHint {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: -2px 0 10px;
 }
 
-.previewItem {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: var(--bg-primary);
+.reasonBlock,
+.photoBlock {
+  display: flex;
+  flex-direction: column;
 }
 
-.previewImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.removePhotoBtn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  cursor: pointer;
+.lockNote {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 
-.removePhotoBtn:active {
-  background: rgba(0, 0, 0, 0.9);
+.actions {
+  margin-top: 6px;
+  padding-bottom: 8px;
 }
 
-@media (min-width: 768px) {
-  .formContainer {
-    max-width: 768px;
-    padding: 32px;
-    padding-bottom: 100px;
+@media (min-width: 600px) {
+  .pair {
+    flex-direction: row;
+  }
+
+  .pair > * {
+    flex: 1;
+    min-width: 0;
   }
 }

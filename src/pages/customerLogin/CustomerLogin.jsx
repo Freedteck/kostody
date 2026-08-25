@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./CustomerLogin.module.css";
+import { TextField, Button, Keypad, Icon } from "../../ui";
+import ForgotPinSheet from "../../components/forgotPinSheet/ForgotPinSheet";
 import mark from "../../assets/mark.png";
 import {
   checkCustomer,
@@ -8,43 +9,39 @@ import {
   createCustomer,
 } from "../../services/api";
 import useToast from "../../hooks/useToast";
+import styles from "./CustomerLogin.module.css";
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+
   const [stage, setStage] = useState("phone");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
-  const [pin, setPin] = useState(["", "", "", ""]);
   const [tempPin, setTempPin] = useState("");
   const [existingUserName, setExistingUserName] = useState("");
-  // const [customerId, setCustomerId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(0);
+  const [resetKey, setResetKey] = useState(0);
+  const [isForgotOpen, setIsForgotOpen] = useState(false);
 
-  const inputRefs = useRef([]);
-
-  useEffect(() => {
-    if (
-      stage === "createPin" ||
-      stage === "confirmPin" ||
-      stage === "enterPin"
-    ) {
-      const timer = setTimeout(() => {
-        inputRefs.current[0]?.focus();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [stage]);
+  const store = (data) => {
+    localStorage.setItem("kostody_token", data.token);
+    localStorage.setItem("kostody_customer", JSON.stringify(data.data));
+    navigate("/c/dashboard");
+  };
 
   const handlePhoneSubmit = (e) => {
     e.preventDefault();
+    if (!phone.trim()) {
+      showToast("Enter your phone number", "error");
+      return;
+    }
     setIsLoading(true);
-
     checkCustomer(phone)
       .then((res) => {
         if (res.exists) {
           setExistingUserName(res.name);
-          // setCustomerId(res.customerId);
           setStage("enterPin");
         } else {
           setStage("name");
@@ -60,56 +57,20 @@ const CustomerLogin = () => {
 
   const handleNameSubmit = (e) => {
     e.preventDefault();
+    if (!name.trim()) {
+      showToast("Enter your name", "error");
+      return;
+    }
     setStage("createPin");
-  };
-
-  const handlePinChange = (e, index) => {
-    if (isLoading) return;
-    const value = e.target.value;
-    if (!/^\d?$/.test(value)) return;
-
-    const newPin = [...pin];
-    newPin[index] = value;
-    setPin(newPin);
-
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    if (index === 3 && value) {
-      const fullPin = newPin.join("");
-
-      if (stage === "createPin") {
-        setTempPin(fullPin);
-        setPin(["", "", "", ""]);
-        setStage("confirmPin");
-      } else if (stage === "confirmPin") {
-        if (fullPin === tempPin) {
-          submitRegistration(fullPin);
-        } else {
-          showToast("PINs do not match", "error");
-          setPin(["", "", "", ""]);
-          setTempPin("");
-          setStage("createPin");
-        }
-      } else if (stage === "enterPin") {
-        submitLogin(fullPin);
-      }
-    }
   };
 
   const submitLogin = (finalPin) => {
     setIsLoading(true);
     loginCustomer(phone, finalPin)
-      .then((data) => {
-        localStorage.setItem("kostody_token", data.token);
-        localStorage.setItem("kostody_customer", JSON.stringify(data.data));
-        navigate("/c/dashboard");
-      })
+      .then(store)
       .catch((err) => {
         showToast(err.message || "Invalid PIN", "error");
-        setPin(["", "", "", ""]);
-        inputRefs.current[0]?.focus();
+        setError((x) => x + 1);
       })
       .finally(() => {
         setIsLoading(false);
@@ -119,119 +80,172 @@ const CustomerLogin = () => {
   const submitRegistration = (finalPin) => {
     setIsLoading(true);
     createCustomer(phone, name, finalPin)
-      .then((data) => {
-        localStorage.setItem("kostody_token", data.token);
-        localStorage.setItem("kostody_customer", JSON.stringify(data.data));
-        navigate("/c/dashboard");
-      })
+      .then(store)
       .catch((err) => {
         showToast(err.message || "Failed to create account", "error");
-        setPin(["", "", "", ""]);
-        setStage("phone");
+        setError((x) => x + 1);
       })
       .finally(() => {
         setIsLoading(false);
       });
   };
 
-  const renderHeader = () => {
-    if (isLoading) return "Processing...";
-    if (stage === "phone") return "Welcome to Kostody";
-    if (stage === "name") return "Create Account";
-    if (stage === "createPin") return "Create 4-digit PIN";
-    if (stage === "confirmPin") return "Confirm your PIN";
-    if (stage === "enterPin")
-      return `Welcome back, ${existingUserName.split(" ")[0]}!`;
+  const handleKeypadComplete = (pin) => {
+    if (stage === "createPin") {
+      setTempPin(pin);
+      setStage("confirmPin");
+      setResetKey((k) => k + 1);
+    } else if (stage === "confirmPin") {
+      if (pin === tempPin) {
+        submitRegistration(pin);
+      } else {
+        showToast("PINs do not match", "error");
+        setError((x) => x + 1);
+      }
+    } else if (stage === "enterPin") {
+      submitLogin(pin);
+    }
   };
 
-  const renderSubtext = () => {
-    if (stage === "phone")
-      return "Enter your phone number to continue. If you are new, we will set you up.";
-    if (stage === "name")
-      return "We couldn't find an account for this number. What should we call you?";
-    if (stage === "createPin")
-      return "This PIN will be used to authorize all your repair agreements securely.";
-    if (stage === "confirmPin") return "Re-enter the PIN to confirm.";
-    if (stage === "enterPin") return "Enter your 4-digit PIN to log in.";
+  const resetToPhone = () => {
+    setStage("phone");
+    setName("");
+    setTempPin("");
+    setExistingUserName("");
   };
+
+  const heading = () => {
+    if (stage === "phone") return "Welcome to Kostody";
+    if (stage === "name") return "Create your account";
+    if (stage === "createPin") return "Set your PIN";
+    if (stage === "confirmPin") return "Confirm your PIN";
+    return `Welcome back, ${existingUserName.split(" ")[0] || ""}`;
+  };
+
+  const subtext = () => {
+    if (stage === "phone")
+      return "Enter your phone number to sign in or set up your account.";
+    if (stage === "name")
+      return "We couldn't find that number. What should we call you?";
+    if (stage === "createPin")
+      return "This PIN authorizes all your repair agreements.";
+    if (stage === "confirmPin") return "Re-enter your PIN to confirm.";
+    return "Enter your 4-digit PIN to sign in.";
+  };
+
+  const keypadInstruction = () => {
+    if (isLoading) return "Please wait…";
+    if (stage === "createPin") return "Create a 4-digit PIN";
+    if (stage === "confirmPin") return "Confirm your 4-digit PIN";
+    return "Enter your 4-digit PIN";
+  };
+
+  const isPinStage =
+    stage === "createPin" || stage === "confirmPin" || stage === "enterPin";
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.header}>
-        <img src={mark} alt="Kostody" className={styles.logo} />
-        <p className={styles.subtitle}>Customer Portal</p>
-      </div>
+    <div className={styles.screen}>
+      <div className={styles.card}>
+        <header className={styles.brand}>
+          <img src={mark} alt="Kostody" className={styles.logo} />
+          <span className={`${styles.portal} md-typescale-label-large`}>
+            Customer Portal
+          </span>
+        </header>
 
-      <div className={styles.formArea}>
-        <h2 className={styles.welcomeTitle}>{renderHeader()}</h2>
-        <p className={styles.welcomeText}>{renderSubtext()}</p>
+        <div className={styles.intro}>
+          <h1 className={`${styles.title} md-typescale-headline-medium`}>
+            {heading()}
+          </h1>
+          <p className={`${styles.subtitle} md-typescale-body-medium`}>
+            {subtext()}
+          </p>
+        </div>
 
-        {stage === "phone" && (
-          <form className={styles.inputForm} onSubmit={handlePhoneSubmit}>
-            <input
-              type="tel"
-              className={styles.input}
-              placeholder="e.g. 0801 234 5678"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoFocus
-              required
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={isLoading}
-            >
-              {isLoading ? "Checking..." : "Continue"}
-            </button>
-          </form>
-        )}
+        <div key={stage} className={styles.stage}>
+          {stage === "phone" && (
+            <form className={styles.form} onSubmit={handlePhoneSubmit}>
+              <TextField
+                label="Phone number"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                leadingIcon="call"
+                required
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                variant="filled"
+                full
+                disabled={isLoading}
+                className={styles.submit}
+              >
+                {isLoading ? "Checking…" : "Continue"}
+              </Button>
+            </form>
+          )}
 
-        {stage === "name" && (
-          <form className={styles.inputForm} onSubmit={handleNameSubmit}>
-            <input
-              type="text"
-              className={styles.input}
-              placeholder="Your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
-              required
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={isLoading}
-            >
-              Continue
-            </button>
-          </form>
-        )}
+          {stage === "name" && (
+            <form className={styles.form} onSubmit={handleNameSubmit}>
+              <TextField
+                label="Full name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                leadingIcon="person"
+                required
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                variant="filled"
+                full
+                className={styles.submit}
+              >
+                Continue
+              </Button>
+              <Button variant="text" full onClick={resetToPhone}>
+                Use a different number
+              </Button>
+            </form>
+          )}
 
-        {(stage === "createPin" ||
-          stage === "confirmPin" ||
-          stage === "enterPin") && (
-          <div className={styles.pinContainer}>
-            <div className={styles.pinRow}>
-              {pin.map((digit, index) => (
-                <input
-                  key={index}
-                  type="password"
-                  inputMode="numeric"
-                  maxLength="1"
-                  className={styles.pinInput}
-                  value={digit}
-                  onChange={(e) => handlePinChange(e, index)}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  disabled={isLoading}
-                />
-              ))}
+          {isPinStage && (
+            <div className={styles.pinArea}>
+              <Keypad
+                onComplete={handleKeypadComplete}
+                error={error}
+                resetKey={resetKey}
+                disabled={isLoading}
+                instruction={keypadInstruction()}
+                onForgot={
+                  stage === "enterPin" && !isLoading
+                    ? () => setIsForgotOpen(true)
+                    : undefined
+                }
+              />
+              <button
+                type="button"
+                className={styles.changeNumber}
+                onClick={resetToPhone}
+                disabled={isLoading}
+              >
+                <Icon name="arrow_back" size={16} />
+                Use a different number
+              </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {isForgotOpen && (
+        <ForgotPinSheet
+          initialPhone={phone}
+          onClose={() => setIsForgotOpen(false)}
+          onSuccess={() => setIsForgotOpen(false)}
+        />
+      )}
     </div>
   );
 };

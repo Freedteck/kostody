@@ -1,201 +1,54 @@
-.paymentPhase,
-.pinPhase {
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form md-outlined-text-field {
+  width: 100%;
+}
+
+.field {
+  width: 100%;
+}
+
+.balance {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
+  padding: 18px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
 
-.balanceDisplay {
-  width: 100%;
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.balanceLabel {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-bottom: 5px;
-}
 .balanceAmount {
-  display: block;
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--accent);
-  font-family: var(--mono);
+  font-family: var(--kd-font-mono, monospace);
+  font-weight: 700;
 }
 
-.formGroup {
-  width: 100%;
-  margin-bottom: 20px;
-}
-.label {
-  display: block;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-}
-
-.input {
-  width: 100%;
-  background-color: var(--bg-primary);
-  border: 1px solid transparent;
-  color: var(--text-primary);
-  padding: 12px;
-  font-size: 1rem;
-  border-radius: 8px;
-  font-family: var(--mono);
-  outline: none;
-}
-
-.input:focus {
-  border-color: var(--accent);
-}
-
-.proceedBtn {
-  width: 100%;
-  padding: 15px;
-  background-color: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.proceedBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-.jobSummary {
-  width: 100%;
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  padding: 15px;
+.remaining {
+  margin: -6px 0 0;
+  color: var(--md-sys-color-on-surface-variant);
   text-align: center;
-  margin-bottom: 20px;
-}
-.summaryDevice {
-  margin: 0 0 5px 0;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-}
-.summaryFault {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
 }
 
-.instruction {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 15px;
-}
-
-.pinDots {
+.pinPhase {
   display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-  transition: transform 0.2s;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid var(--text-secondary);
-  background-color: transparent;
-  transition:
-    background-color 0.2s,
-    border-color 0.2s;
+.deviceNote {
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.dot.active {
-  background-color: #2ecc71;
-  border-color: #2ecc71;
-}
-
-.errorDot {
-  background-color: #ff4d4d !important;
-  border-color: #ff4d4d !important;
-}
-
-.errorText {
-  color: #ff4d4d;
-  font-size: 0.8rem;
-  margin: 0 0 20px 0;
-  font-weight: 500;
-}
-
-.shake {
-  animation: shake 0.4s ease-in-out;
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20%,
-  60% {
-    transform: translateX(-8px);
-  }
-  40%,
-  80% {
-    transform: translateX(8px);
-  }
-}
-
-.keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  width: 100%;
-  max-width: 300px;
-}
-.key {
-  background-color: var(--bg-primary);
-  border: none;
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  height: 60px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.1s;
-}
-
-.key:active:not(:disabled) {
-  background-color: #2ecc71;
-  color: var(--bg-primary);
-  transform: scale(0.95);
-}
-
-.key:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.delKey {
-  background: none;
-  color: var(--text-secondary);
-}
-.delKey:active:not(:disabled) {
-  background-color: transparent;
-  color: var(--text-primary);
-  opacity: 0.5;
-}
-
-.blankKey {
-  visibility: hidden;
+.deviceName {
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 2px;
 }

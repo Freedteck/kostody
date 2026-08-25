@@ -1,11 +1,10 @@
 import { useState } from "react";
-import styles from "./ReturnJobSearch.module.css";
-import BottomSheet from "../bottomSheet/BottomSheet";
+import { Sheet, TextField, Button, Skeleton, Card, StatusChip, Icon } from "../../ui";
 import { searchJobs } from "../../services/api";
 import useToast from "../../hooks/useToast";
-import { Skeleton } from "../skeleton/Skeleton";
+import styles from "./ReturnJobSearch.module.css";
 
-const ReturnJobSearch = ({ onSelectJob, title, onClose }) => {
+const ReturnJobSearch = ({ open, onSelectJob, title, onClose }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -31,61 +30,71 @@ const ReturnJobSearch = ({ onSelectJob, title, onClose }) => {
   };
 
   return (
-    <BottomSheet title={title} onClose={onClose}>
-      <div className={styles.searchContainer}>
-        <form className={styles.searchForm} onSubmit={handleSearch}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Enter Phone Number"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            autoFocus
-            required
-          />
-          <button
-            type="submit"
-            className={styles.searchBtn}
-            disabled={isLoading}
-          >
-            {isLoading ? "..." : "Search"}
-          </button>
-        </form>
+    <Sheet open={open} onClose={onClose} title={title} size="large">
+      <form className={styles.form} onSubmit={handleSearch}>
+        <TextField
+          className={styles.field}
+          label="Customer phone number"
+          type="tel"
+          inputmode="tel"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          leadingIcon="call"
+          required
+        />
+        <Button type="submit" variant="filled" icon="search" disabled={isLoading}>
+          {isLoading ? "Searching…" : "Search"}
+        </Button>
+      </form>
 
-        <div className={styles.resultsContainer}>
-          {isLoading && (
-            <>
-              <Skeleton width="100%" height="70px" radius="8px" />
-              <Skeleton width="100%" height="70px" radius="8px" />
-            </>
-          )}
+      <div className={styles.results}>
+        {isLoading && (
+          <>
+            <Skeleton width="100%" height="96px" radius="16px" />
+            <Skeleton width="100%" height="96px" radius="16px" />
+          </>
+        )}
 
-          {!isLoading && hasSearched && results.length === 0 && (
-            <p className={styles.noResults}>
-              No previous jobs found for that search.
+        {!isLoading && hasSearched && results.length === 0 && (
+          <div className={styles.empty}>
+            <Icon name="search_off" size={28} />
+            <p className="md-typescale-body-medium">
+              No previous jobs found for that number.
             </p>
-          )}
+          </div>
+        )}
 
-          {!isLoading &&
-            results.map((job) => (
-              <div
-                key={job.id}
-                className={styles.resultCard}
-                onClick={() => onSelectJob(job)}
-              >
-                <div className={styles.resultHeader}>
-                  <h3 className={styles.resultDevice}>{job.deviceModel}</h3>
-                  <span className={styles.resultId}>#{job.id}</span>
-                </div>
-                <p className={styles.resultCustomer}>
-                  {job.customerName} · {job.customerPhone}
-                </p>
-                <button className={styles.selectBtn}>Create Return Job</button>
+        {!isLoading &&
+          results.map((job) => (
+            <Card
+              key={job.id}
+              variant="filled"
+              interactive
+              className={styles.result}
+              onClick={() => onSelectJob(job)}
+            >
+              <div className={styles.resultHead}>
+                <h3 className="md-typescale-title-medium">{job.deviceModel}</h3>
+                <span className={`${styles.id} md-typescale-label-medium`}>
+                  #{job.id}
+                </span>
               </div>
-            ))}
-        </div>
+              <p className={`${styles.customer} md-typescale-body-medium`}>
+                {job.customerName} · {job.customerPhone}
+              </p>
+              {job.status && (
+                <div className={styles.resultFoot}>
+                  <StatusChip status={job.status} size="small" />
+                  <span className={`${styles.cta} md-typescale-label-large`}>
+                    Create return
+                    <Icon name="arrow_forward" size={18} />
+                  </span>
+                </div>
+              )}
+            </Card>
+          ))}
       </div>
-    </BottomSheet>
+    </Sheet>
   );
 };
 

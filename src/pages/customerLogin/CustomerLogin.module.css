@@ -1,125 +1,138 @@
-.loginContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
+.screen {
+  min-height: 100dvh;
   display: flex;
-  flex-direction: column;
-  font-family: var(--sans);
-  padding: 20px;
-  padding-top: 80px;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  padding-top: calc(24px + var(--kd-safe-top));
+  padding-bottom: calc(24px + var(--kd-safe-bottom));
+  background-color: var(--md-sys-color-surface);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 60px;
+.card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: rise 500ms var(--md-sys-motion-easing-emphasized-decelerate) both;
 }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
 .logo {
-  width: 84px;
-  height: 84px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto 4px;
-}
-.subtitle {
-  color: var(--accent);
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-top: 5px;
-  font-weight: 600;
+  width: 72px;
+  height: auto;
 }
 
-.formArea {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-.welcomeTitle {
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  margin: 0 0 5px 0;
-  font-weight: 700;
-}
-.welcomeText {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin: 0 0 30px 0;
-  line-height: 1.4;
+.portal {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 
-.inputForm {
+.intro {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 6px;
 }
 
-.input {
+.title {
+  color: var(--md-sys-color-on-surface);
+}
+
+.subtitle {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.stage {
+  animation: fadeThrough 300ms var(--md-sys-motion-easing-standard) both;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form md-outlined-text-field,
+.form md-filled-text-field {
   width: 100%;
-  background-color: var(--surface);
-  border: 1px solid transparent;
-  color: var(--text-primary);
-  padding: 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.2s;
-  font-family: var(--sans);
 }
 
-.input:focus {
-  border-color: var(--accent);
+.submit {
+  margin-top: 4px;
 }
 
-.submitBtn {
-  width: 100%;
-  background-color: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-.submitBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-/* PIN Input Styles */
-.pinContainer {
+.pinArea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
-}
-.pinRow {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
+  gap: 8px;
 }
 
-.pinInput {
-  width: 50px;
-  height: 60px;
-  text-align: center;
-  font-size: 1.5rem;
-  background-color: var(--surface);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.2s;
+.changeNumber {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.pinInput:focus {
-  border-color: var(--accent);
+.changeNumber:disabled {
+  opacity: 0.5;
 }
 
-@media (min-width: 768px) {
-  .formArea {
-    max-width: 500px;
+@media (min-width: 600px) {
+  .card {
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: 40px;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeThrough {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .stage {
+    animation: none;
   }
 }

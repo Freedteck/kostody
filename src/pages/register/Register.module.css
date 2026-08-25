@@ -1,150 +1,184 @@
-.registerContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
-  padding: 20px;
-  padding-top: 80px;
-  font-family: var(--sans);
+.screen {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  padding-top: calc(24px + var(--kd-safe-top));
+  padding-bottom: calc(24px + var(--kd-safe-bottom));
+  background-color: var(--md-sys-color-surface);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 40px;
+.card {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: rise 500ms var(--md-sys-motion-easing-emphasized-decelerate) both;
 }
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
 .logo {
-  width: 84px;
-  height: 84px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto 4px;
+  width: 64px;
+  height: auto;
 }
+
+.portal {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-large);
+  transition: color 200ms var(--md-sys-motion-easing-standard);
+}
+
+.stepDot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-large);
+  transition:
+    background-color 200ms var(--md-sys-motion-easing-standard),
+    color 200ms var(--md-sys-motion-easing-standard);
+}
+
+.stepOn {
+  color: var(--md-sys-color-on-surface);
+}
+
+.stepOn .stepDot {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.stepLine {
+  flex: 1;
+  height: 2px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-outline-variant);
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: slideIn 320ms var(--md-sys-motion-easing-emphasized-decelerate)
+    both;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  color: var(--md-sys-color-on-surface);
+}
+
 .subtitle {
-  color: var(--accent);
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-top: 5px;
-  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
-.formArea {
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form md-outlined-text-field,
+.form md-filled-text-field,
+.form md-outlined-select,
+.form md-filled-select {
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-.stepTitle {
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  margin: 0 0 5px 0;
-  font-weight: 700;
-}
-.stepText {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin: 0 0 30px 0;
-  line-height: 1.4;
 }
 
-.inputGroup {
-  margin-bottom: 20px;
-}
-.label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-  font-weight: 600;
+.submit {
+  margin-top: 4px;
 }
 
-.input,
-.select {
-  width: 100%;
-  background-color: var(--surface);
-  border: 1px solid transparent;
-  color: var(--text-primary);
-  padding: 16px;
-  font-size: 1rem;
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.2s;
-  font-family: var(--sans);
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
 }
 
-.input:focus,
-.select:focus {
-  border-color: var(--accent);
+.grow {
+  flex: 1;
 }
 
-.select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%239ca3af" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-}
-
-.primaryBtn {
-  width: 100%;
-  background-color: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: transform 0.1s;
-}
-
-.primaryBtn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-.loginText {
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--md-sys-color-on-surface-variant);
   text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-top: 30px;
-}
-.loginLink {
-  color: var(--accent);
-  cursor: pointer;
-  font-weight: bold;
 }
 
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--bg-primary);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@media (min-width: 600px) {
+  .card {
+    background-color: var(--md-sys-color-surface-container-low);
+    padding: 40px;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    box-shadow: var(--md-sys-elevation-level1);
   }
 }
 
-.primaryBtn:disabled,
-.loginBtn:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-@media (min-width: 768px) {
-  .formArea {
-    max-width: 500px;
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .pane {
+    animation: none;
   }
 }

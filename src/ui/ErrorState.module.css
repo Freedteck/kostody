@@ -1,0 +1,32 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 48px 24px;
+}
+
+.badge {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--md-sys-shape-corner-full);
+  display: grid;
+  place-items: center;
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  margin-bottom: 8px;
+}
+
+.title {
+  color: var(--md-sys-color-on-surface);
+}
+
+.message {
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 36ch;
+}
+
+.action {
+  margin-top: 12px;
+}

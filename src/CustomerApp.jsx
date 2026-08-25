@@ -1,13 +1,17 @@
 import { Outlet } from "react-router-dom";
-import "./App.css";
-import CustomerBottomNav from "./components/customerBottomNav/CustomerBottomNav";
+import AppScaffold from "./ui/AppScaffold";
+
+const NAV = [
+  { to: "/c/dashboard", icon: "home", label: "Active" },
+  { to: "/c/history", icon: "history", label: "History" },
+  { to: "/c/profile", icon: "person", label: "Profile" },
+];
 
 function CustomerApp() {
   return (
-    <div className="app">
+    <AppScaffold nav={NAV}>
       <Outlet />
-      <CustomerBottomNav />
-    </div>
+    </AppScaffold>
   );
 }
 

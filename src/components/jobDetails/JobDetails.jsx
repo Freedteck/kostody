@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styles from "./JobDetails.module.css";
+import {
+  TopAppBar,
+  IconButton,
+  Card,
+  StatusChip,
+  Button,
+  Icon,
+  Timeline,
+  PhotoGrid,
+  PhotoViewer,
+  TextField,
+  Skeleton,
+  ErrorState,
+} from "../../ui";
 import ConfirmTransfer from "../confirmTransfer/ConfirmTransfer";
 import ConfirmCancel from "../confirmCancel/ConfirmCancel";
 import ProcessCollection from "../processCollection/ProcessCollection";
 import RaiseQuote from "../raiseQuote/RaiseQuote";
 import PinPad from "../pinPad/PinPad";
 import SuccessSheet from "../successSheet/SuccessSheet";
-import ForgotPinSheet from "../forgotPinSheet/ForgotPinSheet"; // Import ForgotPinSheet
+import ForgotPinSheet from "../forgotPinSheet/ForgotPinSheet";
 import {
   getJobsById,
   updateJobStatus,
@@ -18,8 +31,9 @@ import {
   cancelJob,
 } from "../../services/api";
 import useToast from "../../hooks/useToast";
-import { Skeleton } from "../skeleton/Skeleton";
-import ErrorState from "../errorState/ErrorState";
+import styles from "./JobDetails.module.css";
+
+const naira = (value) => `₦${(Number(value) || 0).toLocaleString()}`;
 
 const JobDetails = () => {
   const navigate = useNavigate();
@@ -34,6 +48,9 @@ const JobDetails = () => {
   const [timeline, setTimeline] = useState([]);
   const [showPaymentInput, setShowPaymentInput] = useState(false);
   const [newPaymentAmount, setNewPaymentAmount] = useState("");
+  const [viewerIndex, setViewerIndex] = useState(-1);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [prevJobId, setPrevJobId] = useState(jobId);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false);
@@ -42,7 +59,7 @@ const JobDetails = () => {
   const [isRequotePinOpen, setIsRequotePinOpen] = useState(false);
   const [isAcceptPinOpen, setIsAcceptPinOpen] = useState(false);
   const [isCancelPinOpen, setIsCancelPinOpen] = useState(false);
-  const [isForgotPinOpen, setIsForgotPinOpen] = useState(false); // Add state for Forgot PIN
+  const [isForgotPinOpen, setIsForgotPinOpen] = useState(false);
 
   const [isExist, setIsExist] = useState(false);
   const [newQuoteData, setNewQuoteData] = useState({
@@ -60,76 +77,101 @@ const JobDetails = () => {
     message: "",
   });
 
+  if (jobId !== prevJobId) {
+    setPrevJobId(jobId);
+    setIsLoading(true);
+    setError(null);
+  }
+
   useEffect(() => {
-    const fetchJobDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-      await getJobsById(jobId)
-        .then((data) => {
-          setJobData(data);
-          if (
-            new Date(data.expiresAt) < new Date() &&
-            data.status !== "Completed" &&
-            data.status !== "Transferred" &&
-            data.status !== "Cancelled"
-          ) {
-            setStatus("Expired");
-          } else {
-            setStatus(data.status);
-          }
-
-          setPayments(data.payments?.map((p) => p.amount) || []);
-
-          const formattedTimeline = (data.events || []).map((e) => ({
-            time: new Date(e.createdAt).toLocaleString("en-US", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            event: e.eventText,
-          }));
-          setTimeline(formattedTimeline);
-        })
-        .catch(() => {
-          setError("Failed to load job details.");
-          showToast("Could not fetch job details.", "error");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    let active = true;
+    getJobsById(jobId)
+      .then((data) => {
+        if (!active) return;
+        setJobData(data);
+        if (
+          new Date(data.expiresAt) < new Date() &&
+          data.status !== "Completed" &&
+          data.status !== "Transferred" &&
+          data.status !== "Cancelled"
+        ) {
+          setStatus("Expired");
+        } else {
+          setStatus(data.status);
+        }
+        setPayments(data.payments?.map((p) => p.amount) || []);
+        const formattedTimeline = (data.events || []).map((e) => ({
+          time: new Date(e.createdAt).toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          text: e.eventText,
+        }));
+        setTimeline(formattedTimeline);
+      })
+      .catch(() => {
+        if (!active) return;
+        setError("Failed to load job details.");
+        showToast("Could not fetch job details.", "error");
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
     };
-
-    fetchJobDetails();
-  }, [jobId, showToast]);
+  }, [jobId, showToast, reloadKey]);
 
   if (isLoading) {
     return (
-      <div className={styles.detailsContainer}>
-        <div className={styles.detailsHeader}>
-          <Skeleton width="24px" height="24px" radius="4px" />
-          <div style={{ flex: 1 }}>
-            <Skeleton width="60%" height="1.4rem" radius="4px" />
-            <div style={{ height: "4px" }}></div>
-            <Skeleton width="40%" height="0.85rem" radius="4px" />
-          </div>
+      <div className={styles.page}>
+        <TopAppBar
+          title="Loading…"
+          leading={
+            <IconButton
+              variant="standard"
+              icon="arrow_back"
+              label="Go back"
+              onClick={() => navigate(-1)}
+            />
+          }
+        />
+        <div className={styles.content}>
+          <Skeleton width="60%" height="28px" radius="8px" />
+          <Skeleton width="100%" height="220px" radius="24px" />
+          <Skeleton width="100%" height="140px" radius="24px" />
+          <Skeleton width="100%" height="180px" radius="24px" />
         </div>
-        <div style={{ height: "16px" }}></div>
-        <Skeleton width="100%" height="50px" radius="12px" />
-        <div style={{ height: "16px" }}></div>
-        <Skeleton width="100%" height="200px" radius="12px" />
-        <div style={{ height: "16px" }}></div>
-        <Skeleton width="100%" height="150px" radius="12px" />
-        <div style={{ height: "16px" }}></div>
-        <Skeleton width="100%" height="100px" radius="12px" />
       </div>
     );
   }
 
   if (error || !jobData) {
     return (
-      <div className={styles.detailsContainer}>
-        <ErrorState message={error} />
+      <div className={styles.page}>
+        <TopAppBar
+          title="Job details"
+          leading={
+            <IconButton
+              variant="standard"
+              icon="arrow_back"
+              label="Go back"
+              onClick={() => navigate(-1)}
+            />
+          }
+        />
+        <div className={styles.content}>
+          <ErrorState
+            message={error || "This job could not be found."}
+            onRetry={() => {
+              setError(null);
+              setIsLoading(true);
+              setReloadKey((k) => k + 1);
+            }}
+          />
+        </div>
       </div>
     );
   }
@@ -143,16 +185,24 @@ const JobDetails = () => {
   const isTransferred = status === "Transferred";
   const isCancelled = status === "Cancelled";
 
+  const photoSrcs = (jobData.photos || []).map((p) =>
+    typeof p === "string" ? p : p.url || p.src || "",
+  );
+  const accessories = jobData.accessoriesRetained || [];
+
   const handleAdvanceStatus = async () => {
     let newStatus = "";
     let eventText = "";
+    let icon = "check_circle";
 
     if (status === "Pending Confirmation") {
       newStatus = "In Progress";
       eventText = "Status updated to In Progress";
+      icon = "build";
     } else if (status === "In Progress") {
       newStatus = "Ready for Pickup";
       eventText = "Marked as Ready for Pickup";
+      icon = "inventory_2";
     } else if (status === "Ready for Pickup") {
       setIsCollectionOpen(true);
       return;
@@ -164,7 +214,7 @@ const JobDetails = () => {
         setStatus(newStatus);
         setTimeline((prev) => [
           ...prev,
-          { time: "Just now", event: eventText },
+          { time: "Just now", text: eventText, icon },
         ]);
         setSuccessSheet({
           open: true,
@@ -187,6 +237,13 @@ const JobDetails = () => {
     return "Job Completed";
   };
 
+  const getButtonIcon = () => {
+    if (status === "Pending Confirmation") return "play_arrow";
+    if (status === "In Progress") return "inventory_2";
+    if (status === "Ready for Pickup") return "point_of_sale";
+    return "task_alt";
+  };
+
   const handleLogPayment = async (e) => {
     e.preventDefault();
     const amount = parseFloat(newPaymentAmount);
@@ -199,7 +256,8 @@ const JobDetails = () => {
             ...prev,
             {
               time: "Just now",
-              event: `Payment of ₦${amount.toLocaleString()} logged`,
+              text: `Payment of ₦${amount.toLocaleString()} logged`,
+              icon: "payments",
             },
           ]);
           setNewPaymentAmount("");
@@ -228,8 +286,8 @@ const JobDetails = () => {
           ...prev,
           {
             time: "Just now",
-            event:
-              "Transfer Accepted. Device is currently with the specialist.",
+            text: "Transfer Accepted. Device is currently with the specialist.",
+            icon: "swap_horiz",
           },
         ]);
         setSuccessSheet({
@@ -238,8 +296,8 @@ const JobDetails = () => {
           message: "Device is currently with the specialist.",
         });
       })
-      .catch((error) => {
-        throw new Error(error.message || "Failed to accept transfer");
+      .catch((err) => {
+        throw new Error(err.message || "Failed to accept transfer");
       });
   };
 
@@ -251,7 +309,8 @@ const JobDetails = () => {
       ...prev,
       {
         time: "Just now",
-        event: `Job Closed. Device collected. Customer PIN verified.`,
+        text: "Job Closed. Device collected. Customer PIN verified.",
+        icon: "task_alt",
       },
     ]);
     setSuccessSheet({
@@ -277,7 +336,11 @@ const JobDetails = () => {
     setIsSheetOpen(false);
     setTimeline((prev) => [
       ...prev,
-      { time: "Just now", event: "Transfer Declined. Negotiation required." },
+      {
+        time: "Just now",
+        text: "Transfer Declined. Negotiation required.",
+        icon: "block",
+      },
     ]);
     setSuccessSheet({
       open: true,
@@ -307,7 +370,10 @@ const JobDetails = () => {
           ...prev,
           {
             time: "Just now",
-            event: `New quote raised (₦${Number(newQuoteData.price).toLocaleString()}) and authorized by customer.`,
+            text: `New quote raised (₦${Number(
+              newQuoteData.price,
+            ).toLocaleString()}) and authorized by customer.`,
+            icon: "request_quote",
           },
         ]);
         setSuccessSheet({
@@ -316,9 +382,9 @@ const JobDetails = () => {
           message: "Customer authorized the new price. Job is now active.",
         });
       })
-      .catch((error) => {
-        showToast(error.message || "Failed to requote job", "error");
-        throw new Error(error.message || "Failed to requote job");
+      .catch((err) => {
+        showToast(err.message || "Failed to requote job", "error");
+        throw new Error(err.message || "Failed to requote job");
       });
   };
 
@@ -345,9 +411,10 @@ const JobDetails = () => {
           ...prev,
           {
             time: "Just now",
-            event: jobData.customerConfirmed
+            text: jobData.customerConfirmed
               ? "Job Cancelled. Customer PIN verified."
               : "Job Cancelled by Engineer (Pre-confirmation).",
+            icon: "cancel",
           },
         ]);
         setSuccessSheet({
@@ -357,334 +424,329 @@ const JobDetails = () => {
             "The job has been successfully cancelled and moved to history.",
         });
       })
-      .catch((error) => {
-        showToast(error.message || "Failed to cancel job", "error");
-        throw new Error(error.message || "Failed to cancel job");
+      .catch((err) => {
+        showToast(err.message || "Failed to cancel job", "error");
+        throw new Error(err.message || "Failed to cancel job");
       })
       .finally(() => {
         setIsCancelling(false);
       });
   };
 
-  return (
-    <div className={styles.detailsContainer}>
-      <div className={styles.detailsHeader}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        <div className={styles.headerInfo}>
-          <h1>{jobData.deviceModel}</h1>
-          <p>
-            #{jobData.id} · {status}
-          </p>
-        </div>
-      </div>
+  const errorButtonStyle = {
+    "--md-text-button-label-text-color": "var(--md-sys-color-error)",
+    "--md-text-button-icon-color": "var(--md-sys-color-error)",
+  };
 
-      <div className={styles.toggleRow}>
-        <span className={styles.toggleLabel}>Customer Confirmation</span>
-        <div
-          className={`${styles.toggleSwitch} ${jobData.customerConfirmed ? styles.on : ""}`}
+  const renderActions = () => {
+    if (jobData.transferStatus === "pending_acceptance") {
+      return (
+        <Button
+          variant="filled"
+          full
+          icon="how_to_reg"
+          onClick={() => setIsSheetOpen(true)}
         >
-          <div className={styles.toggleHandle}></div>
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Agreement Details</h2>
-        <div className={styles.detailRow}>
-          <span className={styles.detailLabel}>Customer</span>
-          <span className={styles.detailValue}>{jobData.customer?.name}</span>
-        </div>
-
-        <div className={styles.contactRow}>
-          <a
-            href={`tel:${jobData.customer?.phone}`}
-            className={styles.contactBtn}
+          Accept Transfer
+        </Button>
+      );
+    }
+    if (isTransferred || jobData.childJob) {
+      return (
+        <Button
+          variant="filled"
+          full
+          icon="engineering"
+          onClick={() => navigate(`/app/job/${jobData.childJob?.id}`)}
+        >
+          View Specialist's Job
+        </Button>
+      );
+    }
+    if (isExpired) {
+      return (
+        <Button
+          variant="filled"
+          full
+          icon="request_quote"
+          onClick={() => setIsRequoteOpen(true)}
+        >
+          Raise New Quote
+        </Button>
+      );
+    }
+    if (isCancelled) {
+      return (
+        <Button variant="tonal" full icon="block" disabled>
+          Job Cancelled
+        </Button>
+      );
+    }
+    return (
+      <>
+        <Button
+          variant="filled"
+          full
+          icon={status === "Completed" ? undefined : getButtonIcon()}
+          onClick={handleAdvanceStatus}
+          disabled={status === "Completed" || isUpdatingStatus}
+        >
+          {isUpdatingStatus ? "Updating…" : getButtonLabel()}
+        </Button>
+        {status === "Pending Confirmation" && !jobData.customerConfirmed && (
+          <Button
+            variant="outlined"
+            full
+            icon="edit"
+            onClick={() =>
+              navigate("/app/intake", { state: { editJobData: jobData } })
+            }
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M22 16.92V19.92C22 20.52 21.52 21 20.92 21C9.7 21 1 12.3 1 1.08C1 0.48 1.48 0 2.08 0H5.08C5.68 0 6.16 0.48 6.16 1.08C6.16 2.68 6.36 4.24 6.76 5.74C6.88 6.22 6.74 6.74 6.38 7.1L4.6 8.88C6.06 11.7 8.3 13.94 11.12 15.4L12.9 13.62C13.26 13.26 13.78 13.12 14.26 13.24C15.76 13.64 17.32 13.84 18.92 13.84C19.52 13.84 20 14.32 20 14.92V16.92Z"
-                transform="translate(1 1)"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Call
-          </a>
-          <a
-            href={`https://wa.me/234${jobData.customer?.phone?.slice(1)}`}
-            target="_blank"
-            rel="noreferrer"
-            className={styles.contactBtn}
+            Edit Details
+          </Button>
+        )}
+        {status !== "Completed" && (
+          <Button
+            variant="text"
+            full
+            icon="cancel"
+            onClick={handleCancelClick}
+            disabled={isCancelling}
+            style={errorButtonStyle}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M21 11.5C21 16.7467 16.7467 21 11.5 21C9.88149 21 8.35519 20.6039 7.01829 19.9041L3 21L4.0959 16.9817C3.39613 15.6448 3 14.1185 3 12.5C3 7.25329 7.25329 3 12.5 3C17.7467 3 22 7.25329 22 12.5L21 11.5Z"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            WhatsApp
-          </a>
-        </div>
+            {isCancelling ? "Cancelling…" : "Cancel Job"}
+          </Button>
+        )}
+      </>
+    );
+  };
 
-        <div className={styles.detailRow}>
-          <span className={styles.detailLabel}>Quoted Price</span>
-          <span className={`${styles.detailValue} ${styles.detailValueMono}`}>
-            ₦{(jobData.quotedPrice || 0).toLocaleString()}
-          </span>
-        </div>
-        <div className={styles.detailRow}>
-          <span className={styles.detailLabel}>Total Paid</span>
-          <span className={`${styles.detailValue} ${styles.detailValueMono}`}>
-            ₦{(totalPaid || 0).toLocaleString()}
-          </span>
-        </div>
-        <div className={styles.detailRow}>
+  return (
+    <div className={styles.page}>
+      <TopAppBar
+        title={jobData.deviceModel}
+        subtitle={`#${jobData.id}`}
+        leading={
+          <IconButton
+            variant="standard"
+            icon="arrow_back"
+            label="Go back"
+            onClick={() => navigate(-1)}
+          />
+        }
+      />
+
+      <div className={styles.content}>
+        <div className={styles.statusRow}>
+          <StatusChip status={status} />
           <span
-            className={styles.detailLabel}
-            style={{ color: "var(--accent)" }}
+            className={`${styles.confirmChip} ${
+              jobData.customerConfirmed ? styles.confirmed : ""
+            } md-typescale-label-large`}
           >
-            Outstanding Balance
-          </span>
-          <span
-            className={`${styles.detailValue} ${styles.detailValueMono}`}
-            style={{ color: "var(--accent)" }}
-          >
-            ₦{(outstandingBalance || 0).toLocaleString()}
-          </span>
-        </div>
-
-        <div className={styles.detailRow}>
-          <span
-            className={`${styles.detailLabel} ${isExpired ? styles.expiredText : ""}`}
-          >
-            Quote Validity
-            <span className={styles.infoIcon}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M12 8H12.01"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M11 12H12V16"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className={styles.tooltip}>
-                {isExpired
-                  ? "This quote has expired. Please raise a new quote."
-                  : "The quoted price is valid for this period."}
-              </span>
-            </span>
-          </span>
-          <span
-            className={`${styles.detailValue} ${isExpired ? styles.expiredText : ""}`}
-          >
-            {jobData.quoteValidityDays} Days
-          </span>
-        </div>
-
-        {!showPaymentInput ? (
-          !isTransferred &&
-          !isCancelled &&
-          outstandingBalance > 0 && (
-            <button
-              className={styles.logPaymentBtn}
-              onClick={() => setShowPaymentInput(true)}
-            >
-              + Log New Payment
-            </button>
-          )
-        ) : (
-          <form className={styles.logPaymentInline} onSubmit={handleLogPayment}>
-            <input
-              type="number"
-              className={styles.logPaymentInput}
-              placeholder="Enter amount"
-              value={newPaymentAmount}
-              onChange={(e) => setNewPaymentAmount(e.target.value)}
-              autoFocus
-              required
-              disabled={isSavingPayment}
+            <Icon
+              name={
+                jobData.customerConfirmed ? "verified_user" : "hourglass_top"
+              }
+              size={16}
             />
-            <button
-              type="submit"
-              className={styles.logPaymentSubmit}
-              disabled={isSavingPayment}
-            >
-              {isSavingPayment ? (
-                <span className={styles.spinner}></span>
-              ) : (
-                "Add"
-              )}
-            </button>
-            <button
-              type="button"
-              className={styles.cancelPaymentBtn}
-              onClick={() => setShowPaymentInput(false)}
-              disabled={isSavingPayment}
-            >
-              Cancel
-            </button>
-          </form>
-        )}
-      </div>
+            {jobData.customerConfirmed
+              ? "Customer confirmed"
+              : "Awaiting confirmation"}
+          </span>
+        </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Diagnosis & Parts</h2>
-        <div className={styles.detailRow} style={{ alignItems: "flex-start" }}>
-          <span className={styles.detailLabel}>Accessories</span>
-          <div className={styles.pillContainer}>
-            {jobData.accessoriesRetained?.map((item, index) => (
-              <span key={index} className={styles.pill}>
-                {item}
-              </span>
-            ))}
+        <Card variant="elevated" className={styles.section}>
+          <p className={`${styles.sectionTitle} md-typescale-title-small`}>
+            Agreement details
+          </p>
+
+          <div className={styles.detailRow}>
+            <span className={`${styles.detailLabel} md-typescale-body-medium`}>
+              Customer
+            </span>
+            <span className={`${styles.detailValue} md-typescale-body-medium`}>
+              {jobData.customer?.name}
+            </span>
           </div>
-        </div>
-        <p className={styles.faultText}>{jobData.faultDescription}</p>
-      </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Condition Photos</h2>
-        <div className={styles.photoGrid}>
-          {jobData.photos?.length > 0 ? (
-            jobData.photos.map((photo, index) => (
-              <div key={index} className={styles.photoPlaceholder}>
-                <img
-                  src={photo.url}
-                  alt={`Condition ${index}`}
-                  className={styles.photoImage}
-                />
-              </div>
-            ))
-          ) : (
-            <div className={styles.photoPlaceholder}>No Image</div>
-          )}
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Job History</h2>
-        <div className={styles.timeline}>
-          {timeline.map((item, index) => (
-            <div key={index} className={styles.timelineItem}>
-              <p className={styles.timelineTime}>{item.time}</p>
-              <p className={styles.timelineEvent}>{item.event}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {jobData.isReturn && jobData.parentJobId && (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Linked History</h2>
-          <button
-            className={styles.linkedJobBtn}
-            onClick={() => navigate(`/app/job/${jobData.parentJobId}`)}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M9 14L4 9L9 4M4 9H15C18.866 9 22 12.134 22 16C22 19.866 18.866 23 15 23H12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            View Original Repair
-          </button>
-        </div>
-      )}
-
-      <div className={styles.actionsContainer}>
-        {jobData.transferStatus === "pending_acceptance" ? (
-          <button
-            className={`${styles.statusBtn} ${styles.statusBtnPrimary}`}
-            onClick={() => setIsSheetOpen(true)}
-          >
-            Accept Transfer
-          </button>
-        ) : isTransferred || jobData.childJob ? (
-          <button
-            className={`${styles.statusBtn} ${styles.statusBtnPrimary}`}
-            onClick={() => navigate(`/app/job/${jobData.childJob.id}`)}
-          >
-            View Specialist's Job
-          </button>
-        ) : isExpired ? (
-          <button
-            className={`${styles.statusBtn} ${styles.statusBtnPrimary}`}
-            onClick={() => setIsRequoteOpen(true)}
-          >
-            Raise New Quote
-          </button>
-        ) : isCancelled ? (
-          <button className={`${styles.statusBtn}`} disabled>
-            Job Cancelled
-          </button>
-        ) : (
-          <>
-            <button
-              className={`${styles.statusBtn} ${status !== "Completed" ? styles.statusBtnPrimary : ""}`}
-              onClick={handleAdvanceStatus}
-              disabled={status === "Completed" || isUpdatingStatus}
+          <div className={styles.contactRow}>
+            <a
+              className={styles.contactBtn}
+              href={`tel:${jobData.customer?.phone}`}
             >
-              {isUpdatingStatus ? (
-                <>
-                  <span className={styles.spinner}></span> Updating...
-                </>
-              ) : (
-                getButtonLabel()
-              )}
-            </button>
-            {status === "Pending Confirmation" &&
-              !jobData.customerConfirmed && (
-                <button
-                  className={styles.handoffBtn}
-                  onClick={() =>
-                    navigate("/app/intake", { state: { editJobData: jobData } })
-                  }
-                >
-                  Edit Details
-                </button>
-              )}
-            {status !== "Completed" && (
-              <button
-                className={styles.cancelJobBtn}
-                onClick={handleCancelClick}
-                disabled={isCancelling}
+              <Icon name="call" size={18} />
+              Call
+            </a>
+            <a
+              className={styles.contactBtn}
+              href={`https://wa.me/234${jobData.customer?.phone?.slice(1)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Icon name="chat" size={18} />
+              WhatsApp
+            </a>
+          </div>
+
+          <div className={styles.detailRow}>
+            <span className={`${styles.detailLabel} md-typescale-body-medium`}>
+              Quoted price
+            </span>
+            <span
+              className={`${styles.detailValue} ${styles.mono} md-typescale-body-medium`}
+            >
+              {naira(jobData.quotedPrice)}
+            </span>
+          </div>
+          <div className={styles.detailRow}>
+            <span className={`${styles.detailLabel} md-typescale-body-medium`}>
+              Total paid
+            </span>
+            <span
+              className={`${styles.detailValue} ${styles.mono} md-typescale-body-medium`}
+            >
+              {naira(totalPaid)}
+            </span>
+          </div>
+
+          <div className={styles.outstanding}>
+            <span className="md-typescale-title-small">
+              Outstanding balance
+            </span>
+            <span
+              className={`${styles.outstandingAmount} md-typescale-title-medium`}
+            >
+              {naira(outstandingBalance)}
+            </span>
+          </div>
+
+          <div
+            className={`${styles.validity} ${isExpired ? styles.expired : ""}`}
+          >
+            <Icon
+              name={isExpired ? "timer_off" : "event_available"}
+              size={16}
+            />
+            <span className="md-typescale-body-small">
+              {isExpired
+                ? "This quote has expired — raise a new quote."
+                : `Quote valid for ${jobData.quoteValidityDays} days.`}
+            </span>
+          </div>
+
+          {!isTransferred &&
+            !isCancelled &&
+            outstandingBalance > 0 &&
+            (showPaymentInput ? (
+              <form className={styles.payForm} onSubmit={handleLogPayment}>
+                <TextField
+                  className={styles.payField}
+                  label="Payment amount"
+                  type="number"
+                  inputmode="numeric"
+                  prefixText="₦ "
+                  value={newPaymentAmount}
+                  onChange={(e) => setNewPaymentAmount(e.target.value)}
+                  required
+                  disabled={isSavingPayment}
+                />
+                <div className={styles.payActions}>
+                  <Button
+                    type="button"
+                    variant="text"
+                    onClick={() => setShowPaymentInput(false)}
+                    disabled={isSavingPayment}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="filled"
+                    icon="add"
+                    disabled={isSavingPayment}
+                  >
+                    {isSavingPayment ? "Saving…" : "Add"}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <Button
+                variant="tonal"
+                icon="add"
+                onClick={() => setShowPaymentInput(true)}
+                style={{ marginTop: "6px" }}
               >
-                {isCancelling ? "Cancelling..." : "Cancel Job"}
-              </button>
-            )}
-          </>
+                Log new payment
+              </Button>
+            ))}
+        </Card>
+
+        <Card variant="elevated" className={styles.section}>
+          <p className={`${styles.sectionTitle} md-typescale-title-small`}>
+            Diagnosis & parts
+          </p>
+          <p className={`${styles.subLabel} md-typescale-label-large`}>
+            Reported fault
+          </p>
+          <p className={`${styles.fault} md-typescale-body-medium`}>
+            {jobData.faultDescription}
+          </p>
+          {accessories.length > 0 && (
+            <>
+              <p
+                className={`${styles.subLabel} ${styles.subLabelTop} md-typescale-label-large`}
+              >
+                Accessories retained
+              </p>
+              <div className={styles.accessories}>
+                {accessories.map((item, i) => (
+                  <span
+                    key={i}
+                    className={`${styles.chip} md-typescale-label-large`}
+                  >
+                    <Icon name="cable" size={14} />
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </Card>
+
+        {photoSrcs.length > 0 && (
+          <Card variant="elevated" className={styles.section}>
+            <p className={`${styles.sectionTitle} md-typescale-title-small`}>
+              Condition photos
+            </p>
+            <PhotoGrid photos={photoSrcs} onOpen={(i) => setViewerIndex(i)} />
+          </Card>
         )}
+
+        <Card variant="elevated" className={styles.section}>
+          <p className={`${styles.sectionTitle} md-typescale-title-small`}>
+            Job history
+          </p>
+          <Timeline events={timeline} />
+        </Card>
+
+        {jobData.isReturn && jobData.parentJobId && (
+          <Card variant="elevated" className={styles.section}>
+            <p className={`${styles.sectionTitle} md-typescale-title-small`}>
+              Linked history
+            </p>
+            <Button
+              variant="outlined"
+              full
+              icon="undo"
+              onClick={() => navigate(`/app/job/${jobData.parentJobId}`)}
+            >
+              View Original Repair
+            </Button>
+          </Card>
+        )}
+
+        <div className={styles.actions}>{renderActions()}</div>
       </div>
 
       {isSheetOpen && (
@@ -692,6 +754,7 @@ const JobDetails = () => {
           onAccept={handleAcceptTransfer}
           onDecline={handleDeclineTransfer}
           title="Accept Device Transfer?"
+          fromName={jobData.shop?.engineerName || jobData.shop?.shopName}
           onClose={() => setIsSheetOpen(false)}
         />
       )}
@@ -717,7 +780,6 @@ const JobDetails = () => {
         />
       )}
 
-      {/* Updated PinPads with onForgotPin */}
       {isRequotePinOpen && (
         <PinPad
           onProcess={handleRequotePinSuccess}
@@ -744,7 +806,6 @@ const JobDetails = () => {
         />
       )}
 
-      {/* Forgot PIN Sheet */}
       {isForgotPinOpen && (
         <ForgotPinSheet
           onClose={() => setIsForgotPinOpen(false)}
@@ -768,6 +829,13 @@ const JobDetails = () => {
           }
         />
       )}
+
+      <PhotoViewer
+        open={viewerIndex >= 0}
+        photos={photoSrcs}
+        startIndex={viewerIndex < 0 ? 0 : viewerIndex}
+        onClose={() => setViewerIndex(-1)}
+      />
     </div>
   );
 };

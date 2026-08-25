@@ -1,235 +1,190 @@
-.dashboardContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
-  padding: 20px;
-  padding-bottom: 100px;
-  font-family: var(--sans);
-  color: var(--text-primary);
+.page {
+  padding-bottom: 32px;
 }
-.appBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-.brandGroup {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-.brandMark {
-  width: 36px;
-  height: 36px;
+
+.mark {
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  flex-shrink: 0;
-}
-.title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-.subtitle {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin: 2px 0 0 0;
-}
-.iconBtn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: var(--surface);
-  color: var(--text-primary);
-  flex-shrink: 0;
-  transition: opacity 0.1s;
-}
-.iconBtn:active {
-  opacity: 0.6;
 }
 
-.spotlightCard {
-  background-color: var(--surface);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 40px;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-.spotlightCard:active {
-  transform: scale(0.98);
-}
-.spotlightHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-.spotlightLabel {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--accent);
-  letter-spacing: 1px;
-  margin: 0 0 5px 0;
-  font-weight: bold;
-}
-.spotlightDevice {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0;
-}
-.spotlightShop {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin: 5px 0 0 0;
+.bell {
+  position: relative;
 }
 
-.statusPill {
-  font-size: 0.7rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 6px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-}
-.statusActive {
-  background-color: rgba(0, 180, 216, 0.15);
-  color: #00b4d8;
-}
-.statusCancelled {
-  background-color: rgba(255, 77, 77, 0.15);
-  color: #ff4d4d;
-}
-
-.spotlightFooter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid var(--bg-primary);
-  padding-top: 15px;
-}
-.balanceInfo {
-  display: flex;
-  flex-direction: column;
-}
-.balanceLabel {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 2px;
-}
-.balanceAmount {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--text-primary);
-  font-family: var(--mono);
-}
-.trackBtn {
-  background: var(--bg-primary);
-  border: none;
-  color: var(--text-primary);
-  padding: 8px 15px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-.trackBtn:active {
-  opacity: 0.6;
-}
-
-.historySection {
-  margin-top: 10px;
-}
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.sectionTitle {
-  font-size: 1rem;
+.bellBadge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  font-size: 11px;
   font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-}
-.seeAllBtn {
-  background: none;
-  border: none;
-  color: var(--accent);
-  font-size: 0.8rem;
-  cursor: pointer;
-  font-weight: bold;
+  line-height: 16px;
+  text-align: center;
+  box-sizing: border-box;
+  pointer-events: none;
+  border: 2px solid var(--md-sys-color-surface);
 }
 
-.historyList {
+.content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+  box-sizing: border-box;
 }
-.historyCard {
+
+.spotlight {
+  overflow: hidden;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.spotlightBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+}
+
+.spotlightHead {
   display: flex;
   align-items: center;
-  gap: 15px;
-  background-color: var(--surface);
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-  transition: transform 0.1s;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
 }
-.historyCard:active {
-  transform: scale(0.98);
+
+.spotlightTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   opacity: 0.9;
 }
-.historyIcon {
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-.historyInfo {
-  flex: 1;
-}
-.historyDevice {
-  font-size: 0.95rem;
+
+.spotlightDevice {
   margin: 0;
-  color: var(--text-primary);
-  font-weight: 600;
-}
-.historyMeta {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin: 2px 0 0 0;
-}
-.historyStatus {
-  font-size: 0.7rem;
-  color: #2ecc71;
-  background: rgba(46, 204, 113, 0.15);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: bold;
-  text-transform: uppercase;
 }
 
-@media (min-width: 768px) {
-  .dashboardContainer {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 32px;
-    padding-bottom: 100px;
-  }
-  .title {
-    font-size: 1.4rem;
-  }
-  .subtitle {
-    font-size: 0.85rem;
-  }
-  .historyList {
+.spotlightShop {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.spotlightFoot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.balance {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.balanceLabel {
+  opacity: 0.85;
+}
+
+.balanceAmount {
+  font-family: var(--kd-font-mono, monospace);
+  font-weight: 700;
+}
+
+.openLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+
+.cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cabinetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.cabinetTitle {
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+}
+
+.seeAll {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cabinetList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cabinetCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cabinetIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--md-sys-shape-corner-full, 999px);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.cabinetInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cabinetDevice {
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cabinetMeta {
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 600px) {
+  .cabinetList {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
   }
 }

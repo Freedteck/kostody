@@ -1,43 +1,58 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./CustomerDashboard.module.css";
-import mark from "../../assets/mark.png";
-import EmptyState from "../../components/emptyState/EmptyState";
-import CustomerNotifications from "../../components/customerNotifications/CustomerNotifications";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  TopAppBar,
+  IconButton,
+  Card,
+  StatusChip,
+  Icon,
+  Skeleton,
+  EmptyState,
+  ErrorState,
+} from "../../ui";
 import { getCustomerJobs } from "../../services/api";
-import { Skeleton } from "../../components/skeleton/Skeleton";
-import ErrorState from "../../components/errorState/ErrorState";
+import useNotifications from "../../hooks/useNotifications";
+import mark from "../../assets/mark.png";
+import styles from "./CustomerDashboard.module.css";
+
+const naira = (value) => `₦${(Number(value) || 0).toLocaleString()}`;
+
+const outstandingOf = (job) => {
+  const totalPaid = (job.payments || []).reduce((sum, p) => sum + p.amount, 0);
+  return (Number(job.quotedPrice) || 0) - totalPaid;
+};
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [customerId] = useState(
+    () => JSON.parse(localStorage.getItem("kostody_customer"))?.id || null,
+  );
+
+  const { unreadCount } = useNotifications("customer", customerId);
 
   useEffect(() => {
     const customerData = JSON.parse(localStorage.getItem("kostody_customer"));
     if (!customerData) {
       navigate("/c/login");
-      return;
+      return undefined;
     }
-
-    const fetchJobs = async () => {
-      setIsLoading(true);
-      setError(null);
-      await getCustomerJobs(customerData.id)
-        .then((data) => {
-          setJobs(data);
-        })
-        .catch(() => {
-          setError("Failed to load repairs.");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    let active = true;
+    getCustomerJobs(customerData.id)
+      .then((data) => {
+        if (active) setJobs(data);
+      })
+      .catch(() => {
+        if (active) setError("Failed to load repairs.");
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
     };
-
-    fetchJobs();
   }, [navigate]);
 
   const activeRepairs = jobs.filter(
@@ -48,147 +63,143 @@ const CustomerDashboard = () => {
   );
   const activeRepair = activeRepairs[0];
 
-  const calculateOutstanding = (job) => {
-    const totalPaid = (job.payments || []).reduce(
-      (sum, p) => sum + p.amount,
-      0,
+  const bell = (
+    <div className={styles.bell}>
+      <IconButton
+        variant="standard"
+        icon="notifications"
+        label="Notifications"
+        onClick={() => navigate("/c/notifications")}
+      />
+      {unreadCount > 0 && (
+        <span className={styles.bellBadge}>
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </span>
+      )}
+    </div>
+  );
+
+  const renderBody = () => {
+    if (isLoading) {
+      return (
+        <>
+          <Skeleton width="100%" height="188px" radius="24px" />
+          <Skeleton width="100%" height="76px" radius="16px" />
+          <Skeleton width="100%" height="76px" radius="16px" />
+        </>
+      );
+    }
+    if (error) {
+      return <ErrorState message={error} />;
+    }
+    return (
+      <>
+        {activeRepair ? (
+          <Card
+            as={Link}
+            to={`/c/${activeRepair.id}`}
+            viewTransition
+            variant="elevated"
+            interactive
+            padded={false}
+            className={styles.spotlight}
+          >
+            <div className={styles.spotlightBody}>
+              <div className={styles.spotlightHead}>
+                <span
+                  className={`${styles.spotlightTag} md-typescale-label-large`}
+                >
+                  <Icon name="handyman" size={16} filled />
+                  Currently in the shop
+                </span>
+                <StatusChip status={activeRepair.status} size="small" />
+              </div>
+              <h2
+                className={`${styles.spotlightDevice} md-typescale-headline-small`}
+              >
+                {activeRepair.deviceModel}
+              </h2>
+              <p className={`${styles.spotlightShop} md-typescale-body-large`}>
+                {activeRepair.shop?.shopName}
+              </p>
+              <div className={styles.spotlightFoot}>
+                <div className={styles.balance}>
+                  <span className={`${styles.balanceLabel} md-typescale-label-medium`}>
+                    Outstanding balance
+                  </span>
+                  <span
+                    className={`${styles.balanceAmount} md-typescale-title-large`}
+                  >
+                    {naira(outstandingOf(activeRepair))}
+                  </span>
+                </div>
+                <span className={`${styles.openLink} md-typescale-label-large`}>
+                  View progress
+                  <Icon name="arrow_forward" size={18} />
+                </span>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <EmptyState
+            icon="devices"
+            title="No active repairs"
+            message="When you drop a device at a Kostody-powered shop, it will appear here."
+          />
+        )}
+
+        {history.length > 0 && (
+          <section className={styles.cabinet}>
+            <div className={styles.cabinetHead}>
+              <h2 className={`${styles.cabinetTitle} md-typescale-title-medium`}>
+                Device Cabinet
+              </h2>
+              <Link to="/c/history" className={styles.seeAll}>
+                See all
+              </Link>
+            </div>
+            <div className={styles.cabinetList}>
+              {history.slice(0, 6).map((job) => (
+                <Card
+                  key={job.id}
+                  as={Link}
+                  to={`/c/${job.id}`}
+                  viewTransition
+                  variant="outlined"
+                  interactive
+                  className={styles.cabinetCard}
+                >
+                  <span className={styles.cabinetIcon}>
+                    <Icon name="smartphone" size={22} />
+                  </span>
+                  <div className={styles.cabinetInfo}>
+                    <h3 className={`${styles.cabinetDevice} md-typescale-title-small`}>
+                      {job.deviceModel}
+                    </h3>
+                    <p className={`${styles.cabinetMeta} md-typescale-body-medium`}>
+                      {job.shop?.shopName} ·{" "}
+                      {new Date(job.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <StatusChip status={job.status} size="small" />
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+      </>
     );
-    return (job.quotedPrice || 0) - totalPaid;
   };
 
   return (
-    <div className={styles.dashboardContainer}>
-      <header className={styles.appBar}>
-        <div className={styles.brandGroup}>
-          <img src={mark} alt="Kostody" className={styles.brandMark} />
-          <div>
-            <h1 className={styles.title}>My Devices</h1>
-            <p className={styles.subtitle}>Track and manage your repairs</p>
-          </div>
-        </div>
-        <button
-          className={styles.iconBtn}
-          onClick={() => setIsNotifOpen(true)}
-          title="Notifications"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 17H9M18 17C18.5523 17 19 16.5523 19 16V15.4142C19 15.149 18.8946 14.8946 18.7071 14.7071L18 14V11C18 8.23858 15.7614 6 13 6H11C8.23858 6 6 8.23858 6 11V14L5.29289 14.7071C5.10536 14.8946 5 15.149 5 15.4142V16C5 16.5523 5.44772 17 6 17H18Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-      </header>
-
-      {isLoading ? (
-        <>
-          <Skeleton width="100%" height="150px" radius="16px" />
-          <div style={{ height: "30px" }}></div>
-          <Skeleton width="100%" height="80px" radius="12px" />
-          <div style={{ height: "12px" }}></div>
-          <Skeleton width="100%" height="80px" radius="12px" />
-        </>
-      ) : error ? (
-        <ErrorState message={error} />
-      ) : activeRepair ? (
-        <div
-          className={styles.spotlightCard}
-          onClick={() => navigate(`/c/${activeRepair.id}`)}
-        >
-          <div className={styles.spotlightHeader}>
-            <div>
-              <p className={styles.spotlightLabel}>Currently in the shop</p>
-              <h2 className={styles.spotlightDevice}>
-                {activeRepair.deviceModel}
-              </h2>
-              <p className={styles.spotlightShop}>
-                {activeRepair.shop?.shopName}
-              </p>
-            </div>
-            <span className={`${styles.statusPill} ${styles.statusActive}`}>
-              {activeRepair.status}
-            </span>
-          </div>
-          <div className={styles.spotlightFooter}>
-            <div className={styles.balanceInfo}>
-              <span className={styles.balanceLabel}>Outstanding Balance</span>
-              <span className={styles.balanceAmount}>
-                ₦{calculateOutstanding(activeRepair).toLocaleString()}
-              </span>
-            </div>
-            <button className={styles.trackBtn}>View Progress →</button>
-          </div>
-        </div>
-      ) : (
-        <EmptyState
-          title="No Active Repairs"
-          message="When you drop a device at a Kostody-powered shop, it will appear here."
-        />
-      )}
-
-      {history.length > 0 && (
-        <div className={styles.historySection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Device Cabinet</h2>
-            <button
-              className={styles.seeAllBtn}
-              onClick={() => navigate("/c/history")}
-            >
-              See All
-            </button>
-          </div>
-          <div className={styles.historyList}>
-            {history.slice(0, 6).map((job) => (
-              <div
-                key={job.id}
-                className={styles.historyCard}
-                onClick={() => navigate(`/c/${job.id}`)}
-              >
-                <div className={styles.historyIcon}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M9 3H15C15.5523 3 16 3.44772 16 4V6H8V4C8 3.44772 8.44772 3 9 3Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                    <rect
-                      x="4"
-                      y="6"
-                      width="16"
-                      height="15"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M9 12H15"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div className={styles.historyInfo}>
-                  <h3 className={styles.historyDevice}>{job.deviceModel}</h3>
-                  <p className={styles.historyMeta}>
-                    {job.shop?.shopName} ·{" "}
-                    {new Date(job.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <span className={styles.historyStatus}>{job.status}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {isNotifOpen && (
-        <CustomerNotifications onClose={() => setIsNotifOpen(false)} />
-      )}
+    <div className={styles.page}>
+      <TopAppBar
+        title="My Devices"
+        subtitle="Track and manage your repairs"
+        leading={<img src={mark} alt="Kostody" className={styles.mark} />}
+        actions={bell}
+      />
+      <div className={styles.content}>{renderBody()}</div>
     </div>
   );
 };

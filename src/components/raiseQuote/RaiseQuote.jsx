@@ -1,6 +1,16 @@
 import { useState } from "react";
+import Sheet from "../../ui/Sheet";
+import TextField from "../../ui/TextField";
+import Select, { Option } from "../../ui/Select";
+import Button from "../../ui/Button";
 import styles from "./RaiseQuote.module.css";
-import BottomSheet from "../bottomSheet/BottomSheet";
+
+const VALIDITY = [
+  { value: "3", label: "3 Days" },
+  { value: "7", label: "7 Days" },
+  { value: "14", label: "14 Days" },
+  { value: "30", label: "30 Days" },
+];
 
 const RaiseQuote = ({ onClose, onSubmit, currentPrice }) => {
   const [price, setPrice] = useState("");
@@ -12,61 +22,52 @@ const RaiseQuote = ({ onClose, onSubmit, currentPrice }) => {
   };
 
   return (
-    <BottomSheet onClose={onClose} title="Raise New Quote">
+    <Sheet
+      open
+      onClose={onClose}
+      title="Raise New Quote"
+      subtitle="The customer must authorize the new price with their PIN."
+    >
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="prevPrice">
-            Previous Price (₦)
-          </label>
-          <input
-            type="text"
-            id="prevPrice"
-            className={styles.input}
-            value={currentPrice.toLocaleString()}
-            disabled
-            style={{
-              backgroundColor: "var(--bg-primary)",
-              color: "var(--text-secondary)",
-            }}
-          />
+        <div className={styles.previous}>
+          <span className="md-typescale-body-medium">Previous price</span>
+          <span className={`${styles.previousAmount} md-typescale-title-medium`}>
+            ₦{(currentPrice || 0).toLocaleString()}
+          </span>
         </div>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="newPrice">
-            New Quoted Price (₦)
-          </label>
-          <input
-            type="number"
-            id="newPrice"
-            className={styles.input}
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="e.g. 30000"
-            required
-            autoFocus
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="newValidity">
-            New Quote Validity
-          </label>
-          <select
-            id="newValidity"
-            className={styles.select}
-            value={validity}
-            onChange={(e) => setValidity(e.target.value)}
-            required
-          >
-            <option value="3">3 Days</option>
-            <option value="7">7 Days</option>
-            <option value="14">14 Days</option>
-            <option value="30">30 Days</option>
-          </select>
-        </div>
-        <button type="submit" className={styles.submitBtn}>
+
+        <TextField
+          className={styles.field}
+          label="New quoted price"
+          type="number"
+          inputmode="numeric"
+          prefixText="₦ "
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="30000"
+          required
+        />
+
+        <Select
+          className={styles.field}
+          label="New quote validity"
+          value={validity}
+          onChange={(e) => setValidity(e.target.value)}
+          leadingIcon="event"
+          required
+        >
+          {VALIDITY.map((v) => (
+            <Option key={v.value} value={v.value}>
+              {v.label}
+            </Option>
+          ))}
+        </Select>
+
+        <Button type="submit" variant="filled" full trailing="arrow_forward">
           Proceed
-        </button>
+        </Button>
       </form>
-    </BottomSheet>
+    </Sheet>
   );
 };
 

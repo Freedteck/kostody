@@ -17,6 +17,7 @@ import CustomerProfilePage from "./pages/customerProfile/CustomerProfile";
 import CustomerHistoryPage from "./pages/customerHistory/CustomerHistory";
 import AuthGuard from "./components/auth/AuthGuard";
 import EditProfile from "./components/editProfile/EditProfile";
+import NotificationCenter from "./pages/notifications/NotificationCenter";
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
             path: "profile/edit",
             Component: EditProfile,
           },
+          {
+            path: "notifications",
+            element: <NotificationCenter role="engineer" />,
+          },
         ],
       },
     ],
@@ -88,6 +93,10 @@ export const router = createBrowserRouter([
           {
             path: "history",
             Component: CustomerHistoryPage,
+          },
+          {
+            path: "notifications",
+            element: <NotificationCenter role="customer" />,
           },
           {
             path: "profile",

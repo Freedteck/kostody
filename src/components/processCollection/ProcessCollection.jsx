@@ -1,7 +1,10 @@
 import { useState } from "react";
-import styles from "./ProcessCollection.module.css";
-import BottomSheet from "../bottomSheet/BottomSheet";
+import Sheet from "../../ui/Sheet";
+import Keypad from "../../ui/Keypad";
+import TextField from "../../ui/TextField";
+import Button from "../../ui/Button";
 import { processPayment } from "../../services/api";
+import styles from "./ProcessCollection.module.css";
 
 const ProcessCollection = ({
   onClose,
@@ -13,152 +16,92 @@ const ProcessCollection = ({
   const [phase, setPhase] = useState(
     outstandingBalance > 0 ? "payment" : "pin",
   );
-  const [pin, setPin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isMismatch, setIsMismatch] = useState(false);
+  const [error, setError] = useState(0);
 
-  const triggerError = (message) => {
-    setError(message);
-    setIsMismatch(true);
-    setTimeout(() => {
-      setPin("");
-      setIsMismatch(false);
-      setError(null);
-    }, 1000);
-  };
-
-  const handleProceedToPin = (e) => {
+  const handleProceed = (e) => {
     e.preventDefault();
     setPhase("pin");
   };
 
   const submitPin = (finalPin) => {
     setIsLoading(true);
-    setError(null);
-
     processPayment(jobDetails.id, finalPin, parseFloat(finalPayment || 0))
       .then(() => {
         onSuccess(finalPin, parseFloat(finalPayment || 0));
       })
-      .catch((err) => {
-        triggerError(err.message || "Invalid PIN");
+      .catch(() => {
+        setError((n) => n + 1);
       })
       .finally(() => {
         setIsLoading(false);
       });
   };
 
-  const handleKeyPress = (val) => {
-    if (isLoading) return;
-
-    if (val === "del") {
-      setPin(pin.slice(0, -1));
-      setError(null);
-    } else if (pin.length < 4) {
-      const newPin = pin + val;
-      setPin(newPin);
-
-      if (newPin.length === 4) {
-        submitPin(newPin);
-      }
-    }
-  };
-
-  const keys = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "blank",
-    "0",
-    "del",
-  ];
+  const remaining = outstandingBalance - parseFloat(finalPayment || 0);
 
   return (
-    <BottomSheet
+    <Sheet
+      open
       onClose={onClose}
       title={phase === "payment" ? "Final Payment" : "Authorize Collection"}
+      dismissible={!isLoading}
     >
-      {phase === "payment" && (
-        <form className={styles.paymentPhase} onSubmit={handleProceedToPin}>
-          <div className={styles.balanceDisplay}>
-            <span className={styles.balanceLabel}>Outstanding Balance</span>
-            <span className={styles.balanceAmount}>
+      {phase === "payment" ? (
+        <form className={styles.form} onSubmit={handleProceed}>
+          <div className={styles.balance}>
+            <span className="md-typescale-body-medium">Outstanding balance</span>
+            <span
+              className={`${styles.balanceAmount} md-typescale-headline-small`}
+            >
               ₦{outstandingBalance.toLocaleString()}
             </span>
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Cash Collected Now (₦)</label>
-            <input
-              type="number"
-              className={styles.input}
-              value={finalPayment}
-              onChange={(e) => setFinalPayment(e.target.value)}
-              placeholder="Enter amount paid by customer"
-            />
-          </div>
+          <TextField
+            className={styles.field}
+            label="Cash collected now"
+            type="number"
+            inputmode="numeric"
+            prefixText="₦ "
+            value={finalPayment}
+            onChange={(e) => setFinalPayment(e.target.value)}
+            placeholder="Amount paid by customer"
+          />
 
-          <button type="submit" className={styles.proceedBtn}>
-            Proceed to Customer Confirmation
-          </button>
+          {finalPayment !== "" && (
+            <p className={`${styles.remaining} md-typescale-body-small`}>
+              Balance after this payment: ₦{remaining.toLocaleString()}
+            </p>
+          )}
+
+          <Button type="submit" variant="filled" full trailing="arrow_forward">
+            Continue to PIN
+          </Button>
         </form>
-      )}
-
-      {phase === "pin" && (
+      ) : (
         <div className={styles.pinPhase}>
-          <div className={styles.jobSummary}>
-            <h3 className={styles.summaryDevice}>{jobDetails?.deviceModel}</h3>
-            <p className={styles.summaryFault}>
-              Customer has tested device and is satisfied.
+          <div className={styles.deviceNote}>
+            <p className={`${styles.deviceName} md-typescale-title-medium`}>
+              {jobDetails?.deviceModel}
+            </p>
+            <p className="md-typescale-body-small">
+              Customer has tested the device and is satisfied.
             </p>
           </div>
-
-          <p className={styles.instruction}>
-            {isLoading
-              ? "Verifying..."
-              : "Enter 4-digit PIN to finalize collection"}
-          </p>
-
-          <div
-            className={`${styles.pinDots} ${isMismatch ? styles.shake : ""}`}
-          >
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`${styles.dot} ${pin.length > i ? styles.active : ""} ${isMismatch ? styles.errorDot : ""}`}
-              ></div>
-            ))}
-          </div>
-
-          {error && <p className={styles.errorText}>{error}</p>}
-
-          <div className={styles.keypad}>
-            {keys.map((key, index) => {
-              if (key === "blank")
-                return <div key={index} className={styles.blankKey}></div>;
-              return (
-                <button
-                  key={index}
-                  className={`${styles.key} ${key === "del" ? styles.delKey : ""}`}
-                  onClick={() => handleKeyPress(key)}
-                  type="button"
-                  disabled={isLoading}
-                >
-                  {key === "del" ? "⌫" : key}
-                </button>
-              );
-            })}
-          </div>
+          <Keypad
+            onComplete={submitPin}
+            error={error}
+            disabled={isLoading}
+            instruction={
+              isLoading
+                ? "Verifying…"
+                : "Enter customer PIN to finalize collection"
+            }
+          />
         </div>
       )}
-    </BottomSheet>
+    </Sheet>
   );
 };
 

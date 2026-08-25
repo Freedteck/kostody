@@ -1,0 +1,165 @@
+:root {
+  --md-ref-typeface-plain: "Roboto Variable", "Roboto", system-ui, "Segoe UI",
+    sans-serif;
+  --md-ref-typeface-brand: "Roboto Variable", "Roboto", system-ui, "Segoe UI",
+    sans-serif;
+  --md-ref-typeface-weight-regular: 400;
+  --md-ref-typeface-weight-medium: 500;
+  --md-ref-typeface-weight-bold: 700;
+
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-large-increased: 20px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 999px;
+
+  --md-sys-state-hover-state-layer-opacity: 0.08;
+  --md-sys-state-focus-state-layer-opacity: 0.1;
+  --md-sys-state-pressed-state-layer-opacity: 0.1;
+
+  --kd-safe-top: env(safe-area-inset-top, 0px);
+  --kd-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --kd-safe-left: env(safe-area-inset-left, 0px);
+  --kd-safe-right: env(safe-area-inset-right, 0px);
+
+  --kd-nav-height: 80px;
+  --kd-rail-width: 88px;
+  --kd-page-max: 1240px;
+
+  --md-sys-color-success: rgb(46 125 74);
+  --md-sys-color-on-success: rgb(255 255 255);
+  --md-sys-color-success-container: rgb(180 240 200);
+  --md-sys-color-on-success-container: rgb(0 45 20);
+}
+
+:root.dark {
+  --md-sys-color-success: rgb(130 220 165);
+  --md-sys-color-on-success: rgb(0 57 27);
+  --md-sys-color-success-container: rgb(20 90 50);
+  --md-sys-color-on-success-container: rgb(180 240 200);
+}
+
+:root.light {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  accent-color: var(--md-sys-color-primary);
+}
+
+#root {
+  isolation: isolate;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-primary) 26%,
+    transparent
+  );
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  line-height: 1;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-rounded[data-filled="true"] {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--md-sys-color-outline-variant);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--md-sys-color-outline);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import styles from "./EditProfile.module.css";
+import { TopAppBar, IconButton, Card, TextField, Select, Option, Button } from "../../ui";
 import { updateShopProfile } from "../../services/api";
 import useShop from "../../hooks/useShop";
 import useToast from "../../hooks/useToast";
+import styles from "./EditProfile.module.css";
+
+const SPECIALTIES = [
+  { value: "General Repairs", label: "General Repairs (Hardware / Software)" },
+  { value: "Hardware / Microsoldering", label: "Hardware / Microsoldering" },
+  { value: "Software / Flashing", label: "Software / Flashing" },
+  { value: "Board Level Repairs", label: "Board Level Repairs" },
+];
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -15,16 +23,19 @@ const EditProfile = () => {
   const [formData, setFormData] = useState(initialData || {});
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    if (!initialData) navigate("/app/profile");
+  }, [initialData, navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSaving(true);
-
-    await updateShopProfile(shopId, formData)
+    updateShopProfile(shopId, formData)
       .then(() => {
         showToast("Profile updated successfully.", "success");
         navigate("/app/profile");
@@ -37,142 +48,118 @@ const EditProfile = () => {
       });
   };
 
-  if (!initialData) {
-    navigate("/app/profile");
-    return null;
-  }
+  if (!initialData) return null;
 
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.formHeader}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+    <div className={styles.page}>
+      <TopAppBar
+        title="Edit profile"
+        leading={
+          <IconButton
+            variant="standard"
+            icon="arrow_back"
+            label="Go back"
+            onClick={() => navigate(-1)}
+          />
+        }
+      />
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <section className={styles.group}>
+          <h2 className={`${styles.groupTitle} md-typescale-title-small`}>
+            Business identity
+          </h2>
+          <Card variant="outlined" className={styles.card}>
+            <TextField
+              className={styles.field}
+              label="Shop / business name"
+              name="shopName"
+              value={formData.shopName || ""}
+              onChange={handleChange}
+              leadingIcon="storefront"
+              required
+              disabled={isSaving}
             />
-          </svg>
-        </button>
-        <h1>Edit Profile</h1>
-      </div>
+            <TextField
+              className={styles.field}
+              label="Lead engineer name"
+              name="engineerName"
+              value={formData.engineerName || ""}
+              onChange={handleChange}
+              leadingIcon="badge"
+              required
+              disabled={isSaving}
+            />
+            <Select
+              className={styles.field}
+              label="Specialty"
+              name="specialty"
+              value={formData.specialty || ""}
+              onChange={handleChange}
+              leadingIcon="handyman"
+              required
+              disabled={isSaving}
+            >
+              {SPECIALTIES.map((s) => (
+                <Option key={s.value} value={s.value}>
+                  {s.label}
+                </Option>
+              ))}
+            </Select>
+          </Card>
+        </section>
 
-      <form onSubmit={handleSubmit}>
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="shopName">
-            Shop / Business Name
-          </label>
-          <input
-            type="text"
-            id="shopName"
-            name="shopName"
-            className={styles.input}
-            value={formData.shopName || ""}
-            onChange={handleChange}
-            required
-            disabled={isSaving}
-          />
-        </div>
+        <section className={styles.group}>
+          <h2 className={`${styles.groupTitle} md-typescale-title-small`}>
+            Contact
+          </h2>
+          <Card variant="outlined" className={styles.card}>
+            <TextField
+              className={styles.field}
+              label="Contact phone (WhatsApp)"
+              type="tel"
+              name="phone"
+              value={formData.phone || ""}
+              onChange={handleChange}
+              leadingIcon="call"
+              required
+              disabled={isSaving}
+            />
+            <TextField
+              className={styles.field}
+              label="Email address"
+              type="email"
+              name="email"
+              value={formData.email || ""}
+              onChange={handleChange}
+              leadingIcon="mail"
+              required
+              disabled={isSaving}
+            />
+            <TextField
+              className={styles.field}
+              label="Shop address / area"
+              name="address"
+              value={formData.address || ""}
+              onChange={handleChange}
+              leadingIcon="location_on"
+              required
+              disabled={isSaving}
+            />
+          </Card>
+        </section>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="engineerName">
-            Lead Engineer Name
-          </label>
-          <input
-            type="text"
-            id="engineerName"
-            name="engineerName"
-            className={styles.input}
-            value={formData.engineerName || ""}
-            onChange={handleChange}
-            required
-            disabled={isSaving}
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="phone">
-            Contact Phone (WhatsApp)
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            className={styles.input}
-            value={formData.phone || ""}
-            onChange={handleChange}
-            required
-            disabled={isSaving}
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="email">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className={styles.input}
-            value={formData.email || ""}
-            onChange={handleChange}
-            required
-            disabled={isSaving}
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="address">
-            Shop Address / Area
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            className={styles.input}
-            value={formData.address || ""}
-            onChange={handleChange}
-            required
-            disabled={isSaving}
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="specialty">
-            Specialty
-          </label>
-          <select
-            id="specialty"
-            name="specialty"
-            className={styles.select}
-            value={formData.specialty || ""}
-            onChange={handleChange}
-            required
+        <div className={styles.actions}>
+          <Button
+            type="submit"
+            variant="filled"
+            full
+            icon="save"
             disabled={isSaving}
           >
-            <option value="General Repairs">
-              General Repairs (Hardware/Software)
-            </option>
-            <option value="Hardware / Microsoldering">
-              Hardware / Microsoldering
-            </option>
-            <option value="Software / Flashing">Software / Flashing</option>
-            <option value="Board Level Repairs">Board Level Repairs</option>
-          </select>
+            {isSaving ? "Saving…" : "Save changes"}
+          </Button>
         </div>
-
-        <button type="submit" className={styles.submitBtn} disabled={isSaving}>
-          {isSaving ? (
-            <>
-              <span className={styles.spinner}></span> Saving...
-            </>
-          ) : (
-            "Save Changes"
-          )}
-        </button>
       </form>
     </div>
   );

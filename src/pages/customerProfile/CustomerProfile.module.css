@@ -1,127 +1,142 @@
-.profileContainer {
-  background-color: var(--bg-primary);
-  min-height: 100vh;
-  padding: 20px;
-  padding-bottom: 100px;
-  font-family: var(--sans);
-  color: var(--text-primary);
-}
-.header {
-  margin-bottom: 30px;
-}
-.header h1 {
-  font-size: 1.4rem;
-  margin: 0;
-  font-weight: 700;
+.page {
+  padding-bottom: 32px;
 }
 
-.identityBlock {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 40px;
-}
-.avatar {
-  width: 60px;
-  height: 60px;
-  background-color: var(--accent-bg);
-  border-radius: 50%;
-  color: var(--accent);
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.customerName {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 700;
-}
-.customerPhone {
-  margin: 5px 0 0 0;
-  color: var(--text-secondary);
-  font-family: var(--mono);
-  font-size: 0.9rem;
+.mark {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
-.settingsGroup {
-  margin-bottom: 30px;
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 16px 0;
+  box-sizing: border-box;
 }
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 4px;
+}
+
+.identityText {
+  min-width: 0;
+}
+
+.name {
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 2px 0 0;
+  font-family: var(--kd-font-mono, monospace);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .groupTitle {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  letter-spacing: 1px;
-  margin: 0 0 10px 10px;
-  font-weight: 600;
+  color: var(--md-sys-color-primary);
+  margin: 0;
+  padding: 0 4px;
 }
 
-.listContainer {
-  background-color: var(--surface);
-  border-radius: 12px;
+.list {
   overflow: hidden;
 }
-.listItem {
+
+.infoRow {
   display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--md-sys-shape-corner-full, 999px);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.infoText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.infoLabel {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.infoValue {
+  color: var(--md-sys-color-on-surface);
+  overflow-wrap: anywhere;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 16px;
+  gap: 16px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  text-align: left;
   cursor: pointer;
-  transition: background-color 0.1s;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--md-sys-motion-duration-short4)
+    var(--md-sys-motion-easing-standard);
 }
-.listItem:active {
-  background-color: #202327;
+
+.actionRow:hover {
+  background-color: var(--md-sys-color-surface-container-high);
 }
-.itemLeft {
+
+.actionRow:active {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.rowLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-.listItem svg {
-  color: var(--text-secondary);
-}
-.listDivider {
-  height: 1px;
-  background-color: var(--bg-primary);
-  margin-left: 47px;
+  gap: 16px;
+  min-width: 0;
 }
 
-.logoutBtn {
-  width: 100%;
-  background-color: rgba(255, 77, 77, 0.1);
-  border: none;
-  color: #ff4d4d;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin-top: 20px;
-}
-.logoutBtn:active {
-  background-color: rgba(255, 77, 77, 0.2);
-  transform: scale(0.98);
+.chevron {
+  color: var(--md-sys-color-on-surface-variant);
+  flex-shrink: 0;
 }
 
-.versionText {
+.version {
   text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  font-family: var(--mono);
-  margin-top: 30px;
-  opacity: 0.6;
-}
-
-@media (min-width: 768px) {
-  .profileContainer {
-    max-width: 768px;
-    margin: 0 auto;
-    padding: 32px;
-    padding-bottom: 100px;
-  }
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 4px 0 0;
 }

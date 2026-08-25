@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./Splash.module.css";
+import { CircularProgress } from "../../ui";
 import mark from "../../assets/mark.png";
+import styles from "./Splash.module.css";
 
 const Splash = () => {
   const navigate = useNavigate();
@@ -24,11 +25,14 @@ const Splash = () => {
   }, [navigate]);
 
   return (
-    <div className={styles.splashContainer}>
-      <div className={styles.logoWrapper}>
-        <img src={mark} alt="Kostody" className={styles.logoMark} />
+    <div className={styles.container}>
+      <div className={styles.brand}>
+        <img src={mark} alt="Kostody" className={styles.logo} />
+        <p className={`${styles.tagline} md-typescale-title-medium`}>
+          Device Repair Chain of Custody
+        </p>
       </div>
-      <p className={styles.tagline}>Device Repair Chain of Custody</p>
+      <CircularProgress indeterminate className={styles.spinner} />
     </div>
   );
 };

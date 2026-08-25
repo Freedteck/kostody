@@ -1,125 +1,78 @@
-import { useState, useRef, useEffect } from "react";
-import styles from "./ChangePin.module.css";
-import BottomSheet from "../bottomSheet/BottomSheet";
+import { useState } from "react";
+import Sheet from "../../ui/Sheet";
+import Keypad from "../../ui/Keypad";
 import { changePin } from "../../services/api";
 import useToast from "../../hooks/useToast";
 
 const ChangePinSheet = ({ onClose, onSuccess, customerId }) => {
+  const { showToast } = useToast();
   const [phase, setPhase] = useState("old");
-  const [pin, setPin] = useState(["", "", "", ""]);
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isMismatch, setIsMismatch] = useState(false);
-  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(0);
+  const [resetKey, setResetKey] = useState(0);
 
-  const inputRefs = useRef([]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      inputRefs.current[0]?.focus();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [phase]);
-
-  const triggerError = (message) => {
-    setError(message);
-    setIsMismatch(true);
-
-    setTimeout(() => {
-      setIsMismatch(false);
-      setPin(["", "", "", ""]);
-      inputRefs.current[0]?.focus();
-    }, 1500);
-  };
-
-  const handlePinChange = (e, index) => {
-    if (isLoading) return;
-    const value = e.target.value;
-    if (!/^\d?$/.test(value)) return;
-
-    if (error || isMismatch) {
-      setError(null);
-      setIsMismatch(false);
-    }
-
-    const newPinArr = [...pin];
-    newPinArr[index] = value;
-    setPin(newPinArr);
-
-    if (value && index < 3) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    if (index === 3 && value) {
-      const fullPin = newPinArr.join("");
-
-      if (phase === "old") {
-        setOldPin(fullPin);
-        setPin(["", "", "", ""]);
-        setError(null);
-        setPhase("new");
-      } else if (phase === "new") {
-        setNewPin(fullPin);
-        setPin(["", "", "", ""]);
-        setPhase("confirm");
-      } else if (phase === "confirm") {
-        if (fullPin === newPin) {
-          submitChange(oldPin, newPin);
-        } else {
-          triggerError("PINs do not match");
-        }
-      }
-    }
-  };
-
-  const submitChange = async (oldPinVal, newPinVal) => {
-    setIsLoading(true);
-    setError(null);
-
-    await changePin(customerId, oldPinVal, newPinVal)
+  const submitChange = (oldVal, newVal) => {
+    setLoading(true);
+    changePin(customerId, oldVal, newVal)
       .then(() => {
         showToast("PIN changed successfully.", "success");
         onSuccess();
       })
       .catch((err) => {
-        triggerError(err.message || "Failed to change PIN");
+        showToast(err.message || "Failed to change PIN", "error");
+        setOldPin("");
+        setNewPin("");
         setPhase("old");
+        setError((e) => e + 1);
+        setResetKey((k) => k + 1);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setLoading(false));
   };
 
-  const getTitle = () => {
-    if (isLoading) return "Verifying...";
-    if (phase === "old") return "Enter Old PIN";
-    if (phase === "new") return "Enter New PIN";
-    return "Confirm New PIN";
+  const handleComplete = (pin) => {
+    if (phase === "old") {
+      setOldPin(pin);
+      setPhase("new");
+      setResetKey((k) => k + 1);
+    } else if (phase === "new") {
+      setNewPin(pin);
+      setPhase("confirm");
+      setResetKey((k) => k + 1);
+    } else if (pin === newPin) {
+      submitChange(oldPin, pin);
+    } else {
+      setError((e) => e + 1);
+    }
   };
+
+  const title = loading
+    ? "Verifying…"
+    : phase === "old"
+      ? "Enter current PIN"
+      : phase === "new"
+        ? "Create new PIN"
+        : "Confirm new PIN";
+
+  const instruction = loading
+    ? "Updating your PIN…"
+    : phase === "old"
+      ? "Enter your current 4-digit PIN"
+      : phase === "new"
+        ? "Choose a new 4-digit PIN"
+        : "Re-enter your new PIN to confirm";
 
   return (
-    <BottomSheet onClose={onClose} title={getTitle()}>
-      <div className={styles.pinContainer}>
-        <div className={`${styles.pinRow} ${isMismatch ? styles.shake : ""}`}>
-          {pin.map((digit, index) => (
-            <input
-              key={index}
-              type="password"
-              inputMode="numeric"
-              maxLength="1"
-              className={`${styles.pinInput} ${isMismatch ? styles.errorDot : ""}`}
-              value={digit}
-              onChange={(e) => handlePinChange(e, index)}
-              ref={(el) => (inputRefs.current[index] = el)}
-              disabled={isLoading}
-            />
-          ))}
-        </div>
-        {error && <p className={styles.errorText}>{error}</p>}
-      </div>
-    </BottomSheet>
+    <Sheet open onClose={onClose} title={title} dismissible={!loading}>
+      <Keypad
+        onComplete={handleComplete}
+        error={error}
+        resetKey={resetKey}
+        disabled={loading}
+        instruction={instruction}
+      />
+    </Sheet>
   );
 };
 
