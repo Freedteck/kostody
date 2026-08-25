@@ -189,6 +189,26 @@ const getShopNotifications = async (shopId) =>
 const getCustomerNotifications = async (customerId) =>
   apiFetch(`/notifications/customer/${customerId}`);
 
+const markShopNotificationsRead = async (shopId) =>
+  apiFetch(`/notifications/${shopId}/read`, { method: "POST" });
+
+const dismissShopNotification = async (shopId, eventId) =>
+  apiFetch(`/notifications/${shopId}/item/${eventId}`, { method: "DELETE" });
+
+const clearShopNotifications = async (shopId) =>
+  apiFetch(`/notifications/${shopId}/all`, { method: "DELETE" });
+
+const markCustomerNotificationsRead = async (customerId) =>
+  apiFetch(`/notifications/customer/${customerId}/read`, { method: "POST" });
+
+const dismissCustomerNotification = async (customerId, eventId) =>
+  apiFetch(`/notifications/customer/${customerId}/item/${eventId}`, {
+    method: "DELETE",
+  });
+
+const clearCustomerNotifications = async (customerId) =>
+  apiFetch(`/notifications/customer/${customerId}/all`, { method: "DELETE" });
+
 const acceptTransfer = async (jobId, enteredPin) =>
   apiFetch(`/jobs/${jobId}/accept-transfer`, {
     method: "POST",
@@ -292,6 +312,12 @@ export {
   getShopAnalytics,
   getShopNotifications,
   getCustomerNotifications,
+  markShopNotificationsRead,
+  dismissShopNotification,
+  clearShopNotifications,
+  markCustomerNotificationsRead,
+  dismissCustomerNotification,
+  clearCustomerNotifications,
   acceptTransfer,
   checkReferralJob,
   searchJobs,

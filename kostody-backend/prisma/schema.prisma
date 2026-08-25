@@ -78,8 +78,25 @@ model JobEvent {
   jobId     String
   eventText String
   createdAt DateTime @default(now())
-  
+
   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  states    NotificationState[]
+}
+
+// 5b. Per-recipient read/dismiss overlay on the timeline (never mutates JobEvent)
+model NotificationState {
+  id            String    @id @default(uuid())
+  eventId       String
+  recipientType String
+  recipientId   String
+  readAt        DateTime?
+  dismissedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  event         JobEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, recipientType, recipientId])
+  @@index([recipientType, recipientId])
 }
 
 // 6. Payment Tracking

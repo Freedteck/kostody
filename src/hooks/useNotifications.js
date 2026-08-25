@@ -1,29 +1,40 @@
-import { useCallback, useEffect, useState } from "react";
-import { getShopNotifications, getCustomerNotifications } from "../services/api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  getShopNotifications,
+  getCustomerNotifications,
+  markShopNotificationsRead,
+  markCustomerNotificationsRead,
+  dismissShopNotification,
+  dismissCustomerNotification,
+  clearShopNotifications,
+  clearCustomerNotifications,
+} from "../services/api";
 
-const readKey = (role) => `kostody_notif_read_${role}`;
-const deletedKey = (role) => `kostody_notif_deleted_${role}`;
+const shopFns = {
+  markRead: markShopNotificationsRead,
+  dismiss: dismissShopNotification,
+  clear: clearShopNotifications,
+};
 
-const loadIds = (key) => {
-  const raw = localStorage.getItem(key);
-  const parsed = raw ? JSON.parse(raw) : [];
-  return Array.isArray(parsed) ? parsed : [];
+const customerFns = {
+  markRead: markCustomerNotificationsRead,
+  dismiss: dismissCustomerNotification,
+  clear: clearCustomerNotifications,
 };
 
 const useNotifications = (role, userId) => {
   const [raw, setRaw] = useState([]);
-  const [readIds, setReadIds] = useState(() => loadIds(readKey(role)));
-  const [deletedIds, setDeletedIds] = useState(() => loadIds(deletedKey(role)));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const rawRef = useRef([]);
 
   useEffect(() => {
     if (!userId) return undefined;
     let active = true;
-    const fetcher =
+    const list =
       role === "customer" ? getCustomerNotifications : getShopNotifications;
-    fetcher(userId)
+    list(userId)
       .then((data) => {
         if (active) {
           setRaw(data || []);
@@ -41,44 +52,42 @@ const useNotifications = (role, userId) => {
     };
   }, [role, userId, reloadKey]);
 
-  const items = raw
-    .filter((n) => !deletedIds.includes(n.id))
-    .map((n) => ({ ...n, unread: !readIds.includes(n.id) }));
+  useEffect(() => {
+    rawRef.current = raw;
+  }, [raw]);
 
+  const items = raw.map((n) => ({ ...n, unread: !n.read }));
   const unreadCount = items.filter((n) => n.unread).length;
-
-  const remove = useCallback(
-    (id) => {
-      setDeletedIds((prev) => {
-        if (prev.includes(id)) return prev;
-        const next = [...prev, id];
-        localStorage.setItem(deletedKey(role), JSON.stringify(next));
-        return next;
-      });
-    },
-    [role],
-  );
-
-  const clearAll = useCallback(() => {
-    setDeletedIds((prev) => {
-      const next = Array.from(new Set([...prev, ...raw.map((n) => n.id)]));
-      localStorage.setItem(deletedKey(role), JSON.stringify(next));
-      return next;
-    });
-  }, [role, raw]);
-
-  const markAllRead = useCallback(() => {
-    const ids = raw.map((n) => n.id);
-    if (!ids.length) return;
-    const next = Array.from(new Set([...loadIds(readKey(role)), ...ids]));
-    localStorage.setItem(readKey(role), JSON.stringify(next));
-    setReadIds(next);
-  }, [role, raw]);
 
   const reload = useCallback(() => {
     setIsLoading(true);
     setReloadKey((k) => k + 1);
   }, []);
+
+  const remove = useCallback(
+    (id) => {
+      setRaw((prev) => prev.filter((n) => n.id !== id));
+      if (!userId) return;
+      const api = role === "customer" ? customerFns : shopFns;
+      api.dismiss(userId, id).catch(() => reload());
+    },
+    [role, userId, reload],
+  );
+
+  const clearAll = useCallback(() => {
+    setRaw([]);
+    if (!userId) return;
+    const api = role === "customer" ? customerFns : shopFns;
+    api.clear(userId).catch(() => reload());
+  }, [role, userId, reload]);
+
+  const markAllRead = useCallback(() => {
+    if (!userId) return;
+    if (!rawRef.current.some((n) => !n.read)) return;
+    setRaw((prev) => prev.map((n) => (n.read ? n : { ...n, read: true })));
+    const api = role === "customer" ? customerFns : shopFns;
+    api.markRead(userId).catch(() => reload());
+  }, [role, userId, reload]);
 
   return {
     items,
