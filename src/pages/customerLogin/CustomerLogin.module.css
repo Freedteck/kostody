@@ -72,33 +72,6 @@
   margin-top: 4px;
 }
 
-.pinArea {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.changeNumber {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  color: var(--md-sys-color-on-surface-variant);
-  border-radius: var(--md-sys-shape-corner-full);
-  cursor: pointer;
-  font: inherit;
-  font-size: 14px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.changeNumber:disabled {
-  opacity: 0.5;
-}
-
 @media (min-width: 600px) {
   .card {
     background-color: var(--md-sys-color-surface-container-low);

@@ -1,22 +1,21 @@
 import { useState } from "react";
 import Sheet from "../../ui/Sheet";
-import Keypad from "../../ui/Keypad";
 import Button from "../../ui/Button";
 import TextField from "../../ui/TextField";
 import useToast from "../../hooks/useToast";
 import { requestOtp, resetPin } from "../../services/api";
 import styles from "./ForgotPinSheet.module.css";
 
+const onlyDigits = (value) => value.replace(/\D/g, "").slice(0, 4);
+
 const ForgotPinSheet = ({ onClose, onSuccess, initialPhone = "" }) => {
   const { showToast } = useToast();
   const [step, setStep] = useState("phone");
   const [phone, setPhone] = useState(initialPhone);
   const [otp, setOtp] = useState("");
-  const [tempPin, setTempPin] = useState("");
-  const [pinPhase, setPinPhase] = useState("create");
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(0);
-  const [resetKey, setResetKey] = useState(0);
 
   const sendCode = () => {
     if (!phone.trim()) {
@@ -41,27 +40,26 @@ const ForgotPinSheet = ({ onClose, onSuccess, initialPhone = "" }) => {
     setStep("pin");
   };
 
-  const handlePin = (pin) => {
-    if (pinPhase === "create") {
-      setTempPin(pin);
-      setPinPhase("confirm");
-      setResetKey((k) => k + 1);
+  const submitReset = () => {
+    if (newPin.length < 4) {
+      showToast("Choose a 4-digit PIN", "error");
       return;
     }
-    if (pin !== tempPin) {
-      setError((e) => e + 1);
+    if (newPin !== confirmPin) {
+      showToast("PINs do not match", "error");
       return;
     }
     setLoading(true);
-    resetPin(phone.trim(), otp.trim(), pin)
+    resetPin(phone.trim(), otp.trim(), newPin)
       .then(() => {
         showToast("PIN reset successfully", "success");
         onSuccess?.();
         onClose?.();
       })
       .catch((e) => {
-        setError((x) => x + 1);
         showToast(e.message || "Reset failed", "error");
+        setNewPin("");
+        setConfirmPin("");
       })
       .finally(() => setLoading(false));
   };
@@ -69,11 +67,8 @@ const ForgotPinSheet = ({ onClose, onSuccess, initialPhone = "" }) => {
   const titles = { phone: "Reset PIN", otp: "Enter Code", pin: "New PIN" };
   const subtitles = {
     phone: "We'll text a verification code to your phone.",
-    otp: `Enter the 6-digit code sent to ${phone}.`,
-    pin:
-      pinPhase === "create"
-        ? "Choose a new 4-digit PIN."
-        : "Re-enter your new PIN to confirm.",
+    otp: `Enter the code sent to ${phone}.`,
+    pin: "Choose a new 4-digit PIN.",
   };
 
   return (
@@ -111,7 +106,7 @@ const ForgotPinSheet = ({ onClose, onSuccess, initialPhone = "" }) => {
             onChange={(e) => setOtp(e.target.value)}
             leadingIcon="sms"
           />
-          <Button variant="filled" full onClick={confirmCode}>
+          <Button variant="filled" full onClick={confirmCode} disabled={loading}>
             Continue
           </Button>
           <Button variant="text" full onClick={sendCode} disabled={loading}>
@@ -121,13 +116,31 @@ const ForgotPinSheet = ({ onClose, onSuccess, initialPhone = "" }) => {
       )}
 
       {step === "pin" && (
-        <Keypad
-          onComplete={handlePin}
-          error={error}
-          resetKey={resetKey}
-          disabled={loading}
-          instruction={loading ? "Resetting…" : undefined}
-        />
+        <div className={styles.form}>
+          <TextField
+            label="New PIN"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength={4}
+            value={newPin}
+            onChange={(e) => setNewPin(onlyDigits(e.target.value))}
+            leadingIcon="lock"
+          />
+          <TextField
+            label="Confirm PIN"
+            type="password"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength={4}
+            value={confirmPin}
+            onChange={(e) => setConfirmPin(onlyDigits(e.target.value))}
+            leadingIcon="lock"
+          />
+          <Button variant="filled" full onClick={submitReset} disabled={loading}>
+            {loading ? "Resetting…" : "Reset PIN"}
+          </Button>
+        </div>
       )}
     </Sheet>
   );

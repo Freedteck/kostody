@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import RootLayout from "./RootLayout";
 import App from "./App";
 import Intake from "./pages/intake/Intake";
 import JobDetailsPage from "./pages/jobDetails/JobDetails";
@@ -21,90 +22,95 @@ import NotificationCenter from "./pages/notifications/NotificationCenter";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    Component: Splash,
-  },
-  {
-    path: "/login",
-    Component: Login,
-  },
-  {
-    path: "/register",
-    Component: Register,
-  },
-  {
-    path: "/c/login",
-    Component: CustomerLogin,
-  },
-  {
-    path: "/app",
-    element: <AuthGuard requiredRole="ENGINEER" />,
+    element: <RootLayout />,
     children: [
       {
-        Component: App,
+        path: "/",
+        Component: Splash,
+      },
+      {
+        path: "/login",
+        Component: Login,
+      },
+      {
+        path: "/register",
+        Component: Register,
+      },
+      {
+        path: "/c/login",
+        Component: CustomerLogin,
+      },
+      {
+        path: "/app",
+        element: <AuthGuard requiredRole="ENGINEER" />,
         children: [
           {
-            path: "dashboard",
-            Component: Dashboard,
-          },
-          {
-            path: "intake",
-            Component: Intake,
-          },
-          {
-            path: "summary",
-            Component: JobSummaryPage,
-          },
-          {
-            path: "job/:jobId",
-            Component: JobDetailsPage,
-          },
-          {
-            path: "history",
-            Component: HistoryPage,
-          },
-          {
-            path: "profile",
-            Component: ProfilePage,
-          },
-          {
-            path: "profile/edit",
-            Component: EditProfile,
-          },
-          {
-            path: "notifications",
-            element: <NotificationCenter role="engineer" />,
+            Component: App,
+            children: [
+              {
+                path: "dashboard",
+                Component: Dashboard,
+              },
+              {
+                path: "intake",
+                Component: Intake,
+              },
+              {
+                path: "summary",
+                Component: JobSummaryPage,
+              },
+              {
+                path: "job/:jobId",
+                Component: JobDetailsPage,
+              },
+              {
+                path: "history",
+                Component: HistoryPage,
+              },
+              {
+                path: "profile",
+                Component: ProfilePage,
+              },
+              {
+                path: "profile/edit",
+                Component: EditProfile,
+              },
+              {
+                path: "notifications",
+                element: <NotificationCenter role="engineer" />,
+              },
+            ],
           },
         ],
       },
-    ],
-  },
-  {
-    path: "/c",
-    element: <AuthGuard requiredRole="CUSTOMER" />,
-    children: [
       {
-        Component: CustomerApp,
+        path: "/c",
+        element: <AuthGuard requiredRole="CUSTOMER" />,
         children: [
           {
-            path: "dashboard",
-            Component: CustomerDashboard,
-          },
-          {
-            path: "history",
-            Component: CustomerHistoryPage,
-          },
-          {
-            path: "notifications",
-            element: <NotificationCenter role="customer" />,
-          },
-          {
-            path: "profile",
-            Component: CustomerProfilePage,
-          },
-          {
-            path: "/c/:jobId",
-            Component: CustomerJobPage,
+            Component: CustomerApp,
+            children: [
+              {
+                path: "dashboard",
+                Component: CustomerDashboard,
+              },
+              {
+                path: "history",
+                Component: CustomerHistoryPage,
+              },
+              {
+                path: "notifications",
+                element: <NotificationCenter role="customer" />,
+              },
+              {
+                path: "profile",
+                Component: CustomerProfilePage,
+              },
+              {
+                path: "/c/:jobId",
+                Component: CustomerJobPage,
+              },
+            ],
           },
         ],
       },
