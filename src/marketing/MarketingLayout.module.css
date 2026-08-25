@@ -1,0 +1,19 @@
+.shell {
+  --mkt-header-h: 68px;
+  --mkt-gutter: clamp(20px, 5vw, 56px);
+  --mkt-orange: rgb(252 96 0);
+  --mkt-orange-deep: rgb(206 74 0);
+  --mkt-orange-bright: rgb(255 122 36);
+  --mkt-on-orange: rgb(38 15 0);
+  --mkt-on-orange-dim: rgb(38 15 0 / 0.74);
+  --mkt-cream: rgb(255 245 237);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+}
+
+.main {
+  flex: 1;
+}

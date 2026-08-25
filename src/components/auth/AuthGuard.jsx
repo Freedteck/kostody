@@ -22,7 +22,7 @@ const AuthGuard = ({ requiredRole }) => {
     if (requiredRole === "CUSTOMER") {
       return <Navigate to="/c/login" state={{ from: location }} replace />;
     }
-    return <Navigate to="/" replace />;
+    return <Navigate to="/splash" replace />;
   }
 
   const role = getRoleFromToken(token);
@@ -34,7 +34,7 @@ const AuthGuard = ({ requiredRole }) => {
     if (role === "CUSTOMER") {
       return <Navigate to="/c/dashboard" replace />;
     }
-    return <Navigate to="/" replace />;
+    return <Navigate to="/splash" replace />;
   }
 
   return <Outlet />;

@@ -19,13 +19,44 @@ import CustomerHistoryPage from "./pages/customerHistory/CustomerHistory";
 import AuthGuard from "./components/auth/AuthGuard";
 import EditProfile from "./components/editProfile/EditProfile";
 import NotificationCenter from "./pages/notifications/NotificationCenter";
+import MarketingLayout from "./marketing/MarketingLayout";
+import Home from "./marketing/pages/Home";
+import Product from "./marketing/pages/Product";
+import About from "./marketing/pages/About";
+import Contact from "./marketing/pages/Contact";
+import HeroShot from "./marketing/dev/HeroShot";
 
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
       {
-        path: "/",
+        path: "/dev/hero-shot",
+        Component: HeroShot,
+      },
+      {
+        element: <MarketingLayout />,
+        children: [
+          {
+            path: "/",
+            Component: Home,
+          },
+          {
+            path: "/product",
+            Component: Product,
+          },
+          {
+            path: "/about",
+            Component: About,
+          },
+          {
+            path: "/contact",
+            Component: Contact,
+          },
+        ],
+      },
+      {
+        path: "/splash",
         Component: Splash,
       },
       {

@@ -1,0 +1,238 @@
+.footer {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  padding-top: clamp(48px, 8vw, 104px);
+}
+
+.pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url("../assets/bg-pattern.jpeg");
+  background-size: 560px auto;
+  background-position: center top;
+  opacity: 0;
+  pointer-events: none;
+}
+
+:global(html.dark) .pattern {
+  opacity: 0.42;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding: 0 var(--mkt-gutter);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  padding-bottom: clamp(36px, 5vw, 64px);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.getAppTitle {
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.getAppSub {
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 42ch;
+}
+
+.stores {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.storeCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-surface-container-high) 88%,
+    transparent
+  );
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.storeText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.storeRole {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 600;
+}
+
+.storeDesc {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px 9px 12px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background-color: #0e0e0e;
+  color: #ffffff;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  flex-shrink: 0;
+  transition: transform var(--md-sys-motion-duration-short3)
+    var(--md-sys-motion-easing-standard);
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+}
+
+.badgeIcon {
+  display: inline-flex;
+  color: var(--md-sys-color-primary);
+}
+
+.badgeText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.badgeText small {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.badgeText strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.middle {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 32px;
+  padding: clamp(32px, 4vw, 56px) 0;
+}
+
+.footBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footWord {
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.footTag {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.links {
+  display: flex;
+  gap: clamp(32px, 6vw, 88px);
+  flex-wrap: wrap;
+}
+
+.linkCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linkTitle {
+  color: var(--md-sys-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.footLink {
+  color: var(--md-sys-color-on-surface-variant);
+  transition: color var(--md-sys-motion-duration-short3)
+    var(--md-sys-motion-easing-standard);
+}
+
+.footLink:hover {
+  color: var(--md-sys-color-primary);
+}
+
+.legal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 0;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.legalLinks {
+  display: flex;
+  gap: 20px;
+}
+
+.wordmark {
+  position: relative;
+  z-index: 0;
+  margin-top: clamp(8px, 2vw, 24px);
+  text-align: center;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(96px, 24vw, 340px);
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  color: var(--md-sys-color-on-surface);
+  opacity: 0.09;
+  transform: translateY(22%);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0) 38%,
+    transparent 90%
+  );
+  mask-image: linear-gradient(to bottom, rgb(0 0 0) 38%, transparent 90%);
+}
+
+@media (max-width: 760px) {
+  .top {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .storeCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .badge {
+    align-self: stretch;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,31 @@
+.stub {
+  min-height: 72svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding: calc(var(--mkt-header-h) + var(--kd-safe-top) + clamp(56px, 10vh, 140px))
+    var(--mkt-gutter) clamp(48px, 8vh, 100px);
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(40px, 8vw, 88px);
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+  color: var(--md-sys-color-on-background);
+}
+
+.title span {
+  color: var(--mkt-orange);
+}
+
+.lede {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
