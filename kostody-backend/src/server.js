@@ -10,6 +10,7 @@ import { authRoutes } from "./routes/authRoutes.js";
 import { analyticsRoutes } from "./routes/analyticsRoutes.js";
 import { notificationRoutes } from "./routes/notificationRoutes.js";
 import { globalLimiter, authLimiter } from "./middleware/rateLimit.js";
+import { prisma } from "./config/db.js";
 
 if (!process.env.JWT_SECRET) {
   console.error("FATAL: JWT_SECRET is not set. Refusing to start.");
@@ -18,7 +19,12 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 
-app.use(cors());
+app.set("trust proxy", 1);
+
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : null;
+app.use(cors(corsOrigins ? { origin: corsOrigins } : {}));
 app.use(express.json());
 app.use(globalLimiter);
 
@@ -36,6 +42,16 @@ app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Kostody API is running...");
+});
+
+app.get("/health", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return res.status(200).json({ status: "ok" });
+  } catch (error) {
+    console.error("Health check failed:", error);
+    return res.status(503).json({ status: "degraded" });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
