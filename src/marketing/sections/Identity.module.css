@@ -1,0 +1,263 @@
+.identity {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  padding-block: clamp(72px, 12vh, 150px);
+}
+
+.mark {
+  position: absolute;
+  top: clamp(-150px, -12vw, -50px);
+  right: clamp(-140px, -10vw, -40px);
+  width: clamp(360px, 46vw, 760px);
+  height: auto;
+  filter: brightness(0);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 22% 0%, transparent 56%, rgb(0 0 0 / 0.06) 100%),
+    linear-gradient(180deg, transparent 76%, rgb(0 0 0 / 0.04) 100%);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vh, 72px);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: clamp(28px, 5vw, 76px);
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2.4vh, 26px);
+  max-width: min(56ch, 100%);
+}
+
+.headline {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(31px, 4.4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--md-sys-color-primary);
+}
+
+.para {
+  margin: 0;
+  max-width: 54ch;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-primary-container) 84%,
+    transparent
+  );
+}
+
+.note {
+  margin: 0;
+  max-width: 48ch;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-primary-container) 62%,
+    transparent
+  );
+}
+
+.keystoneWrap {
+  justify-self: end;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.keystone {
+  position: relative;
+  width: min(100%, 380px);
+  padding: clamp(20px, 3vw, 28px);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.keystoneHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.keystoneKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--md-sys-color-primary);
+  font-weight: 700;
+}
+
+.keystoneJob {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.locked {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-surface) 92%,
+    transparent
+  );
+  backdrop-filter: blur(2px);
+  animation: lockIn 0.4s var(--md-sys-motion-easing-emphasized-decelerate) both;
+}
+
+.lockedIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.lockedTitle {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.lockedSub {
+  margin: 0;
+  max-width: 30ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.shops {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.shopsLabel {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-primary-container) 62%,
+    transparent
+  );
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.shopList {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.shopList::-webkit-scrollbar {
+  display: none;
+}
+
+.shopChip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+}
+
+@media (max-width: 900px) {
+  .top {
+    grid-template-columns: 1fr;
+    gap: clamp(30px, 6vw, 46px);
+  }
+
+  .keystoneWrap {
+    justify-self: stretch;
+  }
+
+  .keystone {
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .copy {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: identityUp linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 24%;
+    }
+
+    .keystoneWrap {
+      opacity: 0;
+      transform: translateY(28px) scale(0.99);
+      animation: identityUp linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 30%;
+    }
+
+    .shops {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: identityUp linear both;
+      animation-timeline: view();
+      animation-range: entry 16% cover 44%;
+    }
+  }
+}
+
+@keyframes identityUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

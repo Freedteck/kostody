@@ -1,20 +1,40 @@
 .dispute {
-  --md-sys-color-on-surface: rgb(250 240 233);
-  --md-sys-color-on-surface-variant: rgb(203 186 176);
-  --md-sys-color-outline: rgb(255 240 230 / 0.3);
-  --md-sys-color-outline-variant: rgb(255 240 230 / 0.14);
-  --md-sys-color-surface-container-highest: rgb(46 33 27);
-  --md-sys-color-primary-container: rgb(250 240 233);
-  --md-sys-color-on-primary-container: rgb(38 15 0);
+  --md-sys-color-on-surface: var(--md-sys-color-inverse-on-surface);
+  --md-sys-color-on-surface-variant: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 72%,
+    transparent
+  );
+  --md-sys-color-outline: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 30%,
+    transparent
+  );
+  --md-sys-color-outline-variant: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 14%,
+    transparent
+  );
+  --md-sys-color-surface-container-highest: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 12%,
+    var(--md-sys-color-inverse-surface)
+  );
+  --md-sys-color-primary-container: var(--md-sys-color-inverse-on-surface);
+  --md-sys-color-on-primary-container: var(--md-sys-color-inverse-surface);
   position: relative;
   color: var(--md-sys-color-on-surface);
   padding-block: clamp(72px, 12vh, 168px);
   overflow: clip;
-  background-color: rgb(14 10 8);
+  background-color: var(--md-sys-color-inverse-surface);
   background-image: radial-gradient(
     122% 78% at 50% -6%,
-    rgb(35 24 18),
-    rgb(14 10 8) 66%
+    color-mix(
+      in srgb,
+      var(--md-sys-color-inverse-surface) 86%,
+      var(--md-sys-color-inverse-on-surface) 14%
+    ),
+    var(--md-sys-color-inverse-surface) 66%
   );
 }
 
