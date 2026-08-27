@@ -1,0 +1,211 @@
+.reframe {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--mkt-orange);
+  color: var(--mkt-on-orange);
+  padding-block: clamp(72px, 12vh, 150px);
+}
+
+.mark {
+  position: absolute;
+  bottom: clamp(-150px, -11vw, -50px);
+  left: clamp(-130px, -9vw, -30px);
+  width: clamp(340px, 44vw, 720px);
+  height: auto;
+  filter: brightness(0);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 80% 0%, transparent 54%, rgb(0 0 0 / 0.1) 100%),
+    linear-gradient(180deg, transparent 74%, rgb(0 0 0 / 0.05) 100%);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vh, 72px);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: clamp(28px, 5vw, 76px);
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2.4vh, 26px);
+  max-width: min(56ch, 100%);
+}
+
+.figure {
+  justify-self: end;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.device {
+  position: relative;
+  width: min(100%, 400px);
+  border-radius: 30px;
+  box-shadow:
+    0 26px 60px -26px rgb(0 0 0 / 0.55),
+    0 8px 22px -12px rgb(0 0 0 / 0.4);
+}
+
+.screen {
+  overflow: hidden;
+  max-height: clamp(360px, 54vh, 560px);
+  border-radius: 30px;
+  border: 1px solid color-mix(in srgb, var(--mkt-cream) 20%, transparent);
+  background-color: rgb(26 18 14);
+  -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 99%);
+}
+
+.screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.headline {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(31px, 4.4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--mkt-on-orange);
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--mkt-cream);
+}
+
+.para {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--mkt-on-orange-dim);
+}
+
+.clinic {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(22px, 3vw, 44px);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.clinic::-webkit-scrollbar {
+  display: none;
+}
+
+.phase {
+  flex: 1 0 auto;
+  min-width: clamp(210px, 28%, 280px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--mkt-on-orange);
+  color: var(--mkt-cream);
+}
+
+.phaseLabel {
+  color: var(--mkt-on-orange);
+  font-weight: 700;
+}
+
+.phaseLine {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--mkt-on-orange-dim);
+}
+
+@media (max-width: 900px) {
+  .top {
+    grid-template-columns: 1fr;
+    gap: clamp(30px, 6vw, 46px);
+  }
+
+  .figure {
+    justify-self: stretch;
+  }
+
+  .device {
+    width: min(100%, 380px);
+    margin-inline: auto;
+  }
+
+  .screen {
+    max-height: clamp(340px, 44vh, 480px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .copy {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: reframeUp linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 24%;
+    }
+
+    .figure {
+      opacity: 0;
+      transform: translateY(28px) scale(0.99);
+      animation: reframeUp linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 30%;
+    }
+
+    .phase {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: reframeUp linear both;
+      animation-timeline: view();
+      animation-range: entry 16% cover 44%;
+    }
+  }
+}
+
+@keyframes reframeUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -25,6 +25,8 @@ import Product from "./marketing/pages/Product";
 import About from "./marketing/pages/About";
 import Contact from "./marketing/pages/Contact";
 import HeroShot from "./marketing/dev/HeroShot";
+import DisputeShot from "./marketing/dev/DisputeShot";
+import ClinicShot from "./marketing/dev/ClinicShot";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +35,14 @@ export const router = createBrowserRouter([
       {
         path: "/dev/hero-shot",
         Component: HeroShot,
+      },
+      {
+        path: "/dev/dispute-shot",
+        Component: DisputeShot,
+      },
+      {
+        path: "/dev/clinic-shot",
+        Component: ClinicShot,
       },
       {
         element: <MarketingLayout />,
