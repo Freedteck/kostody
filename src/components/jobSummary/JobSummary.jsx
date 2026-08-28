@@ -207,7 +207,7 @@ const JobSummary = () => {
                 Warranty return
               </p>
               <p className="md-typescale-body-small">
-                Linked to a previous job — no new charge unless a new fault is
+                Linked to a previous job - no new charge unless a new fault is
                 logged.
               </p>
             </div>

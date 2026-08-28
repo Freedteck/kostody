@@ -1,13 +1,18 @@
-import PageStub from "./PageStub";
+import AboutHero from "../sections/AboutHero";
+import Distrust from "../sections/Distrust";
+import Convictions from "../sections/Convictions";
+import Refusals from "../sections/Refusals";
+import Pledge from "../sections/Pledge";
 
 const About = () => {
   return (
-    <PageStub
-      eyebrow="About"
-      title="Why we built"
-      accent="Kostody."
-      lede="The story behind the handshake problem, the people it fails, and the standard of proof we want every repair to meet is coming to this page next."
-    />
+    <>
+      <AboutHero />
+      <Distrust />
+      <Convictions />
+      <Refusals />
+      <Pledge />
+    </>
   );
 };
 

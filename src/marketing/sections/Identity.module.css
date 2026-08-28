@@ -23,7 +23,11 @@
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(120% 80% at 22% 0%, transparent 56%, rgb(0 0 0 / 0.06) 100%),
+    radial-gradient(
+      120% 80% at 22% 0%,
+      transparent 56%,
+      rgb(0 0 0 / 0.06) 100%
+    ),
     linear-gradient(180deg, transparent 76%, rgb(0 0 0 / 0.04) 100%);
 }
 
@@ -99,7 +103,7 @@
 
 .keystone {
   position: relative;
-  width: min(100%, 380px);
+  width: min(100%, 400px);
   padding: clamp(20px, 3vw, 28px);
   border-radius: 28px;
   overflow: hidden;

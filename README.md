@@ -14,6 +14,7 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
 # kostody
 
 A repair-shop job-management app with two clients (engineer and customer) served
@@ -42,15 +43,16 @@ cp .env.example .env        # fill in the values below
 npm run dev
 ```
 
-| Variable                | Required | Description                                                    |
-| ----------------------- | -------- | -------------------------------------------------------------- |
-| `PORT`                  | no       | Port to listen on (defaults to `5000`).                        |
-| `DATABASE_URL`          | yes      | PostgreSQL connection string used by Prisma.                   |
+| Variable                | Required | Description                                                          |
+| ----------------------- | -------- | -------------------------------------------------------------------- |
+| `PORT`                  | no       | Port to listen on (defaults to `5000`).                              |
+| `DATABASE_URL`          | yes      | PostgreSQL connection string used by Prisma.                         |
 | `JWT_SECRET`            | yes      | Secret for signing/verifying JWTs. **Server won't boot without it.** |
-| `CLOUDINARY_CLOUD_NAME` | yes      | Cloudinary cloud name (job photo uploads).                     |
-| `CLOUDINARY_API_KEY`    | yes      | Cloudinary API key.                                            |
-| `CLOUDINARY_API_SECRET` | yes      | Cloudinary API secret.                                         |
+| `CLOUDINARY_CLOUD_NAME` | yes      | Cloudinary cloud name (job photo uploads).                           |
+| `CLOUDINARY_API_KEY`    | yes      | Cloudinary API key.                                                  |
+| `CLOUDINARY_API_SECRET` | yes      | Cloudinary API secret.                                               |
 
 `.env` files are gitignored; never commit real secrets. Use `.env.example` as the
 template.
 
+The story behind the handshake problem, the people it fails, and the standard of proof we want every repair to meet is coming to this page next.

@@ -45,7 +45,7 @@ const Sides = () => {
           </h2>
           <p className={`${styles.lede} md-typescale-body-large`}>
             The engineer's app and yours aren't two versions of the story.
-            They're two windows on the same locked timeline — same events, same
+            They're two windows on the same locked timeline - same events, same
             timestamps, nothing either side can quietly rewrite.
           </p>
         </div>

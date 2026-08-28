@@ -1,0 +1,203 @@
+.showcases {
+  display: block;
+}
+
+.show {
+  padding-block: clamp(72px, 12vh, 150px);
+}
+
+.engineer {
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.customer {
+  color: var(--md-sys-color-on-secondary-container);
+  background-color: var(--md-sys-color-secondary-container);
+}
+
+.inner {
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 6vw, 76px);
+}
+
+.textCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2.2vh, 24px);
+  max-width: min(52ch, 100%);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.customer .eyebrow {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-secondary-container) 70%,
+    transparent
+  );
+}
+
+.title {
+  margin: 0;
+  max-width: 18ch;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 4.4vw, 54px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: inherit;
+}
+
+.lede {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.customer .lede {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-secondary-container) 82%,
+    transparent
+  );
+}
+
+.caps {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.6vh, 26px);
+}
+
+.cap {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 16px;
+}
+
+.capIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-surface);
+}
+
+.customer .capIcon {
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-surface) 78%,
+    transparent
+  );
+}
+
+.capText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 3px;
+}
+
+.capLabel {
+  color: var(--md-sys-color-on-surface);
+}
+
+.customer .capLabel {
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.capLine {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.customer .capLine {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-secondary-container) 78%,
+    transparent
+  );
+}
+
+.visualCol {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.device {
+  position: relative;
+  width: min(100%, 400px);
+  border-radius: 30px;
+  box-shadow:
+    0 28px 62px -28px rgb(0 0 0 / 0.55),
+    0 8px 24px -14px rgb(0 0 0 / 0.42);
+}
+
+.screen {
+  overflow: hidden;
+  max-height: clamp(380px, 56vh, 560px);
+  border-radius: 30px;
+  border: 1px solid color-mix(in srgb, var(--mkt-cream) 20%, transparent);
+  background-color: var(--md-sys-color-background);
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 99%);
+}
+
+.screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 900px) {
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    align-items: center;
+    gap: clamp(32px, 5vw, 84px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .textCol {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: showRise linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 32%;
+    }
+
+    .visualCol {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+      animation: showRise linear both;
+      animation-timeline: view();
+      animation-range: entry 2% cover 30%;
+    }
+  }
+}
+
+@keyframes showRise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

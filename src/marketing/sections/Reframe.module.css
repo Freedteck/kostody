@@ -75,7 +75,7 @@
   max-height: clamp(360px, 54vh, 560px);
   border-radius: 30px;
   border: 1px solid color-mix(in srgb, var(--mkt-cream) 20%, transparent);
-  background-color: rgb(26 18 14);
+  background-color: var(--md-sys-color-background);
   -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 99%);
   mask-image: linear-gradient(to bottom, #000 82%, transparent 99%);
 }

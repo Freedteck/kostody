@@ -1,0 +1,219 @@
+.distrust {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(72px, 12vh, 156px);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6.5vh, 84px);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: min(760px, 100%);
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(29px, 4.6vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface);
+}
+
+.lede {
+  margin: 0;
+  max-width: 64ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.clash {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 6vw, 92px);
+  align-items: start;
+}
+
+.seam {
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--md-sys-color-outline-variant) 0 7px,
+    transparent 7px 15px
+  );
+}
+
+.seamIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  box-shadow: 0 0 0 1px var(--md-sys-color-outline-variant);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.6vh, 26px);
+}
+
+.engineer {
+  margin-top: clamp(28px, 6vh, 76px);
+  align-items: flex-end;
+  text-align: right;
+}
+
+.voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.engineer .voice {
+  flex-direction: row-reverse;
+}
+
+.fears {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fear {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background-color: var(--md-sys-color-surface);
+  box-shadow:
+    0 2px 10px -4px rgb(0 0 0 / 0.16),
+    0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+.engineer .fear {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.fearIcon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.fearText {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.turn {
+  align-self: center;
+  margin: 0;
+  max-width: 62ch;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.turn em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+@media (max-width: 760px) {
+  .clash {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .seam {
+    display: none;
+  }
+
+  .engineer {
+    margin-top: 0;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .engineer .voice {
+    flex-direction: row;
+  }
+
+  .engineer .fear {
+    flex-direction: row;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .head,
+    .customer,
+    .engineer,
+    .turn {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: distrustUp linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 26%;
+    }
+
+    .engineer {
+      animation-range: entry 10% cover 32%;
+    }
+
+    .turn {
+      animation-range: entry 8% cover 40%;
+    }
+  }
+}
+
+@keyframes distrustUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

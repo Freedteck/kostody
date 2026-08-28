@@ -1,0 +1,196 @@
+.shared {
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container);
+  padding-block: clamp(72px, 12vh, 150px);
+}
+
+.inner {
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 6vw, 76px);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(16px, 2.2vh, 24px);
+  max-width: min(50ch, 100%);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 54%, transparent);
+}
+
+.title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 58px);
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface);
+}
+
+.title em {
+  font-style: normal;
+  color: var(--md-sys-color-primary);
+}
+
+.lede {
+  margin: 0;
+  max-width: 50ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.pillJoin {
+  color: var(--md-sys-color-primary);
+}
+
+.figure {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.keypadCard {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 400px);
+  padding: clamp(20px, 2.4vw, 26px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.keypadHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.keypadKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--md-sys-color-primary);
+}
+
+.keypadJob {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.locked {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-surface) 94%,
+    transparent
+  );
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: lockedIn 0.32s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.lockedIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.lockedTitle {
+  margin: 0;
+  color: var(--md-sys-color-on-surface);
+}
+
+.lockedSub {
+  margin: 0;
+  max-width: 30ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (min-width: 900px) {
+  .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    align-items: center;
+    gap: clamp(32px, 5vw, 84px);
+  }
+
+  .figure {
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .copy,
+    .figure {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: sharedRise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 34%;
+    }
+  }
+}
+
+@keyframes sharedRise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lockedIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locked {
+    animation: none;
+  }
+}

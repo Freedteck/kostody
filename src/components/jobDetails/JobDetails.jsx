@@ -630,7 +630,7 @@ const JobDetails = () => {
             />
             <span className="md-typescale-body-small">
               {isExpired
-                ? "This quote has expired — raise a new quote."
+                ? "This quote has expired - raise a new quote."
                 : `Quote valid for ${jobData.quoteValidityDays} days.`}
             </span>
           </div>

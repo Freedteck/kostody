@@ -36,7 +36,7 @@ const InfoRow = ({ icon, label, value }) => (
         {label}
       </span>
       <span className={`${styles.infoValue} md-typescale-body-large`}>
-        {value || "—"}
+        {value || "-"}
       </span>
     </div>
   </div>

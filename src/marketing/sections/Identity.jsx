@@ -39,7 +39,7 @@ const Identity = () => {
             </h2>
             <p className={`${styles.para} md-typescale-body-large`}>
               You don't open a new account at every repair shop. Your phone
-              number is your identity across all of Kostody — and one 4-digit
+              number is your identity across all of Kostody - and one 4-digit
               PIN, held by you and never the shop, locks every agreement.
             </p>
             <p className={`${styles.note} md-typescale-body-medium`}>

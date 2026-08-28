@@ -39,7 +39,7 @@ const Standard = () => {
             One standard of <em>proof</em>.
           </h2>
           <p className={`${styles.lede} md-typescale-body-large`}>
-            Every shop, every repair, both sides of the counter — held to one
+            Every shop, every repair, both sides of the counter - held to one
             record.
           </p>
         </div>
