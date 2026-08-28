@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /product
+Allow: /about
+Allow: /help
+Allow: /privacy
+Allow: /terms
+
+Disallow: /app/
+Disallow: /c/
+Disallow: /login
+Disallow: /register
+Disallow: /c/login
+
+Sitemap: https://kostody.vercel.app/sitemap.xml
