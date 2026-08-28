@@ -1,3 +1,8 @@
+.headerWrapper {
+  position: relative;
+  z-index: 50;
+}
+
 .bar {
   position: fixed;
   top: 0;
@@ -61,6 +66,12 @@
   height: 30px;
   width: auto;
   display: block;
+  transition: filter var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+
+/* Ensure logo is bright/visible against the orange hero background when unscrolled */
+.bar:not(.scrolled) .logo {
+  filter: brightness(0) invert(1);
 }
 
 .word {
@@ -145,29 +156,108 @@
   --md-icon-button-icon-color: var(--md-sys-color-on-surface);
 }
 
-.sheet {
-  display: none;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
-  background-color: var(--md-sys-color-surface-container);
-  box-shadow: var(--md-sys-elevation-level2);
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 90;
+  background-color: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--md-sys-motion-easing-standard);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-.sheetNav {
-  max-width: var(--kd-page-max);
-  margin: 0 auto;
-  padding: 8px var(--mkt-gutter) 16px;
+.backdropOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Side Drawer (Right to Left Slide) */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 100;
+  width: min(320px, 85vw);
+  background-color: var(--md-sys-color-surface);
+  box-shadow: var(--md-sys-elevation-level4);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  transform: translateX(100%);
+  transition: transform 0.4s var(--md-sys-motion-easing-emphasized-decelerate);
 }
 
-.sheetLink {
-  padding: 14px 4px;
-  color: var(--md-sys-color-on-surface);
+.drawerOpen {
+  transform: translateX(0);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(16px, 3vh, 24px) 20px;
   border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
-.sheetLink:last-child {
-  border-bottom: none;
+.drawerLogo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.drawerNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.drawerLink {
+  padding: 14px 16px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.3s var(--md-sys-motion-easing-standard),
+    transform 0.3s var(--md-sys-motion-easing-standard),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.drawerOpen .drawerLink {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: calc(0.12s + var(--i, 0) * 0.06s);
+}
+
+.drawerLink:hover,
+.drawerLinkActive {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--mkt-orange);
+}
+
+.drawerFooter {
+  padding: 20px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.drawerCta {
+  width: 100%;
 }
 
 @media (max-width: 840px) {
@@ -177,10 +267,6 @@
 
   .menuBtn {
     display: inline-flex;
-  }
-
-  .open .sheet {
-    display: block;
   }
 }
 

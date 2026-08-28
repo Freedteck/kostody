@@ -1,0 +1,179 @@
+.mapSection {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(72px, 12vh, 156px);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6.5vh, 84px);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: min(720px, 100%);
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface);
+}
+
+.title em {
+  font-style: normal;
+  color: var(--mkt-orange);
+}
+
+.lede {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Subtle vertical dividing line between desktop columns */
+.column:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(clamp(12px, 2vw, 28px) * -1);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--md-sys-color-outline-variant);
+}
+
+.colHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.index {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 44%, transparent);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--mkt-orange);
+  background-color: color-mix(
+    in srgb,
+    var(--mkt-orange) 12%,
+    var(--md-sys-color-surface)
+  );
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--mkt-orange) 24%, transparent);
+}
+
+.colBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role {
+  color: var(--mkt-orange);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.headline {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(21px, 2.6vw, 32px);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface);
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--mkt-orange);
+}
+
+.desc {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 5vh, 48px);
+  }
+
+  .column:not(:first-child)::before {
+    display: none;
+  }
+
+  .column:not(:first-child) {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding-top: clamp(28px, 4vh, 40px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .head,
+    .column {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: threeWayUp linear both;
+      animation-timeline: view();
+      animation-range: entry 3% cover 26%;
+    }
+
+    .column:nth-child(2) {
+      animation-range: entry 7% cover 30%;
+    }
+
+    .column:nth-child(3) {
+      animation-range: entry 11% cover 34%;
+    }
+  }
+}
+
+@keyframes threeWayUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

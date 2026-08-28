@@ -23,27 +23,15 @@ import MarketingLayout from "./marketing/MarketingLayout";
 import Home from "./marketing/pages/Home";
 import Product from "./marketing/pages/Product";
 import About from "./marketing/pages/About";
-import Contact from "./marketing/pages/Contact";
-import HeroShot from "./marketing/dev/HeroShot";
-import DisputeShot from "./marketing/dev/DisputeShot";
-import ClinicShot from "./marketing/dev/ClinicShot";
+import Help from "./marketing/pages/Help";
+import Privacy from "./marketing/pages/Privacy";
+import Terms from "./marketing/pages/Terms";
+import NotFound from "./marketing/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      {
-        path: "/dev/hero-shot",
-        Component: HeroShot,
-      },
-      {
-        path: "/dev/dispute-shot",
-        Component: DisputeShot,
-      },
-      {
-        path: "/dev/clinic-shot",
-        Component: ClinicShot,
-      },
       {
         element: <MarketingLayout />,
         children: [
@@ -60,8 +48,20 @@ export const router = createBrowserRouter([
             Component: About,
           },
           {
-            path: "/contact",
-            Component: Contact,
+            path: "/help",
+            Component: Help,
+          },
+          {
+            path: "/privacy",
+            Component: Privacy,
+          },
+          {
+            path: "/terms",
+            Component: Terms,
+          },
+          {
+            path: "*",
+            Component: NotFound,
           },
         ],
       },

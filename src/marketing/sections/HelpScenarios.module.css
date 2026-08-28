@@ -1,0 +1,172 @@
+.scenarios {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(84px, 14vh, 176px);
+  color: var(--md-sys-color-inverse-on-surface);
+  background-color: var(--md-sys-color-inverse-surface);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(44px, 7vh, 84px);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: min(720px, 100%);
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+.title em {
+  font-style: normal;
+  color: var(--md-sys-color-inverse-primary);
+}
+
+.lede {
+  margin: 0;
+  max-width: 60ch;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 72%,
+    transparent
+  );
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(24px, 3.5vw, 36px);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 5%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--md-sys-color-inverse-on-surface) 12%, transparent);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: var(--md-sys-color-inverse-primary);
+  background-color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-primary) 14%,
+    transparent
+  );
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--md-sys-color-inverse-primary) 28%, transparent);
+}
+
+.question {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+.question em {
+  font-style: normal;
+  color: var(--md-sys-color-inverse-primary);
+}
+
+.answer {
+  margin: 0;
+  line-height: 1.6;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 74%,
+    transparent
+  );
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .head,
+    .card {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: scenarioUp linear both;
+      animation-timeline: view();
+      animation-range: entry 3% cover 28%;
+    }
+
+    .card:nth-child(2) {
+      animation-range: entry 6% cover 31%;
+    }
+
+    .card:nth-child(3) {
+      animation-range: entry 9% cover 34%;
+    }
+
+    .card:nth-child(4) {
+      animation-range: entry 12% cover 37%;
+    }
+
+    .card:nth-child(5) {
+      animation-range: entry 15% cover 40%;
+    }
+
+    .card:nth-child(6) {
+      animation-range: entry 18% cover 43%;
+    }
+  }
+}
+
+@keyframes scenarioUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

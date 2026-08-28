@@ -1,0 +1,149 @@
+.coda {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(88px, 15vh, 172px);
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(30px, 5vh, 52px);
+}
+
+.seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(196px, 28vw, 288px);
+  aspect-ratio: 1;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.ring,
+.sealMark {
+  grid-area: 1 / 1;
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ringLine {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.75;
+  opacity: 0.42;
+}
+
+.ringAccent {
+  fill: none;
+  stroke: var(--mkt-orange);
+  stroke-width: 1.4;
+  opacity: 0.6;
+}
+
+.ringText {
+  fill: currentColor;
+  font-family: "Roboto", system-ui, sans-serif;
+  font-size: 8.4px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  opacity: 0.7;
+}
+
+.sealMark {
+  width: 33%;
+  height: auto;
+  display: block;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vh, 18px);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 54%, transparent);
+}
+
+.title {
+  margin: 0;
+  max-width: 18ch;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(34px, 6vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: var(--md-sys-color-on-surface);
+}
+
+.title em {
+  font-style: normal;
+  color: var(--mkt-orange);
+}
+
+.lede {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (max-width: 760px) {
+  .seal {
+    width: clamp(168px, 46vw, 216px);
+  }
+
+  .ringText {
+    letter-spacing: 1.3px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .seal {
+      opacity: 0;
+      transform: rotate(-7deg) scale(0.9);
+      animation: sealIn linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 34%;
+    }
+
+    .copy {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: standUp linear both;
+      animation-timeline: view();
+      animation-range: entry 12% cover 42%;
+    }
+  }
+}
+
+@keyframes sealIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes standUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

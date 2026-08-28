@@ -17,7 +17,14 @@ const LINKS = [
     title: "Company",
     items: [
       { label: "About", to: "/about" },
-      { label: "Contact", to: "/contact" },
+      { label: "Help & Support", to: "/help" },
+    ],
+  },
+  {
+    title: "Legal",
+    items: [
+      { label: "Privacy", to: "/privacy" },
+      { label: "Terms", to: "/terms" },
     ],
   },
 ];

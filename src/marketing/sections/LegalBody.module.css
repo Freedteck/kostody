@@ -1,0 +1,160 @@
+/* Shared body CSS for Privacy and Terms pages.
+   Mirrors Convictions.module.css exactly - same tier, same tokens. */
+
+.body {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(84px, 14vh, 176px);
+  color: var(--md-sys-color-inverse-on-surface);
+  background-color: var(--md-sys-color-inverse-surface);
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--kd-page-max);
+  margin: 0 auto;
+  padding-inline: var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(44px, 7vh, 84px);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: min(680px, 100%);
+}
+
+.title {
+  margin: 0;
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 4.6vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+.title em {
+  font-style: normal;
+  color: var(--md-sys-color-inverse-primary);
+}
+
+.lede {
+  margin: 0;
+  max-width: 60ch;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 72%,
+    transparent
+  );
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(18px, 4vw, 52px);
+  padding-block: clamp(28px, 4.5vh, 48px);
+  border-top: 1px solid
+    color-mix(in srgb, var(--md-sys-color-inverse-on-surface) 16%, transparent);
+}
+
+.item:last-child {
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--md-sys-color-inverse-on-surface) 16%, transparent);
+}
+
+.index {
+  padding-top: 6px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 46%,
+    transparent
+  );
+}
+
+.clause {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.clauseTitle {
+  position: relative;
+  margin: 0;
+  padding-left: clamp(46px, 6vw, 60px);
+  font-family: "Roboto Flex Variable", "Roboto Variable", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(24px, 3.2vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--md-sys-color-inverse-on-surface);
+}
+
+.clauseIcon {
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-inverse-primary);
+}
+
+.clauseBody {
+  margin: 0;
+  max-width: 64ch;
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-inverse-on-surface) 74%,
+    transparent
+  );
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+@media (max-width: 640px) {
+  .item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .index {
+    padding-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .head,
+    .item {
+      opacity: 0;
+      transform: translateY(26px);
+      animation: legalBodyUp linear both;
+      animation-timeline: view();
+      animation-range: entry 2% cover 24%;
+    }
+  }
+}
+
+@keyframes legalBodyUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
