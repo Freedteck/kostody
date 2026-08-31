@@ -4,6 +4,9 @@ import useTheme from "../hooks/useTheme";
 import mark from "../assets/mark.png";
 import styles from "./Footer.module.css";
 
+const APP_URL = import.meta.env.VITE_APP_URL || "";
+
+
 const LINKS = [
   {
     title: "Product",
@@ -63,7 +66,7 @@ const Footer = () => {
               <div className={styles.ctas}>
                 <a
                   className={styles.ctaPrimary}
-                  href="/login"
+                  href={`${APP_URL}/login`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -72,7 +75,7 @@ const Footer = () => {
                 </a>
                 <a
                   className={styles.ctaTonal}
-                  href="/c/login"
+                  href={`${APP_URL}/c/login`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
