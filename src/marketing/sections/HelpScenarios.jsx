@@ -4,39 +4,45 @@ import styles from "./HelpScenarios.module.css";
 const SCENARIOS = [
   {
     icon: "request_quote",
-    question: "I got a quote from my shop. <em>Now what?</em>",
-    answer:
-      "Review the quote in your timeline. If you accept it, enter your PIN to authorize the repair. The shop is notified instantly and work can begin.",
+    worry: "My shop sent me a quote. What now?",
+    truth:
+      "The quote sits in your timeline with the exact price and what it covers.",
+    move: "Read it. If it looks right, tap in your PIN, and the shop can start.",
   },
   {
     icon: "pin",
-    question: "I forgot my PIN. <em>How do I reset it?</em>",
-    answer:
-      "Right now, there is no self-service PIN reset. Because your PIN is the key that authorizes repairs, we do not store it and cannot reset it via SMS or email.",
+    worry: "I forgot my PIN.",
+    truth:
+      "Your PIN is scrambled the moment you set it, so no one, not even us, can look it up for you. That is what keeps it safe.",
+    move: "Reach out and we will help you set a new one. Our details are further down this page.",
   },
   {
     icon: "price_change",
-    question: "The price is higher at pickup. <em>What do I do?</em>",
-    answer:
-      "It can't be. The price you approved in the app is the exact price logged in the shared record. A shop cannot alter an approved quote without sending a new one for your PIN approval first.",
+    worry: "The price is higher than we agreed.",
+    truth:
+      "It cannot be. The amount you approved is locked in your timeline, the exact figure at the exact time.",
+    move: "Open it and show them. There is nothing to argue about.",
   },
   {
     icon: "broken_image",
-    question: "My device came back with <em>new damage.</em>",
-    answer:
-      "Open the intake record. The shop logs condition photos when you hand over your device. The time-stamped record proves exactly what state it arrived in.",
+    worry: "My device came back with damage that was not there before.",
+    truth:
+      "The photos from when you dropped it off are saved in your timeline, each one stamped with the time.",
+    move: "Compare them side by side. The proof is already yours.",
   },
   {
     icon: "pending_actions",
-    question: "Where is my repair? <em>Is it done?</em>",
-    answer:
-      "Your timeline shows the exact, real-time status of your device. When the shop finishes the repair or updates the status, it reflects immediately on your end.",
+    worry: "Where is my repair? Is it done yet?",
+    truth:
+      "Your timeline shows the real status, updated the moment the shop moves it forward.",
+    move: "Open the app and look. No need to call and ask.",
   },
   {
     icon: "payments",
-    question: "Can I cancel or <em>pay online?</em>",
-    answer:
-      "Only the shop can cancel a repair once it's started (since they hold the device). All payments are currently recorded in ₦ at the counter. Online pay arrives in Phase 2.",
+    worry: "Can I cancel, or pay online?",
+    truth:
+      "Once a repair starts, only the shop can cancel it, since they are holding your device. Paying online is coming soon; for now every payment is at the counter in naira.",
+    move: "Sort a cancellation with your shop directly.",
   },
 ];
 
@@ -49,26 +55,43 @@ const HelpScenarios = () => {
             What do I do <em>when...</em>
           </h2>
           <p className={`${styles.lede} md-typescale-body-large`}>
-            Real scenarios, answered accurately. Because the record handles the
-            heavy lifting, you rarely need to ask "what happened."
+            Real situations, answered straight. In almost every one, the record
+            has already done the hard part for you.
           </p>
         </div>
 
         <ul className={styles.grid}>
           {SCENARIOS.map((item) => (
-            <li key={item.question} className={styles.card}>
-              <div className={styles.cardHeader}>
+            <li key={item.worry} className={styles.card}>
+              <div className={styles.worry}>
                 <span className={styles.badge}>
                   <Icon name={item.icon} size={22} />
                 </span>
-                <h3
-                  className={styles.question}
-                  dangerouslySetInnerHTML={{ __html: item.question }}
-                />
+                <h3 className={styles.worryText}>{item.worry}</h3>
               </div>
-              <p className={`${styles.answer} md-typescale-body-medium`}>
-                {item.answer}
-              </p>
+
+              <div className={styles.beats}>
+                <div className={styles.beat}>
+                  <span
+                    className={`${styles.beatLabel} md-typescale-label-medium`}
+                  >
+                    What is already true
+                  </span>
+                  <p className={`${styles.beatText} md-typescale-body-medium`}>
+                    {item.truth}
+                  </p>
+                </div>
+                <div className={styles.beat}>
+                  <span
+                    className={`${styles.beatLabel} md-typescale-label-medium`}
+                  >
+                    Your move
+                  </span>
+                  <p className={`${styles.beatText} md-typescale-body-medium`}>
+                    {item.move}
+                  </p>
+                </div>
+              </div>
             </li>
           ))}
         </ul>

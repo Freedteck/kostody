@@ -6,7 +6,7 @@ const RULES = [
     icon: "pin",
     title: "No PIN over chat or phone.",
     reason:
-      "We will never ask for your 4-digit PIN over email, phone, or DM. Your PIN is stored nowhere on our servers and belongs strictly to you.",
+      "We will never ask for your 4-digit PIN over email, phone, or DM. We keep it scrambled, so not even we can read it. It is yours alone.",
   },
   {
     icon: "mark_email_unread",
@@ -18,13 +18,13 @@ const RULES = [
     icon: "credit_card_off",
     title: "No off-counter payments.",
     reason:
-      "All payments are handled directly with the shop at their physical counter. Online payments will only occur inside the official app in Phase 2.",
+      "All payments are handled directly with the shop at their counter. Online payment will only ever happen inside the official app, and that is coming soon.",
   },
   {
     icon: "verified",
     title: "No unverified claims.",
     reason:
-      "Every request points back to a time-stamped record in your app. If an update or charge is not logged on your timeline, ignore it.",
+      "Every request points back to a record in your app, stamped with the time. If a change or charge is not on your timeline, ignore it.",
   },
 ];
 

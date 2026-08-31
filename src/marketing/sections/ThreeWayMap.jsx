@@ -7,24 +7,30 @@ const ENTITIES = [
     icon: "history",
     name: "The Record",
     role: "Answers 'what happened'",
-    headline: "Answers <em>what happened</em> with zero room to rewrite.",
-    desc: "Your repair timeline is tamper-proof. Every quote, condition photo, and status update is logged with a clock on it. When you need to know what was agreed to or when work finished, the record is the only source of truth.",
+    lead: "Answers",
+    accent: "what happened",
+    tail: " with zero room to rewrite.",
+    desc: "Your repair timeline cannot be edited or erased. Every quote, photo, and status update is saved with the time it happened. When you need to know what was agreed, or when the work was done, the record is the one answer everyone trusts.",
   },
   {
     index: "02",
     icon: "storefront",
     name: "Your Shop",
     role: "Answers device questions",
-    headline: "Holds your <em>physical device</em> and does the work.",
-    desc: "The shop has physical custody of your phone or laptop. They diagnose faults, set quotes, and carry out repairs. Kostody is not a middleman or support desk for repair work. Anything about the hardware is between you and the shop.",
+    lead: "Holds your",
+    accent: "physical device",
+    tail: " and does the work.",
+    desc: "The shop physically has your phone or laptop. They find the fault, set the price, and do the repair. Kostody is not a middleman and does not fix devices. Anything about the device itself is between you and the shop.",
   },
   {
     index: "03",
     icon: "shield",
     name: "Kostody",
-    role: "Handles the account layer",
-    desc: "We build and maintain the platform that locks the shared history. We protect your 4-digit PIN, keep the timeline tamper-proof, and verify registered shops. We don't set prices, manage repairs, or take phone calls about hardware.",
-    headline: "Protects your <em>PIN & history</em> across every shop.",
+    role: "Keeps your account safe",
+    lead: "Protects your",
+    accent: "PIN & history",
+    tail: " across every shop.",
+    desc: "We build and run the app that keeps your shared history locked. We keep your 4-digit PIN scrambled so no one can read it, and we make sure no shop can quietly rewrite what happened. We do not set prices, do repairs, or answer questions about your device.",
   },
 ];
 
@@ -58,10 +64,10 @@ const ThreeWayMap = () => {
                 <span className={`${styles.role} md-typescale-label-large`}>
                   {item.role}
                 </span>
-                <h3
-                  className={styles.headline}
-                  dangerouslySetInnerHTML={{ __html: item.headline }}
-                />
+                <h3 className={styles.headline}>
+                  {item.lead} <em>{item.accent}</em>
+                  {item.tail}
+                </h3>
                 <p className={`${styles.desc} md-typescale-body-large`}>
                   {item.desc}
                 </p>

@@ -3,6 +3,7 @@ import HelpHero from "../sections/HelpHero";
 import ThreeWayMap from "../sections/ThreeWayMap";
 import HelpScenarios from "../sections/HelpScenarios";
 import AntiScam from "../sections/AntiScam";
+import ContactHelp from "../sections/ContactHelp";
 import HelpCoda from "../sections/HelpCoda";
 
 const Help = () => {
@@ -17,6 +18,7 @@ const Help = () => {
       <ThreeWayMap />
       <HelpScenarios />
       <AntiScam />
+      <ContactHelp />
       <HelpCoda />
     </>
   );
