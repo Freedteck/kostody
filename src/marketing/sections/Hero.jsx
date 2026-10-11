@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Button, Icon } from "../../ui";
+import { Button, Icon, DeviceMockup } from "../../ui";
 import mark from "../../assets/mark.png";
-import proof from "../../assets/hero-proof.png";
+import customerDash from "../../assets/dashboard-customer-light-2x.png";
 import styles from "./Hero.module.css";
 
 const CHAIN = [
@@ -58,14 +58,10 @@ const Hero = () => {
           </div>
 
           <div className={styles.figure}>
-            <div className={styles.device}>
-              <div className={styles.screen}>
-                <img
-                  src={proof}
-                  alt="A Kostody repair record: each step confirmed with a PIN and time-stamped"
-                />
-              </div>
-            </div>
+            <DeviceMockup
+              src={customerDash}
+              alt="A Kostody customer repair tracking dashboard on iPhone 12"
+            />
           </div>
         </div>
 

@@ -1,6 +1,6 @@
-import { Icon } from "../../ui";
+import { Icon, DeviceMockup } from "../../ui";
 import mark from "../../assets/mark.png";
-import clinic from "../../assets/dashboard-clinic.png";
+import clinic from "../../assets/dashboard-clinic-light-2x.png";
 import styles from "./Reframe.module.css";
 
 const PHASES = [
@@ -42,14 +42,10 @@ const Reframe = () => {
           </div>
 
           <div className={styles.figure}>
-            <div className={styles.device}>
-              <div className={styles.screen}>
-                <img
-                  src={clinic}
-                  alt="A Kostody engineer's Active Jobs board: devices checked in, each with a customer, a fault and a live status"
-                />
-              </div>
-            </div>
+            <DeviceMockup
+              src={clinic}
+              alt="A Kostody engineer's Active Jobs board on iPhone 12"
+            />
           </div>
         </div>
 

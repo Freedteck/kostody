@@ -1,6 +1,6 @@
-import { Icon } from "../../ui";
+import { Icon, DeviceMockup } from "../../ui";
 import mark from "../../assets/mark.png";
-import pinAuth from "../../assets/pin-auth.png";
+import pinAuth from "../../assets/pin-auth-2x.png";
 import styles from "./Identity.module.css";
 
 const SHOPS = [
@@ -38,15 +38,11 @@ const Identity = () => {
           </div>
 
           <div className={styles.figure}>
-            <div className={styles.device}>
-              <div className={styles.screen}>
-                <img
-                  src={pinAuth}
-                  alt="Customer 4-digit PIN authorization screen on Kostody"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+            <DeviceMockup
+              src={pinAuth}
+              variant="counter-dock"
+              alt="Customer 4-digit PIN authorization screen on iPhone 12"
+            />
           </div>
         </div>
 

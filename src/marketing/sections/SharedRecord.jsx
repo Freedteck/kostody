@@ -1,5 +1,5 @@
-import { Icon } from "../../ui";
-import pinLocked from "../../assets/pin-locked.png";
+import { Icon, DeviceMockup } from "../../ui";
+import pinLocked from "../../assets/pin-locked-2x.png";
 import styles from "./SharedRecord.module.css";
 
 const SharedRecord = () => {
@@ -33,15 +33,12 @@ const SharedRecord = () => {
         </div>
 
         <div className={styles.figure}>
-          <div className={styles.device}>
-            <div className={styles.screen}>
-              <img
-                src={pinLocked}
-                alt="Agreement locked on Kostody with customer PIN verification"
-                loading="lazy"
-              />
-            </div>
-          </div>
+          <DeviceMockup
+            src={pinLocked}
+            objectPosition="bottom center"
+            className={styles.rotatedMockup}
+            alt="Kostody Agreement Locked verified record on iPhone 12"
+          />
         </div>
       </div>
     </section>

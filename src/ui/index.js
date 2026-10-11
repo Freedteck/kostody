@@ -24,6 +24,7 @@ export { default as Avatar } from "./Avatar";
 export { default as TopAppBar } from "./TopAppBar";
 export { default as AppScaffold } from "./AppScaffold";
 export { default as FabDock } from "./FabDock";
+export { default as DeviceMockup } from "./DeviceMockup";
 
 export {
   ChipSet,

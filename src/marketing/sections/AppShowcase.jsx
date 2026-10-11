@@ -1,7 +1,7 @@
-import { Icon } from "../../ui";
-import board from "../../assets/dashboard-clinic.png";
-import proof from "../../assets/hero-proof.png";
-import referralImg from "../../assets/e2e-referral.png";
+import { Icon, DeviceMockup } from "../../ui";
+import board from "../../assets/dashboard-clinic-light-2x.png";
+import customerProof from "../../assets/dashboard-customer-light-2x.png";
+import referralImg from "../../assets/e2e-referral-2x.png";
 import styles from "./AppShowcase.module.css";
 
 const SHOWS = [
@@ -40,8 +40,8 @@ const SHOWS = [
     eyebrow: "For the customer",
     title: "Your device, your PIN, your proof.",
     lede: "Hand over your phone and still know exactly what's happening to it - from any shop, on one number that's always yours.",
-    img: proof,
-    imgAlt: "The customer's live repair record",
+    img: customerProof,
+    imgAlt: "The customer's live repair record on iPhone 12",
     caps: [
       {
         icon: "visibility",
@@ -136,11 +136,7 @@ const AppShowcase = () => {
             </div>
 
             <div className={styles.visualCol}>
-              <div className={styles.device}>
-                <div className={styles.screen}>
-                  <img src={show.img} alt={show.imgAlt} loading="lazy" />
-                </div>
-              </div>
+              <DeviceMockup src={show.img} alt={show.imgAlt} />
             </div>
           </div>
         </div>

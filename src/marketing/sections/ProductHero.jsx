@@ -1,7 +1,7 @@
 import mark from "../../assets/mark.png";
-import board from "../../assets/dashboard-clinic.png";
-import proof from "../../assets/hero-proof.png";
-import { Icon } from "../../ui";
+import board from "../../assets/dashboard-clinic-light-2x.png";
+import customerDash from "../../assets/dashboard-customer-light-2x.png";
+import { Icon, DeviceMockup } from "../../ui";
 import styles from "./ProductHero.module.css";
 
 const STRIP = [
@@ -30,16 +30,16 @@ const ProductHero = () => {
           </div>
 
           <div className={styles.figure} aria-hidden="true">
-            <div className={`${styles.device} ${styles.back}`}>
-              <div className={styles.screen}>
-                <img src={board} alt="" loading="lazy" />
-              </div>
-            </div>
-            <div className={`${styles.device} ${styles.front}`}>
-              <div className={styles.screen}>
-                <img src={proof} alt="" loading="lazy" />
-              </div>
-            </div>
+            <DeviceMockup
+              src={board}
+              alt="The engineer active jobs board on iPhone 12"
+              className={styles.back}
+            />
+            <DeviceMockup
+              src={customerDash}
+              alt="The customer live repair tracking dashboard on iPhone 12"
+              className={styles.front}
+            />
           </div>
         </div>
 

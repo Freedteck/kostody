@@ -1,0 +1,254 @@
+.mockupWrapper {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: min(100%, 330px);
+  max-width: 100%;
+}
+
+/* Chassis - The physical iPhone 12 flat aluminum body */
+.chassis {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 71.5 / 146.7; /* Authentic iPhone 12 physical ratio (1:2.052) */
+  border-radius: 44px;
+  background: #1c1815;
+  padding: 9px;
+  box-sizing: border-box;
+  /* Dual-stage flat aluminum edge highlight and gentle studio depth */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 0 0 2.5px #27201c,
+    0 0 0 4px rgba(0, 0, 0, 0.45),
+    0 24px 48px -12px rgba(0, 0, 0, 0.45),
+    0 8px 18px -6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease;
+}
+
+/* Speaker Earpiece Slit (Above the notch in top bezel) */
+.earpiece {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 3px;
+  border-radius: 2px;
+  background: #0f0c0a;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.9);
+  z-index: 12;
+}
+
+/* Hardware Buttons on the sides */
+.button {
+  position: absolute;
+  background: #2a231e;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Ring / Silent switch (Left top) */
+.btnMute {
+  left: -3.5px;
+  top: 78px;
+  width: 3.5px;
+  height: 14px;
+}
+
+/* Volume Up (Left middle) */
+.btnVolUp {
+  left: -3.5px;
+  top: 114px;
+  width: 3.5px;
+  height: 38px;
+}
+
+/* Volume Down (Left lower) */
+.btnVolDown {
+  left: -3.5px;
+  top: 160px;
+  width: 3.5px;
+  height: 38px;
+}
+
+/* Power / Side button (Right side) */
+.btnPower {
+  right: -3.5px;
+  top: 120px;
+  width: 3.5px;
+  height: 58px;
+}
+
+/* Inner Bezel surrounding the screen */
+.innerBezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Classic iPhone 12 Notch */
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 24px;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  background: #000;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 18px;
+  gap: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.sensor {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #0c0f12;
+}
+
+.cameraLens {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #233446 0%, #060a0f 70%);
+  box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+/* Screen area */
+.screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff8f6; /* Matching Kostody light surface */
+}
+
+.screenshot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Subtle studio glass reflection */
+.glassReflection {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    130deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 26%,
+    transparent 38%
+  );
+}
+
+/* Floor Shadow - Natural ground contact shadow */
+.floorShadow {
+  position: absolute;
+  bottom: -16px;
+  left: 8%;
+  width: 84%;
+  height: 32px;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(0, 0, 0, 0.52) 0%,
+    rgba(0, 0, 0, 0.22) 42%,
+    transparent 72%
+  );
+  filter: blur(10px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  transform: scaleY(0.45);
+  transition:
+    transform 0.4s ease,
+    opacity 0.4s ease;
+}
+
+/* Realistic, subtle variants (no distorted/wogowogo 3D) */
+
+/* Upright (Default studio front shot) */
+.upright .chassis {
+  transform: none;
+}
+
+/* Gentle Left - Soft, natural 3D lift */
+.gentle-left .chassis {
+  transform: perspective(1400px) rotateY(3.5deg) rotateX(1.5deg);
+}
+
+.gentle-left .floorShadow {
+  transform: translateX(-8px) scaleY(0.45);
+}
+
+/* Gentle Right - Soft, natural 3D lift */
+.gentle-right .chassis {
+  transform: perspective(1400px) rotateY(-3.5deg) rotateX(1.5deg);
+}
+
+.gentle-right .floorShadow {
+  transform: translateX(8px) scaleY(0.45);
+}
+
+/* Counter Dock - Upright counter presentation */
+.counter-dock .chassis {
+  transform: perspective(1400px) rotateX(2.5deg);
+}
+
+.counter-dock .floorShadow {
+  transform: translateY(4px) scaleY(0.42);
+}
+
+/* Facing Left - Screen turns to the left (towards text on left) with top tilted right */
+.facing-left .chassis {
+  transform: perspective(2200px) rotateY(-12deg) rotateX(4deg) rotateZ(3.5deg);
+  box-shadow:
+    -2px 3px 0 1px rgba(255, 255, 255, 0.18),
+    -5px 7px 0 2px #26201c,
+    16px 28px 54px -10px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.facing-left .floorShadow {
+  transform: translateX(14px) translateY(6px) rotateZ(-2deg) scaleY(0.44);
+  transition: transform 0.3s ease;
+}
+
+.facing-left:hover .chassis {
+  transform: perspective(2200px) rotateY(-8deg) rotateX(2deg) rotateZ(2deg) translateY(-4px);
+}
+
+@media (max-width: 600px) {
+  .mockupWrapper {
+    width: min(100%, 300px);
+  }
+
+  .gentle-left .chassis,
+  .gentle-right .chassis,
+  .counter-dock .chassis,
+  .facing-left .chassis {
+    transform: none;
+  }
+
+  .gentle-left .floorShadow,
+  .gentle-right .floorShadow,
+  .counter-dock .floorShadow,
+  .facing-left .floorShadow {
+    transform: scaleY(0.45);
+  }
+}
