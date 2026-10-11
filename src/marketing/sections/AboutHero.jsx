@@ -21,7 +21,11 @@ const AboutHero = () => {
 
         <div className={styles.sealWrap} aria-hidden="true">
           <div className={styles.seal}>
-            <svg className={styles.ring} viewBox="0 0 200 200" role="presentation">
+            <svg
+              className={styles.ring}
+              viewBox="0 0 200 200"
+              role="presentation"
+            >
               <defs>
                 <path
                   id="aboutSealArc"

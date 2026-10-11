@@ -9,7 +9,7 @@ const RECORD = [
   },
   {
     icon: "lock",
-    text: "Fault and ₦85,000 quote signed with the customer PIN",
+    text: "Fault and ₦85,000 quote confirmed with the customer PIN",
     time: "Aug 20, 09:14 AM",
   },
 ];
@@ -76,8 +76,8 @@ const Gap = () => {
           </ul>
 
           <p className={`${styles.resolveNote} md-typescale-body-medium`}>
-            Nobody has to be believed. You both signed the record the day it
-            came in.
+            Nobody has to be believed. It was locked into the intake record the
+            day it came in.
           </p>
         </div>
       </div>

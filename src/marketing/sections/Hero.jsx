@@ -27,15 +27,15 @@ const Hero = () => {
         <div className={styles.top}>
           <div className={styles.copy}>
             <h1 id="hero-title" className={styles.headline}>
-              Your phone holds your whole life. Get it repaired professionally,
-              with <em>proof at every step.</em>
+              Every repair on the record. From the moment the device{" "}
+              <em>hits the counter.</em>
             </h1>
 
             <p className={`${styles.para} md-typescale-body-large`}>
-              Kostody turns every repair into a locked, tamper-proof record.
-              Condition photos, the fault, the quote and each payment are signed
-              with your Universal PIN and time-stamped, so neither you nor the
-              engineer can rewrite what happened.
+              Kostody turns repair shops into organized device clinics. Log
+              condition photos before opening, lock in the diagnosis and quote,
+              and confirm with the customer's 4-digit PIN. Clear records, zero
+              arguments.
             </p>
 
             <div className={styles.actions}>
@@ -45,7 +45,7 @@ const Hero = () => {
                 onClick={goToGetApp}
                 className={styles.cta}
               >
-                Download the app
+                Get the app
               </Button>
               <Link
                 to="/product"
@@ -62,7 +62,7 @@ const Hero = () => {
               <div className={styles.screen}>
                 <img
                   src={proof}
-                  alt="A Kostody repair record: each step signed with a PIN and time-stamped"
+                  alt="A Kostody repair record: each step confirmed with a PIN and time-stamped"
                 />
               </div>
             </div>

@@ -1,20 +1,8 @@
-import { useEffect, useState } from "react";
-import { Card, Icon, Keypad } from "../../ui";
+import { Icon } from "../../ui";
+import pinLocked from "../../assets/pin-locked.png";
 import styles from "./SharedRecord.module.css";
 
 const SharedRecord = () => {
-  const [locked, setLocked] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
-
-  useEffect(() => {
-    if (!locked) return undefined;
-    const timer = setTimeout(() => {
-      setLocked(false);
-      setResetKey((key) => key + 1);
-    }, 2800);
-    return () => clearTimeout(timer);
-  }, [locked]);
-
   return (
     <section className={styles.shared} aria-labelledby="shared-title">
       <div className={styles.inner}>
@@ -45,39 +33,15 @@ const SharedRecord = () => {
         </div>
 
         <div className={styles.figure}>
-          <Card variant="elevated" padded={false} className={styles.keypadCard}>
-            <div className={styles.keypadHead}>
-              <span className={`${styles.keypadKicker} md-typescale-label-large`}>
-                <Icon name="lock" size={16} filled />
-                Approve repair
-              </span>
-              <span className={`${styles.keypadJob} md-typescale-label-medium`}>
-                iPhone 12 · ₦85,000
-              </span>
+          <div className={styles.device}>
+            <div className={styles.screen}>
+              <img
+                src={pinLocked}
+                alt="Agreement locked on Kostody with customer PIN verification"
+                loading="lazy"
+              />
             </div>
-
-            <Keypad
-              length={4}
-              instruction="Enter any 4 digits to approve - try it"
-              onComplete={() => setLocked(true)}
-              resetKey={resetKey}
-              disabled={locked}
-            />
-
-            {locked && (
-              <div className={styles.locked} role="status">
-                <span className={styles.lockedIcon}>
-                  <Icon name="verified_user" size={28} filled />
-                </span>
-                <p className={`${styles.lockedTitle} md-typescale-title-medium`}>
-                  Agreement locked
-                </p>
-                <p className={`${styles.lockedSub} md-typescale-body-medium`}>
-                  Both sides notified · time-stamped
-                </p>
-              </div>
-            )}
-          </Card>
+          </div>
         </div>
       </div>
     </section>

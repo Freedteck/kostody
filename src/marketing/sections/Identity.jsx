@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Card, Icon, Keypad } from "../../ui";
+import { Icon } from "../../ui";
 import mark from "../../assets/mark.png";
+import pinAuth from "../../assets/pin-auth.png";
 import styles from "./Identity.module.css";
 
 const SHOPS = [
@@ -14,18 +14,6 @@ const SHOPS = [
 ];
 
 const Identity = () => {
-  const [locked, setLocked] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
-
-  useEffect(() => {
-    if (!locked) return undefined;
-    const t = setTimeout(() => {
-      setLocked(false);
-      setResetKey((k) => k + 1);
-    }, 2800);
-    return () => clearTimeout(t);
-  }, [locked]);
-
   return (
     <section className={styles.identity} aria-labelledby="identity-title">
       <img src={mark} alt="" aria-hidden="true" className={styles.mark} />
@@ -39,61 +27,26 @@ const Identity = () => {
             </h2>
             <p className={`${styles.para} md-typescale-body-large`}>
               You don't open a new account at every repair shop. Your phone
-              number is your identity across all of Kostody - and one 4-digit
-              PIN, held by you and never the shop, locks every agreement.
+              number is your universal ID across all of Kostody. Dropping off a
+              dead device? You don't even need a working phone on you: the engineer
+              inputs your number, and your 4-digit PIN confirms the agreement right at the counter.
             </p>
             <p className={`${styles.note} md-typescale-body-medium`}>
-              Walk into any shop and the record already knows who you are.
-              Nothing gets signed without your PIN.
+              Walk into any shop nationwide and the workbench recognizes you.
+              No work begins without your PIN.
             </p>
           </div>
 
-          <div className={styles.keystoneWrap}>
-            <Card
-              variant="elevated"
-              padded={false}
-              className={styles.keystone}
-            >
-              <div className={styles.keystoneHead}>
-                <span
-                  className={`${styles.keystoneKicker} md-typescale-label-large`}
-                >
-                  <Icon name="lock" size={16} filled />
-                  Authorize repair
-                </span>
-                <span
-                  className={`${styles.keystoneJob} md-typescale-label-medium`}
-                >
-                  #2481 · Samsung Galaxy A54
-                </span>
+          <div className={styles.figure}>
+            <div className={styles.device}>
+              <div className={styles.screen}>
+                <img
+                  src={pinAuth}
+                  alt="Customer 4-digit PIN authorization screen on Kostody"
+                  loading="lazy"
+                />
               </div>
-
-              <Keypad
-                length={4}
-                instruction="Enter your 4-digit PIN"
-                onComplete={() => setLocked(true)}
-                resetKey={resetKey}
-                disabled={locked}
-              />
-
-              {locked && (
-                <div className={styles.locked} role="status">
-                  <span className={styles.lockedIcon}>
-                    <Icon name="verified_user" size={30} filled />
-                  </span>
-                  <p
-                    className={`${styles.lockedTitle} md-typescale-title-medium`}
-                  >
-                    Agreement locked
-                  </p>
-                  <p
-                    className={`${styles.lockedSub} md-typescale-body-medium`}
-                  >
-                    Signed with your PIN · time-stamped · can't be rewritten
-                  </p>
-                </div>
-              )}
-            </Card>
+            </div>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { Icon } from "../../ui";
 import board from "../../assets/dashboard-clinic.png";
 import proof from "../../assets/hero-proof.png";
+import referralImg from "../../assets/e2e-referral.png";
 import styles from "./AppShowcase.module.css";
 
 const SHOWS = [
@@ -24,8 +25,8 @@ const SHOWS = [
       },
       {
         icon: "history",
-        label: "A tamper-proof work log",
-        line: "Parts fitted and tests run are added as you go - a log no one can quietly edit.",
+        label: "A verified work log",
+        line: "Parts fitted and tests run are added as you go - a clean history neither side can rewrite.",
       },
       {
         icon: "task_alt",
@@ -64,16 +65,43 @@ const SHOWS = [
       },
     ],
   },
+  {
+    key: "referral",
+    eyebrow: "Engineer to engineer",
+    title: "Outsource without losing the chain of custody.",
+    lede: "Sending a complex board for CPU reballing or specialized flashing to a specialist in Ikeja or another workshop? Hand off with a Referral Job ID so accountability never breaks down.",
+    img: referralImg,
+    imgAlt: "Engineer-to-engineer referral intake on Kostody",
+    caps: [
+      {
+        icon: "qr_code_2",
+        label: "One-tap referral intake",
+        line: "The receiving specialist enters your Referral Job ID to auto-fill customer and device history.",
+      },
+      {
+        icon: "handshake",
+        label: "Both technicians protected",
+        line: "You are the client to the specialist, while your original customer agreement stays intact.",
+      },
+      {
+        icon: "inventory_2",
+        label: "Accessories logged across hands",
+        line: "Every retained component, battery, and peripheral is accounted for across bench transfers.",
+      },
+      {
+        icon: "verified_user",
+        label: "No multi-engineer blame games",
+        line: "A clear handoff record means no one can claim the board died before it reached their bench.",
+      },
+    ],
+  },
 ];
 
 const AppShowcase = () => {
   return (
     <section className={styles.showcases} aria-label="What each side gets">
       {SHOWS.map((show) => (
-        <div
-          key={show.key}
-          className={`${styles.show} ${styles[show.key]}`}
-        >
+        <div key={show.key} className={`${styles.show} ${styles[show.key]}`}>
           <div className={styles.inner}>
             <div className={styles.textCol}>
               <span className={`${styles.eyebrow} md-typescale-label-large`}>
@@ -91,10 +119,14 @@ const AppShowcase = () => {
                       <Icon name={cap.icon} size={20} filled />
                     </span>
                     <div className={styles.capText}>
-                      <span className={`${styles.capLabel} md-typescale-title-small`}>
+                      <span
+                        className={`${styles.capLabel} md-typescale-title-small`}
+                      >
                         {cap.label}
                       </span>
-                      <span className={`${styles.capLine} md-typescale-body-medium`}>
+                      <span
+                        className={`${styles.capLine} md-typescale-body-medium`}
+                      >
                         {cap.line}
                       </span>
                     </div>

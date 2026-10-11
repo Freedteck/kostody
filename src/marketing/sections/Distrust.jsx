@@ -4,30 +4,30 @@ import styles from "./Distrust.module.css";
 const CUSTOMER = [
   {
     icon: "request_quote",
-    fear: "Will the price they said hold, or creep up by the time I collect it?",
+    fear: "Will the price they quoted hold, or creep up by the time I collect it?",
   },
   {
     icon: "lock",
-    fear: "Is everything on my phone safe while it's sitting in the back?",
+    fear: "Is my personal data, banking, and messages safe while it is sitting in the back?",
   },
   {
     icon: "policy",
-    fear: "If it comes back with a new crack, can I prove it wasn't there?",
+    fear: "If it comes back with a new crack or missing part, can I prove it was not there?",
   },
 ];
 
 const ENGINEER = [
   {
     icon: "gavel",
-    fear: "Will they blame me for damage that arrived with the device?",
+    fear: "Will they hold me liable for pre-existing liquid damage once the device is opened?",
   },
   {
-    icon: "price_change",
-    fear: "Will they insist I quoted less than we actually agreed?",
+    icon: "inventory_2",
+    fear: "Will they accuse me of losing a SIM card, memory card, or battery they never left?",
   },
   {
-    icon: "reviews",
-    fear: "Will one furious review sink me with no way to answer it?",
+    icon: "schedule",
+    fear: "Will they abandon the device for months and demand the old quote after parts prices surge?",
   },
 ];
 

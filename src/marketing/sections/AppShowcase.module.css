@@ -16,6 +16,11 @@
   background-color: var(--md-sys-color-secondary-container);
 }
 
+.referral {
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
 .inner {
   max-width: var(--kd-page-max);
   margin: 0 auto;

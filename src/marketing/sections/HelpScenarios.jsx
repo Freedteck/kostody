@@ -3,46 +3,46 @@ import styles from "./HelpScenarios.module.css";
 
 const SCENARIOS = [
   {
-    icon: "request_quote",
-    worry: "My shop sent me a quote. What now?",
-    truth:
-      "The quote sits in your timeline with the exact price and what it covers.",
-    move: "Read it. If it looks right, tap in your PIN, and the shop can start.",
-  },
-  {
-    icon: "pin",
-    worry: "I forgot my PIN.",
-    truth:
-      "Your PIN is scrambled the moment you set it, so no one, not even us, can look it up for you. That is what keeps it safe.",
-    move: "Reach out and we will help you set a new one. Our details are further down this page.",
-  },
-  {
     icon: "price_change",
-    worry: "The price is higher than we agreed.",
+    worry: "The price at collection is higher than agreed.",
     truth:
-      "It cannot be. The amount you approved is locked in your timeline, the exact figure at the exact time.",
-    move: "Open it and show them. There is nothing to argue about.",
+      "The quote confirmed with the customer PIN is locked on the timeline with the exact date and amount.",
+    move: "Open the job timeline and show the agreed quote. There is nothing to argue about.",
   },
   {
     icon: "broken_image",
-    worry: "My device came back with damage that was not there before.",
+    worry: "The customer claims new damage appeared during repair.",
     truth:
-      "The photos from when you dropped it off are saved in your timeline, each one stamped with the time.",
-    move: "Compare them side by side. The proof is already yours.",
+      "Condition photos taken at intake document pre-existing cracks, dents, and wear before any tool was used.",
+    move: "Open condition photos on the record. Compare the drop-off state side by side.",
   },
   {
-    icon: "pending_actions",
-    worry: "Where is my repair? Is it done yet?",
+    icon: "inventory_2",
+    worry: "A customer claims they left accessories, a charger, or a SIM card.",
     truth:
-      "Your timeline shows the real status, updated the moment the shop moves it forward.",
-    move: "Open the app and look. No need to call and ask.",
+      "The intake checklist records every retained accessory before the device moves to the bench.",
+    move: "Check the job record under 'Accessories retained'. Whatever was returned at the counter is documented.",
   },
   {
-    icon: "payments",
-    worry: "Can I cancel, or pay online?",
+    icon: "schedule",
+    worry: "A device was abandoned for weeks and parts prices surged.",
     truth:
-      "Once a repair starts, only the shop can cancel it, since they are holding your device. Paying online is coming soon; for now every payment is at the counter in naira.",
-    move: "Sort a cancellation with your shop directly.",
+      "Every quote carries a strict 7-day validity window to protect shops against market inflation.",
+    move: "Expired quotes invalidate automatically. Issue a new quote based on current market rates.",
+  },
+  {
+    icon: "qr_code_2",
+    worry: "I need to outsource a board to a specialist in another plaza.",
+    truth:
+      "Kostody referral jobs preserve chain of custody across workshops without exposing customer contact info.",
+    move: "Share the Referral Job ID with the specialist to auto-fill their intake while keeping both benches covered.",
+  },
+  {
+    icon: "pin",
+    worry: "The customer forgot their 4-digit PIN.",
+    truth:
+      "Customer PINs are encrypted so neither the repair shop nor Kostody can look them up.",
+    move: "Use the support contact below to verify identity and securely set a new 4-digit PIN.",
   },
 ];
 

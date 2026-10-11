@@ -24,7 +24,7 @@ const CONVICTIONS = [
     accent: "your yes",
     tail: ".",
     decision:
-      "Your 4-digit PIN - held by you, never the shop - gates every agreement. No PIN, no repair, no exceptions.",
+      "Your 4-digit PIN, held by you and never the shop, confirms every agreement. No PIN, no repair, no misunderstandings.",
   },
   {
     icon: "sell",
@@ -32,7 +32,7 @@ const CONVICTIONS = [
     accent: "price",
     tail: ".",
     decision:
-      "The quote you approve is the amount you pay. It's locked the moment you sign - it can't drift upward by the time you collect.",
+      "The quote you approve is the amount you pay. It is locked the moment you confirm with your PIN: it cannot drift upward at collection, and the engineer gets paid without dispute.",
   },
 ];
 

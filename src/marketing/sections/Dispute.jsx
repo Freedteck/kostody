@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../ui";
 import record from "../../assets/dispute-record.png";
+import crackPhoto from "../../assets/condition-photo-crack.png";
 import styles from "./Dispute.module.css";
 
 const BEATS = [
   "She swore the screen was fine at drop-off. He swore the crack was already there. Both of them meant it.",
   "So we opened the record and scrolled back to 09:02, the minute it hit the counter, before a single screw was turned.",
-  "There it is in condition photo 3, shot at intake. The same hairline crack, time-stamped 09:02. Not a memory now, a fact with a clock on it.",
+  "There it is in condition photo 1, shot at intake. The same hairline crack, time-stamped 09:02. Not a memory now, a fact with a clock on it.",
   "Nobody had to be believed. The record read the same for both of them, and it always will, because a line can be added but never rewritten.",
 ];
 
@@ -96,8 +97,11 @@ const Dispute = () => {
                   </div>
                 </div>
                 <div className={styles.photoSlot}>
-                  <Icon name="image" size={22} />
-                  <span className="md-typescale-label-small">Intake photo</span>
+                  <img
+                    src={crackPhoto}
+                    alt="Intake condition photo showing pre-existing cracked screen"
+                    className={styles.photoImg}
+                  />
                 </div>
               </div>
             </div>

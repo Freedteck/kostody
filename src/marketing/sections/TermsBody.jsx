@@ -6,7 +6,7 @@ const CLAUSES = [
     index: "01",
     icon: "shield",
     title: "What Kostody is.",
-    body: "Kostody is the platform that creates and protects the shared repair record between shops and customers. We build the infrastructure, enforce the tamper-proof timeline, verify registered shops, and secure the PIN authorization system. That is the full scope of our role.",
+    body: "Kostody is the platform that creates and protects the shared repair record between shops and customers. We build the infrastructure, enforce the unalterable timeline, verify registered shops, and secure the PIN authorization system. That is the full scope of our role.",
   },
   {
     index: "02",

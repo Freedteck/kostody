@@ -8,28 +8,28 @@ const EVENTS = [
     record: "Logged · 4 photos",
     time: "2:01 PM",
     eng: "Shot every crack",
-    you: "You saw all four",
+    you: "Sees every angle",
   },
   {
     icon: "request_quote",
     record: "Quote · ₦85,000",
     time: "2:14 PM",
-    eng: "Set the price once",
-    you: "It can't creep up",
+    eng: "Sets the price once",
+    you: "Locked against creep",
   },
   {
     icon: "lock",
     record: "Locked with PIN",
     time: "2:20 PM",
-    eng: "Waits for approval",
-    you: "Your PIN, your call",
+    eng: "Intake confirmed",
+    you: "Confirmed with PIN",
   },
   {
     icon: "task_alt",
     record: "Ready for pickup",
     time: "5:47 PM",
-    eng: "Marked it done",
-    you: "Same alert, same second",
+    eng: "Marked bench-ready",
+    you: "Instant alert",
   },
 ];
 
@@ -44,9 +44,9 @@ const Sides = () => {
             Two sides. <em>One record.</em>
           </h2>
           <p className={`${styles.lede} md-typescale-body-large`}>
-            The engineer's app and yours aren't two versions of the story.
-            They're two windows on the same locked timeline - same events, same
-            timestamps, nothing either side can quietly rewrite.
+            The engineer's app and the customer's app are not two different versions
+            of the story. They are two windows on the same timeline: same events, same
+            timestamps, and nothing either side can quietly rewrite.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ const Sides = () => {
             className={`${styles.label} ${styles.labelCust} md-typescale-label-large`}
           >
             <Icon name="person" size={18} />
-            Your app
+            The customer's app
           </span>
         </div>
 

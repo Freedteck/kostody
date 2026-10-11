@@ -24,7 +24,7 @@ const ProductHero = () => {
             </h1>
             <p className={`${styles.para} md-typescale-body-large`}>
               The engineer runs the repair. The customer follows it live. Both
-              meet on one record neither side can edit - here's what each side
+              meet on one record neither side can edit: here is what each side
               gets.
             </p>
           </div>
