@@ -1,22 +1,25 @@
+import { useState } from "react";
 import { Icon, DeviceMockup } from "../../ui";
 import board from "../../assets/dashboard-clinic-light-2x.png";
 import customerProof from "../../assets/dashboard-customer-light-2x.png";
 import referralImg from "../../assets/e2e-referral-2x.png";
 import styles from "./AppShowcase.module.css";
 
-const SHOWS = [
+const TABS = [
   {
     key: "engineer",
-    eyebrow: "For the engineer",
-    title: "Run your bench on proof.",
-    lede: "The Device Clinic for your shop - every job on the bench, every step on the record. Look professional, and get paid without arguments.",
+    label: "For the shop",
+    icon: "handyman",
     img: board,
-    imgAlt: "The engineer's Active Jobs board",
+    imgAlt: "The engineer's Active Jobs board on Kostody",
+    title: "Run your bench on proof.",
+    lede:
+      "Every job on the bench, every step on the record. Look professional and get paid without arguments.",
     caps: [
       {
         icon: "photo_camera",
-        label: "Check in with photos",
-        line: "Log the device and its faults with time-stamped condition photos before you touch it.",
+        label: "Check in with condition photos",
+        line: "Log the device and its faults with time-stamped photos before you touch it.",
       },
       {
         icon: "request_quote",
@@ -26,7 +29,7 @@ const SHOWS = [
       {
         icon: "history",
         label: "A verified work log",
-        line: "Parts fitted and tests run are added as you go - a clean history neither side can rewrite.",
+        line: "Parts fitted and tests run are added as you go. A clean history neither side can rewrite.",
       },
       {
         icon: "task_alt",
@@ -37,16 +40,18 @@ const SHOWS = [
   },
   {
     key: "customer",
-    eyebrow: "For the customer",
-    title: "Your device, your PIN, your proof.",
-    lede: "Hand over your phone and still know exactly what's happening to it - from any shop, on one number that's always yours.",
+    label: "For the customer",
+    icon: "person",
     img: customerProof,
     imgAlt: "The customer's live repair record on iPhone 12",
+    title: "Your device, your PIN, your proof.",
+    lede:
+      "Hand over your phone and still know exactly what's happening to it. From any shop, on one number that's always yours.",
     caps: [
       {
         icon: "visibility",
         label: "Watch every step, live",
-        line: "See each photo, quote, and update the moment it's logged - not after the fact.",
+        line: "See each photo, quote, and update the moment it's logged. Not after the fact.",
       },
       {
         icon: "lock",
@@ -59,19 +64,21 @@ const SHOWS = [
         line: "The quote you approved is the price you pay. It's locked on the record.",
       },
       {
-        icon: "gavel",
-        label: "Proof if it's questioned",
-        line: "If anything is ever disputed, the record answers on your behalf.",
+        icon: "sync_alt",
+        label: "One record, both sides",
+        line: "The engineer writes it, you approve it. Neither side can edit a line afterwards.",
       },
     ],
   },
   {
     key: "referral",
-    eyebrow: "Engineer to engineer",
-    title: "Outsource without losing the chain of custody.",
-    lede: "Sending a complex board for CPU reballing or specialized flashing to a specialist in Ikeja or another workshop? Hand off with a Referral Job ID so accountability never breaks down.",
+    label: "Referrals",
+    icon: "swap_horiz",
     img: referralImg,
     imgAlt: "Engineer-to-engineer referral intake on Kostody",
+    title: "Outsource without losing the chain of custody.",
+    lede:
+      "Sending a board for CPU reballing or specialized flashing? Hand off with a Referral Job ID so accountability never breaks.",
     caps: [
       {
         icon: "qr_code_2",
@@ -81,7 +88,7 @@ const SHOWS = [
       {
         icon: "handshake",
         label: "Both technicians protected",
-        line: "You are the client to the specialist, while your original customer agreement stays intact.",
+        line: "You are the client to the specialist. Your original customer agreement stays intact.",
       },
       {
         icon: "inventory_2",
@@ -98,49 +105,70 @@ const SHOWS = [
 ];
 
 const AppShowcase = () => {
+  const [active, setActive] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
+
+  const handleTab = (index) => {
+    if (index === active) return;
+    setActive(index);
+    setAnimKey((k) => k + 1);
+  };
+
+  const tab = TABS[active];
+
   return (
-    <section className={styles.showcases} aria-label="What each side gets">
-      {SHOWS.map((show) => (
-        <div key={show.key} className={`${styles.show} ${styles[show.key]}`}>
-          <div className={styles.inner}>
-            <div className={styles.textCol}>
-              <span className={`${styles.eyebrow} md-typescale-label-large`}>
-                {show.eyebrow}
-              </span>
-              <h2 className={styles.title}>{show.title}</h2>
-              <p className={`${styles.lede} md-typescale-body-large`}>
-                {show.lede}
-              </p>
+    <section className={styles.showcase} aria-labelledby="showcase-title">
+      <div className={styles.inner}>
+        {/* ── Left: tabs + content ── */}
+        <div className={styles.contentCol}>
+          <nav className={styles.tabs} aria-label="App view">
+            {TABS.map((t, i) => (
+              <button
+                key={t.key}
+                className={`${styles.tab} ${i === active ? styles.tabActive : ""}`}
+                onClick={() => handleTab(i)}
+                aria-pressed={i === active}
+              >
+                <Icon name={t.icon} size={18} filled={i === active} />
+                {t.label}
+              </button>
+            ))}
+          </nav>
 
-              <ul className={styles.caps}>
-                {show.caps.map((cap) => (
-                  <li key={cap.label} className={styles.cap}>
-                    <span className={styles.capIcon}>
-                      <Icon name={cap.icon} size={20} filled />
+          <div key={animKey} className={styles.panel}>
+            <h2 id="showcase-title" className={styles.title}>
+              {tab.title}
+            </h2>
+            <p className={`${styles.lede} md-typescale-body-large`}>
+              {tab.lede}
+            </p>
+            <ul className={styles.caps}>
+              {tab.caps.map((cap) => (
+                <li key={cap.label} className={styles.cap}>
+                  <span className={styles.capIcon}>
+                    <Icon name={cap.icon} size={20} filled />
+                  </span>
+                  <div className={styles.capText}>
+                    <span className={`${styles.capLabel} md-typescale-title-small`}>
+                      {cap.label}
                     </span>
-                    <div className={styles.capText}>
-                      <span
-                        className={`${styles.capLabel} md-typescale-title-small`}
-                      >
-                        {cap.label}
-                      </span>
-                      <span
-                        className={`${styles.capLine} md-typescale-body-medium`}
-                      >
-                        {cap.line}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className={styles.visualCol}>
-              <DeviceMockup src={show.img} alt={show.imgAlt} />
-            </div>
+                    <span className={`${styles.capLine} md-typescale-body-medium`}>
+                      {cap.line}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      ))}
+
+        {/* ── Right: phone ── */}
+        <div className={styles.visualCol} aria-hidden="true">
+          <div key={`phone-${animKey}`} className={styles.phoneWrap}>
+            <DeviceMockup src={tab.img} alt={tab.imgAlt} />
+          </div>
+        </div>
+      </div>
     </section>
   );
 };

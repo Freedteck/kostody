@@ -185,17 +185,35 @@
   }
 
   .figure {
-    min-height: clamp(340px, 72vw, 460px);
+    min-height: clamp(380px, 95vw, 500px);
   }
 
+  /* Scale the whole phone uniformly so every px detail (notch,
+     buttons, border-radius, shadow) stays perfectly proportional */
   .back {
-    width: clamp(165px, 42vw, 220px);
-    transform: translateX(-24%) translateY(-5%);
+    width: clamp(210px, 26vw, 300px);
+    transform: translateX(-24%) translateY(-5%) scale(0.92);
+    transform-origin: center center;
   }
 
   .front {
-    width: clamp(150px, 38vw, 205px);
-    transform: translateX(22%) translateY(7%);
+    width: clamp(195px, 24vw, 280px);
+    transform: translateX(22%) translateY(7%) scale(0.92);
+    transform-origin: center center;
+  }
+}
+
+@media (max-width: 480px) {
+  .figure {
+    min-height: clamp(300px, 80vw, 400px);
+  }
+
+  .back {
+    transform: translateX(-24%) translateY(-5%) scale(0.78);
+  }
+
+  .front {
+    transform: translateX(22%) translateY(7%) scale(0.78);
   }
 }
 
