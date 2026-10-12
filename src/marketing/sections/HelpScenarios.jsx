@@ -39,10 +39,10 @@ const SCENARIOS = [
   },
   {
     icon: "pin",
-    worry: "The customer forgot their 4-digit PIN.",
+    worry: "I forgot my 4-digit PIN or account password.",
     truth:
-      "Customer PINs are encrypted so neither the repair shop nor Kostody can look them up.",
-    move: "Use the support contact below to verify identity and securely set a new 4-digit PIN.",
+      "Credentials are encrypted so neither the repair shop nor Kostody support can look them up.",
+    move: "Tap 'Forgot PIN?' on the keypad or 'Forgot Password?' on login to verify with an OTP sent to your registered phone and set a new one.",
   },
 ];
 

@@ -11,8 +11,8 @@ const CLAUSES = [
   {
     index: "02",
     icon: "pin",
-    title: "Your PIN is never stored by us.",
-    body: "Your 4-digit PIN is the key that authorizes every repair agreement. We do not store it, hash it, or have any server-side record of it. If you forget your PIN, we cannot recover or reset it remotely. That is not a limitation. It is a design decision that protects you.",
+    title: "Your PIN and password are encrypted.",
+    body: "Your 4-digit PIN authorizes repair agreements, and your account password secures shop access. Neither can be viewed by repair shops or Kostody staff. If you forget your PIN or password, you can reset it directly in the app using a one-time verification code (OTP) sent to your registered phone number.",
   },
   {
     index: "03",

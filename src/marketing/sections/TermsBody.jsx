@@ -29,8 +29,8 @@ const CLAUSES = [
   {
     index: "05",
     icon: "pin",
-    title: "Your PIN is your responsibility.",
-    body: "Your 4-digit PIN is the sole authorization mechanism on the platform. You are responsible for keeping it private. Kostody cannot reset it remotely. If your PIN is compromised because you shared it, the consequences of any authorized action taken with it are yours. No shop or Kostody representative will ever ask you for your PIN.",
+    title: "Your PIN and password are your responsibility.",
+    body: "Your 4-digit PIN is the sole authorization mechanism for repair agreements, and your password secures your account. You are responsible for keeping them private. If you forget either credential, you must verify your identity via a one-time OTP sent to your registered phone number to reset it. No shop or Kostody representative will ever ask you for your PIN or password.",
   },
   {
     index: "06",

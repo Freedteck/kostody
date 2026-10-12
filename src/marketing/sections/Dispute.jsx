@@ -1,110 +1,72 @@
-import { useEffect, useRef, useState } from "react";
 import { Icon } from "../../ui";
-import record from "../../assets/dispute-record.png";
-import crackPhoto from "../../assets/condition-photo-crack.png";
+import recordExpanded from "../../assets/record-expanded-proof.png";
 import styles from "./Dispute.module.css";
 
-const BEATS = [
-  "She swore the screen was fine at drop-off. He swore the crack was already there. Both of them meant it.",
-  "So we opened the record and scrolled back to 09:02, the minute it hit the counter, before a single screw was turned.",
-  "There it is in condition photo 1, shot at intake. The same hairline crack, time-stamped 09:02. Not a memory now, a fact with a clock on it.",
-  "Nobody had to be believed. The record read the same for both of them, and it always will, because a line can be added but never rewritten.",
+const CALLOUTS = [
+  {
+    icon: "photo_camera",
+    title: "Condition photos",
+    line: "Pre-existing screen cracks captured and timestamped before work starts.",
+  },
+  {
+    icon: "request_quote",
+    title: "Financial summary",
+    line: "Quoted price and paid amount locked in. No hidden fees or quote inflation.",
+  },
+  {
+    icon: "history_toggle_off",
+    title: "Tracking history",
+    line: "Intake authorized, marked ready for pickup, and closed with customer PIN verification.",
+  },
 ];
 
 const Dispute = () => {
-  const [beat, setBeat] = useState(0);
-  const [live, setLive] = useState(false);
-  const trackRef = useRef(null);
-
-  useEffect(() => {
-    setLive(true);
-    const nodes = trackRef.current?.querySelectorAll("[data-beat-index]");
-    if (!nodes || !nodes.length) return undefined;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setBeat(Number(entry.target.dataset.beatIndex));
-          }
-        });
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
-    nodes.forEach((node) => io.observe(node));
-    return () => io.disconnect();
-  }, []);
-
   return (
-    <section
-      className={styles.dispute}
-      aria-labelledby="dispute-title"
-      data-beat={beat}
-      data-live={live ? "" : undefined}
-    >
+    <section className={styles.dispute} aria-labelledby="dispute-title">
       <div className={styles.inner}>
         <header className={styles.head}>
           <h2 id="dispute-title" className={styles.title}>
             So we scrolled back to the morning it came in.
           </h2>
           <p className={`${styles.lede} md-typescale-body-large`}>
-            The whole repair is one locked record, every step added and none ever
-            rewritten. Play it back and the crack stops being a memory. It becomes
-            a time-stamp.
+            The repair is one continuous record. Every event is appended, none is ever rewritten.
+            Play it back and the debate stops being an argument: it is a timestamped fact.
           </p>
         </header>
 
-        <div className={styles.stage}>
-          <div className={styles.track} ref={trackRef}>
-            {BEATS.map((text, i) => (
-              <div
-                key={i}
-                className={styles.beat}
-                data-beat-index={i}
-                data-active={beat === i ? "" : undefined}
-              >
-                <p className={styles.beatText}>{text}</p>
-              </div>
-            ))}
+        <div className={styles.canvas}>
+          {/* Tablet hardware enclosure */}
+          <div className={styles.tabletChassis}>
+            <div className={styles.tabletCamera} aria-hidden="true" />
+            <div
+              className={styles.tabletScreen}
+              tabIndex={0}
+              aria-label="Scrollable Kostody repair record on tablet"
+            >
+              <img
+                src={recordExpanded}
+                alt="Kostody real audit record featuring intake photos, financial summary, and tracking history"
+                className={styles.screenshot}
+              />
+            </div>
           </div>
 
-          <div className={styles.viewport} aria-hidden="true">
-            <div className={styles.device}>
-              <img className={styles.record} src={record} alt="" />
-              <div className={styles.veil} />
-
-              <span className={styles.stamp}>
-                <Icon name="schedule" size={15} filled />
-                09:02 · at intake
-              </span>
-
-              <span className={styles.verdict}>
-                <Icon name="verified" size={15} filled />
-                Settled
-              </span>
-
-              <div className={styles.evidence}>
-                <div className={styles.evidenceHead}>
-                  <span className={styles.evidenceIcon}>
-                    <Icon name="photo_camera" size={16} filled />
-                  </span>
-                  <div>
-                    <p className={`${styles.evidenceTitle} md-typescale-label-large`}>
-                      Condition photo 3
-                    </p>
-                    <p className={`${styles.evidenceSub} md-typescale-label-medium`}>
-                      Logged 09:02, before the device was opened
-                    </p>
-                  </div>
+          <div className={styles.callouts}>
+            {CALLOUTS.map((callout) => (
+              <div key={callout.title} className={styles.callout}>
+                <div className={styles.calloutIcon}>
+                  <Icon name={callout.icon} size={20} filled />
                 </div>
-                <div className={styles.photoSlot}>
-                  <img
-                    src={crackPhoto}
-                    alt="Intake condition photo showing pre-existing cracked screen"
-                    className={styles.photoImg}
-                  />
+                <div className={styles.calloutBody}>
+                  <h3 className={`${styles.calloutTitle} md-typescale-title-medium`}>
+                    {callout.title}
+                  </h3>
+                  <p className={`${styles.calloutLine} md-typescale-body-medium`}>
+                    {callout.line}
+                  </p>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,84 +1,59 @@
-import { Icon } from "../../ui";
+import { DeviceMockup } from "../../ui";
+import recordMobile from "../../assets/record-mobile-proof.png";
 import styles from "./Gap.module.css";
-
-const RECORD = [
-  {
-    icon: "photo_camera",
-    text: "Four condition photos logged at intake",
-    time: "Aug 20, 09:02 AM",
-  },
-  {
-    icon: "lock",
-    text: "Fault and ₦85,000 quote confirmed with the customer PIN",
-    time: "Aug 20, 09:14 AM",
-  },
-];
 
 const Gap = () => {
   return (
     <section className={styles.gap} aria-labelledby="gap-title">
       <div className={styles.inner}>
-        <div className={styles.head}>
-          <h2 id="gap-title" className={styles.title}>
-            When it goes wrong, it becomes your word against theirs.
-          </h2>
-          <p className={`${styles.lede} md-typescale-body-large`}>
-            Weeks after a repair the battery swells or the screen lifts, and the
-            story splits in two. No one is lying. You each remember it
-            differently, and with nothing written down the louder memory wins.
-          </p>
-        </div>
+        <div className={styles.grid}>
+          {/* Left Column: Direct dialogue clash */}
+          <div className={styles.copyCol}>
+            <span className={`${styles.eyebrow} md-typescale-label-large`}>
+              The Counter Conflict
+            </span>
 
-        <div className={styles.clash}>
-          <figure className={`${styles.memory} ${styles.customer}`}>
-            <figcaption className={`${styles.voice} md-typescale-label-large`}>
-              What the customer remembers
-            </figcaption>
-            <blockquote className={styles.quote}>
-              The screen was fine. I only brought it in for the battery.
-            </blockquote>
-          </figure>
-
-          <span className={styles.fault} aria-hidden="true" />
-
-          <figure className={`${styles.memory} ${styles.shop}`}>
-            <figcaption className={`${styles.voice} md-typescale-label-large`}>
-              What the shop remembers
-            </figcaption>
-            <blockquote className={styles.quote}>
-              That crack was there on arrival. I pointed it out at the counter.
-            </blockquote>
-          </figure>
-        </div>
-
-        <div className={styles.resolve}>
-          <p className={`${styles.resolveLabel} md-typescale-label-large`}>
-            <Icon name="verified_user" filled size={18} />
-            Kostody already settled it
-          </p>
-
-          <ul className={styles.record}>
-            {RECORD.map((r, i) => (
-              <li key={i} className={styles.recordLine}>
-                <span className={styles.recordDot}>
-                  <Icon name={r.icon} filled size={18} />
+            <div className={styles.disputeStory}>
+              <div className={styles.quoteBlock}>
+                <span className={`${styles.speaker} md-typescale-label-medium`}>
+                  Customer
                 </span>
-                <span className={`${styles.recordText} md-typescale-body-large`}>
-                  {r.text}
-                </span>
-                <span
-                  className={`${styles.recordTime} md-typescale-label-medium`}
-                >
-                  {r.time}
-                </span>
-              </li>
-            ))}
-          </ul>
+                <p className={styles.speech}>
+                  &ldquo;The screen was fine. I only brought it in for the battery.&rdquo;
+                </p>
+              </div>
 
-          <p className={`${styles.resolveNote} md-typescale-body-medium`}>
-            Nobody has to be believed. It was locked into the intake record the
-            day it came in.
-          </p>
+              <div className={styles.vsSeam} aria-hidden="true">
+                <span className={styles.seamLine} />
+                <span className={styles.seamWord}>VS</span>
+                <span className={styles.seamLine} />
+              </div>
+
+              <div className={`${styles.quoteBlock} ${styles.shopBlock}`}>
+                <span className={`${styles.speaker} md-typescale-label-medium`}>
+                  Shop
+                </span>
+                <p className={styles.speech}>
+                  &ldquo;That crack was there on arrival. I pointed it out at the counter.&rdquo;
+                </p>
+              </div>
+            </div>
+
+            <p className={`${styles.summary} md-typescale-body-large`}>
+              Without proof, the loudest memory wins. With Kostody, the intake condition photos, 
+              fixed quote, and customer PIN resolve it the moment the device hits the counter.
+            </p>
+          </div>
+
+          {/* Right Column: Grounded phone proof */}
+          <div className={styles.visualCol}>
+            <div className={styles.mockupContainer}>
+              <DeviceMockup
+                src={recordMobile}
+                alt="Actual Kostody verified intake record showing pre-repair condition photos and quote"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
